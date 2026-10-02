@@ -114,8 +114,8 @@ lib/
   territorio/              COB → BBM/UEOp → fração → município; tabela oficial de frações; sedes
   datas.ts                 Datas em America/Sao_Paulo
   env.ts                   Variáveis de ambiente (server-only, validadas com zod)
-docs/                      Padrão visual, fontes de dados, território
-scripts/                   copiar-worker-maplibre.mjs (postinstall)
+docs/                      Padrão visual, fontes de dados, território, métricas de risco, Fase 1
+scripts/                   copiar-worker-maplibre.mjs (postinstall); arcgis/ (criação das camadas da Fase 1)
 public/geo/                Contorno de Minas Gerais
 tests/                     vitest (parsers das fontes, cache, indicadores, território, mapa)
 ```
@@ -252,9 +252,15 @@ tabulares e as cores dos 6 COBs tratadas como dado. Referência completa em
 
 - **Fase 0 (este repositório):** fundação, mapa e indicadores lendo o ArcGIS, avisos INMET,
   previsão Open-Meteo e `/status`.
-- **Fase 1:** ingestão por cron gravando no Postgres (séries históricas), ANA, GloFAS,
-  CEMADEN e radar RainViewer no mapa.
-- **Fase 2:** módulos operacionais (Alertas & Ações RRD com fila de pendências, NAC),
-  autenticação institucional e notificações (Telegram).
-- **Fase 3:** coleta nativa (substituindo o Survey123) e Ocorrências Complexas/SCI.
+- **Fase 1 (desenho em [`docs/fase-1.md`](docs/fase-1.md)):**
+  - emissão e fila de alertas na própria Sala, substituindo o Survey123, com gravação em
+    feições do ArcGIS pré-desenhada;
+  - login pelos usuários do GeoRescue;
+  - mapa de risco por município (INMET, CEMADEN e alertas do CBMMG);
+  - chuva prevista nos 853 municípios, no modelo do GeoRisk, com as matrizes oficiais
+    ([`docs/metricas-risco.md`](docs/metricas-risco.md)).
+- **Fase 2:** ANA/SACE e estações hidrológicas, GloFAS, radar, NAC e notificações
+  (Telegram).
+- **Fase 3:** migração para o cartão **Período Chuvoso** do GeoRescue e Ocorrências
+  Complexas/SCI.
 - **Fase 4:** boletim matinal e relatórios gerados automaticamente (PDF/DOCX).
