@@ -1,0 +1,80 @@
+import { describe, expect, it } from "vitest";
+import {
+  afetaMinasGerais,
+  classificarSeveridade,
+  filtrarAvisosMg,
+  interpretarRssInmet,
+  lerTabelaDescricao,
+  mesorregioesMg,
+  vigenciaDoAviso,
+} from "@/lib/sources/inmet";
+import { RSS_INMET_EXEMPLO } from "@/lib/sources/exemplos/inmet-avisos";
+
+describe("interpretarRssInmet (fixture com a estrutura real do feed)", () => {
+  const avisos = interpretarRssInmet(RSS_INMET_EXEMPLO);
+
+  it("lê todos os itens", () => {
+    expect(avisos).toHaveLength(6);
+  });
+
+  it("extrai a tabela do <description> e converte datas de Brasília", () => {
+    const tempestade = avisos.find((a) => a.id === "55928");
+    expect(tempestade).toMatchObject({
+      evento: "Tempestade",
+      severidade: "grande-perigo",
+      severidadeRotulo: "Grande Perigo",
+      inicio: "2026-10-02T11:30:00.000Z", // 08:30 em Brasília
+      fim: "2026-10-03T02:59:00.000Z", // 23:59 em Brasília
+      link: "https://avisos.inmet.gov.br/55928",
+      status: "Alert",
+    });
+    expect(tempestade?.areas).toEqual(["Metropolitana de Belo Horizonte", "Zona da Mata", "Campo das Vertentes"]);
+    expect(tempestade?.descricao).toMatch(/^INMET publica aviso/);
+  });
+
+  it("filtra MG, remove expirados e ordena por severidade", () => {
+    const agora = new Date("2026-10-02T15:00:00Z"); // 12:00 em Brasília
+    const mg = filtrarAvisosMg(avisos, agora);
+    const ids = mg.map((a) => a.id);
+    expect(ids[0]).toBe("55928"); // grande perigo primeiro
+    expect(mg.every((a) => afetaMinasGerais(a.areas))).toBe(true);
+    // Ventos Costeiros (Sul) não afeta MG
+    expect(mg.some((a) => a.evento === "Ventos Costeiros")).toBe(false);
+    // Baixa Umidade terminou em 31/07/2026: não pode aparecer
+    expect(mg.some((a) => a.evento === "Baixa Umidade")).toBe(false);
+    expect(mg.some((a) => "status" in a)).toBe(false);
+  });
+});
+
+describe("regras auxiliares", () => {
+  it("classifica severidades do RSS e do CAP", () => {
+    expect(classificarSeveridade("Perigo Potencial")).toBe("perigo-potencial");
+    expect(classificarSeveridade("Perigo")).toBe("perigo");
+    expect(classificarSeveridade("Grande Perigo")).toBe("grande-perigo");
+    expect(classificarSeveridade("Extreme")).toBe("grande-perigo");
+    expect(classificarSeveridade("")).toBe("desconhecida");
+  });
+
+  it("reconhece mesorregiões de MG com variações de acento/caixa", () => {
+    expect(afetaMinasGerais(["triangulo mineiro/alto paranaiba"])).toBe(true);
+    expect(afetaMinasGerais(["Sul Fluminense", "Zona da Mata"])).toBe(true);
+    expect(afetaMinasGerais(["Leste Goiano", "Distrito Federal"])).toBe(false);
+    expect(mesorregioesMg(["Sul Baiano", "Jequitinhonha", "Vale do Mucuri"])).toEqual(["Jequitinhonha", "Vale do Mucuri"]);
+  });
+
+  it("calcula a vigência", () => {
+    const aviso = { inicio: "2026-10-03T03:00:00Z", fim: "2026-10-04T02:59:00Z" };
+    expect(vigenciaDoAviso(aviso, new Date("2026-10-02T15:00:00Z"))).toBe("futuro");
+    expect(vigenciaDoAviso(aviso, new Date("2026-10-03T12:00:00Z"))).toBe("vigente");
+    expect(vigenciaDoAviso(aviso, new Date("2026-10-04T03:00:00Z"))).toBe("expirado");
+  });
+
+  it("lê tabela com entidades HTML", () => {
+    const t = lerTabelaDescricao("<tr><th align='left'>&Aacute;rea</th><td>A &amp; B</td></tr>");
+    expect(t.get("area")).toBe("A & B");
+  });
+
+  it("recusa XML que não é RSS", () => {
+    expect(() => interpretarRssInmet("<html><body>erro</body></html>")).toThrow(/RSS/);
+  });
+});
