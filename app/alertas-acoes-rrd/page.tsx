@@ -1,8 +1,25 @@
 import type { Metadata } from "next";
 
+import { CartaoEntrar } from "@/components/alertas/cartao-entrar";
+import { ehAbaFila } from "@/components/alertas/apresentacao";
+import { PainelAlertas } from "@/components/alertas/painel-alertas";
 import { CabecalhoPagina } from "@/components/layout/cabecalho-pagina";
-import { EmConstrucao } from "@/components/layout/em-construcao";
+import { PADRAO_ALERTA_ID } from "@/lib/alertas/dominio";
+import { obterSessao } from "@/lib/auth/sessao";
+import { sessaoPublica } from "@/lib/auth/tipos";
 import { itemDaRota } from "@/lib/navegacao";
+
+/*
+ * Alertas & Ações RRD — fila e emissão de alertas da Sala (docs/fase-1.md §4).
+ *
+ * A sessão é lida no servidor (contrato de lib/auth/sessao.ts; o navegador
+ * recebe só a parte pública, sem o sid). Sem sessão, nenhuma fila: só o
+ * convite para entrar pelo GeoRescue. Com sessão, o PainelAlertas lê
+ * /api/alertas no navegador (sem cache: dado recortado por usuário) e
+ * oferece só as ações que as capacidades da sessão permitem; o servidor
+ * confere tudo de novo. ?alerta=AL-… abre o detalhe; ?aba=… escolhe a aba.
+ */
+export const dynamic = "force-dynamic";
 
 const modulo = itemDaRota("/alertas-acoes-rrd");
 
@@ -11,24 +28,29 @@ export const metadata: Metadata = {
   description: modulo.descricao,
 };
 
-export default function PaginaAlertasAcoesRrd() {
+function primeiro(valor: string | string[] | undefined): string | null {
+  return (Array.isArray(valor) ? valor[0] : valor) ?? null;
+}
+
+export default async function PaginaAlertasAcoesRrd({ searchParams }: PageProps<"/alertas-acoes-rrd">) {
+  const [sessao, busca] = await Promise.all([obterSessao(), searchParams]);
+
+  if (!sessao) {
+    return (
+      <>
+        <CabecalhoPagina titulo={modulo.rotulo} subtitulo={modulo.descricao} icone={modulo.icone} />
+        <CartaoEntrar />
+      </>
+    );
+  }
+
+  const alerta = primeiro(busca.alerta);
+  const aba = primeiro(busca.aba);
   return (
-    <>
-      <CabecalhoPagina titulo={modulo.rotulo} subtitulo={modulo.descricao} icone={modulo.icone} />
-      <div className="mx-auto w-full max-w-4xl">
-        <EmConstrucao
-          icone={modulo.icone}
-          titulo={modulo.rotulo}
-          descricao="Do alerta emitido pela UEOp à ação de Redução do Risco de Desastres executada no município, com prazo e responsável à vista."
-          entregas={[
-            "Emissão de alertas com protocolo CAP (Common Alerting Protocol), o padrão usado pelos avisos oficiais.",
-            "Fila de pendências com prazo: alertas que ainda aguardam ação RRD, ordenados pelo vencimento, por COB e BBM.",
-            "Notificação pelo Telegram para quem precisa agir, no momento em que o alerta é emitido ou o prazo aperta.",
-          ]}
-          substitui="Aba Alertas do painel atual."
-          enquantoIsso="continue emitindo alertas e registrando ações RRD pelos formulários Survey123 e pela aba Alertas do painel atual. Os totais por COB já aparecem na Visão Geral."
-        />
-      </div>
-    </>
+    <PainelAlertas
+      sessao={sessaoPublica(sessao)}
+      alertaInicial={alerta && PADRAO_ALERTA_ID.test(alerta) ? alerta : null}
+      abaInicial={ehAbaFila(aba) ? aba : null}
+    />
   );
 }

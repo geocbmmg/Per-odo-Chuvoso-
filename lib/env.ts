@@ -22,6 +22,18 @@ const esquema = z.object({
   DADOS_EXEMPLO: z.enum(["0", "1"]).default("0"),
   FONTES_TIMEOUT_MS: z.coerce.number().int().positive().default(15000),
   ARMAZEM_LEITURAS: z.enum(["memoria", "postgres"]).default("memoria"),
+  // Fila de alertas da Sala (docs/fase-1.md §4.4). "arcgis" só lê: escrita desligada nesta fase.
+  ALERTAS_ARMAZEM: z.enum(["memoria", "postgres", "arcgis"]).default("memoria"),
+  // Segredo do pseudônimo de autoria (HMAC-SHA256). 32+ caracteres aleatórios.
+  SALA_PSEUDO_SEGREDO: z.string().min(32).optional(),
+  // Login federado (docs/fase-1.md §3). URL do GeoRescue (não é segredo); sem
+  // ela, ou sem SALA_SESSION_SECRET, o login real fica desligado (503).
+  GEORESCUE_BASE_URL: z.url({ protocol: /^https?$/ }).optional(),
+  // Assina o cookie de sessão da Sala (HMAC-SHA256). 32+ caracteres; segredo
+  // curto é descartado (login desligado: falha fechada, nunca sessão fraca).
+  SALA_SESSION_SECRET: z.string().min(32).optional(),
+  // Domínio de GRUPO do GeoRescue que faz o "Operador da Sala".
+  SALA_GRUPO_OPERADOR: z.string().trim().min(1).max(60).default("SALA"),
 });
 
 export type Env = z.infer<typeof esquema>;
