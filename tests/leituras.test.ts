@@ -131,3 +131,14 @@ describe("statusDaFonte", () => {
     expect(statusDaFonte("open-meteo-previsao").estado).toBe("fora-do-ar");
   });
 });
+
+describe("stubs das fontes da Fase 1", () => {
+  it("falham com FonteIndisponivelError e mensagem clara", async () => {
+    const { obterTelemetriaAna } = await import("@/lib/sources/ana");
+    const { obterVazaoPrevista } = await import("@/lib/sources/glofas");
+    const { obterQuadrosRadar } = await import("@/lib/sources/rainviewer");
+    await expect(obterTelemetriaAna(["56110005"])).rejects.toBeInstanceOf(FonteIndisponivelError);
+    await expect(obterVazaoPrevista()).rejects.toThrow(/não implementado/);
+    await expect(obterQuadrosRadar()).rejects.toThrow(/Fase 1/);
+  });
+});
