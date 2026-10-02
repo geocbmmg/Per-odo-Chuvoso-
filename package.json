@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "db:generate": "drizzle-kit generate",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "postinstall": "node scripts/copiar-worker-maplibre.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",

@@ -1,0 +1,1277 @@
+/*
+ * Mapa da Sala de Situação — padrão visual do GeoRescue.
+ *
+ * Os tokens globais (--gr-bg, --fundo-rgb, --acc-rgb…) vêm do tema da
+ * aplicação; cada um tem aqui um valor de reserva por tema para o mapa
+ * continuar coerente mesmo antes de o tema global carregar. O tema do mapa
+ * é marcado no próprio componente com data-mapa-tema="escuro|claro".
+ *
+ * Fora de @layer de propósito: precisa vencer o maplibre-gl.css e o preflight.
+ */
+
+[data-mapa-tema="escuro"] {
+  color-scheme: dark;
+  --m-bg: var(--gr-bg, #0a0e14);
+  --m-sup1: var(--sup-1, #0f141c);
+  --m-sup2: var(--sup-2, #131922);
+  --m-fundo-rgb: var(--fundo-rgb, 10, 14, 20);
+  --m-painel-rgb: var(--painel-rgb, 19, 25, 34);
+  --m-linha-rgb: var(--linha-rgb, 255, 255, 255);
+  --m-sombra-rgb: var(--sombra-rgb, 0, 0, 0);
+  --m-sombra-k: var(--sombra-k, 1);
+  --m-ink: var(--gr-ink, #e6eaf0);
+  --m-ink2: var(--gr-ink2, #aeb6c2);
+  --m-mut: var(--gr-mut, #868f9c);
+  --m-faint: var(--gr-faint, #5a6371);
+  --m-ink-forte: var(--gr-ink-forte, #ffffff);
+  --m-acc: var(--acc, #f1c23c);
+  --m-acc-txt: var(--acc-txt, #f1c23c);
+  --m-acc-forte: var(--acc-forte, #fbdc74);
+  --m-acc-rgb: var(--acc-rgb, 241, 194, 60);
+  --m-ok-txt: var(--ok-txt, #43c67c);
+  --m-ok-rgb: var(--ok-rgb, 67, 198, 124);
+  --m-perigo-txt: var(--perigo-txt, #fb7185);
+  --m-perigo-rgb: var(--perigo-rgb, 225, 29, 72);
+  --m-alerta: var(--alerta, #ff8a45);
+  --m-alerta-txt: var(--alerta-txt, #ff8a45);
+  --m-alerta-rgb: var(--alerta-rgb, 255, 138, 69);
+  --m-rotulo-tinta: #ffffff;
+  --m-rotulo-fundo: rgba(10, 14, 20, 0.55);
+  --m-rotulo-borda: rgba(255, 255, 255, 0.16);
+}
+
+[data-mapa-tema="claro"] {
+  color-scheme: light;
+  --m-bg: var(--gr-bg, #f2f4f7);
+  --m-sup1: var(--sup-1, #ffffff);
+  --m-sup2: var(--sup-2, #f7f9fb);
+  --m-fundo-rgb: var(--fundo-rgb, 242, 244, 247);
+  --m-painel-rgb: var(--painel-rgb, 255, 255, 255);
+  --m-linha-rgb: var(--linha-rgb, 16, 21, 28);
+  --m-sombra-rgb: var(--sombra-rgb, 16, 24, 40);
+  --m-sombra-k: var(--sombra-k, 0.42);
+  --m-ink: var(--gr-ink, #10151c);
+  --m-ink2: var(--gr-ink2, #39424f);
+  --m-mut: var(--gr-mut, #4a5462);
+  --m-faint: var(--gr-faint, #545d69);
+  --m-ink-forte: var(--gr-ink-forte, #0b1017);
+  --m-acc: var(--acc, #7a5800);
+  --m-acc-txt: var(--acc-txt, #6e4f00);
+  --m-acc-forte: var(--acc-forte, #5a4000);
+  --m-acc-rgb: var(--acc-rgb, 110, 79, 0);
+  --m-ok-txt: var(--ok-txt, #0b5c33);
+  --m-ok-rgb: var(--ok-rgb, 11, 92, 51);
+  --m-perigo-txt: var(--perigo-txt, #a81b30);
+  --m-perigo-rgb: var(--perigo-rgb, 176, 31, 52);
+  --m-alerta: var(--alerta, #8f3110);
+  --m-alerta-txt: var(--alerta-txt, #8f3110);
+  --m-alerta-rgb: var(--alerta-rgb, 143, 49, 16);
+  --m-rotulo-tinta: #10151c;
+  --m-rotulo-fundo: rgba(255, 255, 255, 0.72);
+  --m-rotulo-borda: rgba(16, 21, 28, 0.2);
+}
+
+/* ── Casca e contêiner ──────────────────────────────────────────────────── */
+
+.mapa-sit,
+.mapa-legenda,
+.mapa-esqueleto {
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Mesmo modelo de caixa do preflight do Tailwind, sem depender dele. */
+.mapa-sit,
+.mapa-sit *,
+.mapa-sit *::before,
+.mapa-sit *::after,
+.mapa-legenda,
+.mapa-legenda *,
+.mapa-legenda *::before,
+.mapa-legenda *::after,
+.mapa-esqueleto,
+.mapa-esqueleto * {
+  box-sizing: border-box;
+}
+
+.mapa-sit {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(var(--m-linha-rgb), 0.09);
+  background: var(--m-bg);
+  color: var(--m-ink);
+}
+
+.mapa-sit:fullscreen {
+  border-radius: 0;
+  border: 0;
+}
+
+/* Tela cheia sem a Fullscreen API (iPhone): ocupa a janela. */
+.mapa-sit[data-expandido="true"] {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  width: 100vw;
+  height: 100dvh;
+  border-radius: 0;
+  border: 0;
+}
+
+/* A altura (prop `altura`) é do mapa; a legenda cresce abaixo dele. */
+.mapa-sit__area {
+  position: relative;
+  flex: none;
+  min-height: 0;
+  /* Unidades cqh para limitar o balão à altura útil do mapa. */
+  container-type: size;
+}
+
+/* Em tela cheia o mapa ocupa o que sobra acima da legenda. */
+.mapa-sit:fullscreen .mapa-sit__area,
+.mapa-sit[data-expandido="true"] .mapa-sit__area {
+  flex: 1 1 auto;
+  height: auto;
+  min-height: 0;
+}
+
+.mapa-sit__canvas {
+  position: absolute;
+  inset: 0;
+  background: var(--m-bg);
+}
+
+.mapa-sit .maplibregl-map {
+  font: inherit;
+}
+
+.mapa-sit .maplibregl-canvas:focus-visible {
+  outline: 2px solid var(--m-acc-forte);
+  outline-offset: -3px;
+}
+
+.mapa-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.mapa-sit :where(button, [tabindex], summary):focus-visible,
+.mapa-legenda :where(button, [tabindex]):focus-visible {
+  outline: 2px solid var(--m-acc-forte);
+  outline-offset: 2px;
+}
+
+/* ── Ferramentas (.cen-tb do GeoRescue) ─────────────────────────────────── */
+
+.mapa-sit__ferramentas {
+  position: absolute;
+  z-index: 5;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mapa-sit__grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mapa-tb {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 8px;
+  border: 1px solid rgba(var(--m-linha-rgb), 0.15);
+  background: rgba(var(--m-fundo-rgb), 0.94);
+  color: var(--m-ink2);
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(var(--m-sombra-rgb), calc(0.45 * var(--m-sombra-k)));
+  transition:
+    background-color 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.mapa-tb svg {
+  width: 17px;
+  height: 17px;
+}
+
+.mapa-tb:hover:not(:disabled) {
+  color: var(--m-ink-forte);
+  border-color: rgba(var(--m-linha-rgb), 0.3);
+}
+
+.mapa-tb[aria-pressed="true"],
+.mapa-tb[aria-expanded="true"] {
+  background: rgba(var(--m-acc-rgb), 0.2);
+  color: var(--m-acc-txt);
+  border-color: var(--m-acc-txt);
+}
+
+.mapa-tb:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* Selo de falha numa camada: forma (losango) + "!" + cor. */
+.mapa-tb__aviso {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  display: grid;
+  place-items: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+  background: var(--m-alerta);
+  color: #0a0e14;
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1;
+  transform: rotate(45deg);
+  box-shadow: 0 0 0 2px rgba(var(--m-fundo-rgb), 0.94);
+}
+
+[data-mapa-tema="claro"] .mapa-tb__aviso {
+  color: #ffffff;
+}
+
+.mapa-tb__aviso > span {
+  transform: rotate(-45deg);
+}
+
+/* ── Painéis sobre o mapa (camadas, mapa base) ──────────────────────────── */
+
+.mapa-painel {
+  position: absolute;
+  z-index: 7;
+  top: 10px;
+  left: 54px;
+  display: flex;
+  flex-direction: column;
+  width: min(304px, calc(100% - 64px));
+  max-height: calc(100% - 20px);
+  border-radius: 12px;
+  border: 1px solid rgba(var(--m-linha-rgb), 0.14);
+  background: rgba(var(--m-fundo-rgb), 0.96);
+  color: var(--m-ink);
+  box-shadow: 0 12px 34px rgba(var(--m-sombra-rgb), calc(0.55 * var(--m-sombra-k)));
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+}
+
+.mapa-painel:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.mapa-painel:focus-visible {
+  outline: 2px solid var(--m-acc-forte);
+  outline-offset: 2px;
+}
+
+.mapa-painel__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 6px 6px 14px;
+  border-bottom: 1px solid rgba(var(--m-linha-rgb), 0.09);
+}
+
+.mapa-painel__titulo {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--m-mut);
+}
+
+.mapa-painel__fechar {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--m-mut);
+  cursor: pointer;
+}
+
+.mapa-painel__fechar:hover {
+  background: rgba(var(--m-acc-rgb), 0.15);
+  color: var(--m-ink-forte);
+}
+
+.mapa-painel__corpo {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--polegar, rgba(var(--m-linha-rgb), 0.25)) transparent;
+}
+
+.mapa-painel__rodape {
+  margin: 0;
+  padding: 8px 14px 10px;
+  border-top: 1px solid rgba(var(--m-linha-rgb), 0.09);
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--m-mut);
+}
+
+.mapa-painel__rodape[data-tom="alerta"] {
+  color: var(--m-alerta-txt);
+}
+
+.mapa-painel__rodape svg {
+  width: 13px;
+  height: 13px;
+  margin-right: 4px;
+  vertical-align: -2px;
+}
+
+/* ── Linha de camada ────────────────────────────────────────────────────── */
+
+.mapa-camada__botao {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 40px;
+  padding: 6px 8px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--m-ink2);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mapa-camada__botao:hover {
+  background: rgba(var(--m-linha-rgb), 0.055);
+  color: var(--m-ink-forte);
+}
+
+.mapa-camada__olho {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  color: var(--m-acc-txt);
+}
+
+.mapa-camada__olho svg {
+  width: 17px;
+  height: 17px;
+}
+
+.mapa-camada__botao[aria-pressed="false"] {
+  color: var(--m-mut);
+}
+
+.mapa-camada__botao[aria-pressed="false"] .mapa-camada__olho {
+  color: var(--m-faint);
+}
+
+.mapa-camada__botao[aria-pressed="false"] .mapa-simbolo {
+  opacity: 0.4;
+}
+
+.mapa-camada__nome {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.mapa-camada {
+  list-style: none;
+}
+
+.mapa-camada__estado {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--m-mut);
+}
+
+.mapa-camada__aviso {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr);
+  gap: 6px;
+  align-items: start;
+  margin: 0 8px 8px 38px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--m-alerta-txt);
+}
+
+.mapa-camada__aviso svg {
+  width: 14px;
+  height: 14px;
+  margin-top: 1px;
+}
+
+.mapa-camada__aviso .mapa-camada__tentar {
+  grid-column: 2;
+  justify-self: start;
+}
+
+.mapa-camada__nota {
+  margin: 0 8px 8px 38px;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--m-mut);
+}
+
+.mapa-camada__tentar {
+  height: 30px;
+  padding: 0 11px;
+  border-radius: 8px;
+  border: 1px solid rgba(var(--m-alerta-rgb), 0.45);
+  background: transparent;
+  color: var(--m-alerta-txt);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.mapa-camada__tentar:hover {
+  background: rgba(var(--m-alerta-rgb), 0.12);
+}
+
+/* ── Pílula de contagem (.hub-pill) ─────────────────────────────────────── */
+
+.mapa-pilula {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 20px;
+  border: 1px solid rgba(var(--m-acc-rgb), 0.4);
+  background: rgba(var(--m-acc-rgb), 0.16);
+  color: var(--m-acc-txt);
+  font-size: 0.72rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.mapa-pilula[data-estado="vazio"],
+.mapa-pilula[data-estado="carregando"] {
+  border-color: rgba(var(--m-linha-rgb), 0.3);
+  background: rgba(var(--m-linha-rgb), 0.1);
+  color: var(--m-mut);
+}
+
+.mapa-pilula[data-estado="carregando"] {
+  border-style: dashed;
+}
+
+.mapa-pilula[data-estado="erro"] {
+  border: 1px dashed rgba(var(--m-alerta-rgb), 0.55);
+  background: rgba(var(--m-alerta-rgb), 0.13);
+  color: var(--m-alerta-txt);
+}
+
+/* ── Seletor de mapa base ───────────────────────────────────────────────── */
+
+.mapa-base-op {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 6px 10px;
+  border-radius: 9px;
+  border: 1px solid rgba(var(--m-linha-rgb), 0.12);
+  color: var(--m-ink2);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mapa-base-op + .mapa-base-op {
+  margin-top: 4px;
+}
+
+.mapa-base-op:hover {
+  background: rgba(var(--m-linha-rgb), 0.055);
+  color: var(--m-ink-forte);
+}
+
+.mapa-base-op svg {
+  flex: none;
+  width: 17px;
+  height: 17px;
+}
+
+.mapa-base-op[data-ativo="true"] {
+  border-color: rgba(var(--m-acc-rgb), 0.45);
+  background: rgba(var(--m-acc-rgb), 0.16);
+  color: var(--m-acc-forte);
+  font-weight: 750;
+}
+
+.mapa-base-op:has(input:focus-visible) {
+  outline: 2px solid var(--m-acc-forte);
+  outline-offset: 2px;
+}
+
+.mapa-base-op input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mapa-base-op__marca {
+  margin-left: auto;
+}
+
+/* ── Avisos e estados do mapa ───────────────────────────────────────────── */
+
+.mapa-sit__dica {
+  position: absolute;
+  z-index: 4;
+  top: 10px;
+  left: 50%;
+  display: flex;
+  margin: 0;
+  align-items: center;
+  gap: 6px;
+  max-width: calc(100% - 140px);
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px dashed rgba(var(--m-alerta-rgb), 0.55);
+  background: rgba(var(--m-fundo-rgb), 0.9);
+  color: var(--m-alerta-txt);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.3;
+  transform: translateX(-50%);
+}
+
+.mapa-sit__dica svg {
+  flex: none;
+  width: 14px;
+  height: 14px;
+}
+
+.mapa-sit__estado {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  padding: 24px;
+  background: var(--m-bg);
+  color: var(--m-ink2);
+  font-size: 13.5px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.mapa-sit__estado p {
+  max-width: 46ch;
+  margin: 0;
+}
+
+.mapa-sit__estado strong {
+  color: var(--m-ink);
+}
+
+.mapa-giro {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border: 3px solid rgba(var(--m-linha-rgb), 0.08);
+  border-top-color: var(--m-acc-txt);
+  animation: mapa-giro 1s linear infinite;
+}
+
+.mapa-carregando__texto {
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--m-acc-txt);
+}
+
+@keyframes mapa-giro {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Esqueleto do next/dynamic (antes do JS do mapa chegar): mesma caixa do
+   mapa + uma faixa no lugar da legenda, para a página não pular. */
+.mapa-esqueleto {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(var(--m-linha-rgb), 0.09);
+  background: var(--m-sup1);
+  color: var(--m-ink2);
+}
+
+.mapa-esqueleto__mapa {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  background:
+    radial-gradient(60% 50% at 50% 45%, rgba(var(--m-acc-rgb), 0.07), transparent 70%),
+    var(--m-bg);
+}
+
+.mapa-esqueleto__legenda {
+  height: 112px;
+  border-top: 1px solid rgba(var(--m-linha-rgb), 0.09);
+}
+
+@media (max-width: 767.98px) {
+  .mapa-esqueleto__legenda {
+    height: 45px;
+  }
+}
+
+/* ── Balões (popups) ────────────────────────────────────────────────────── */
+
+/* Abaixo das ferramentas (z 5): o balão nunca bloqueia os controles. */
+.mapa-sit .mapa-popup {
+  z-index: 4;
+  /* No celular, estreito o bastante para caber centrado ao lado da barra. */
+  max-width: min(320px, calc(100cqw - 128px)) !important;
+}
+
+/* Até metade da altura do mapa: o MapLibre sempre acha lado (acima ou
+   abaixo do ponto) em que o balão cabe inteiro. */
+.mapa-sit .mapa-popup .maplibregl-popup-content {
+  max-height: min(420px, calc(50cqh - 72px));
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--pop-borda, rgba(var(--m-linha-rgb), 0.16));
+  background: var(--m-sup1);
+  color: var(--m-ink);
+  box-shadow: 0 12px 34px rgba(var(--m-sombra-rgb), calc(0.55 * var(--m-sombra-k)));
+  font-size: 13px;
+  line-height: 1.45;
+  scrollbar-width: thin;
+}
+
+/* Mapa estreito: o ponto é centralizado a ~64% da altura antes de o balão
+   abrir (enquadrarParaBalao), então cabe um balão mais alto acima dele. */
+@container (max-width: 559px) {
+  .mapa-sit .mapa-popup .maplibregl-popup-content {
+    max-height: calc(62cqh - 64px);
+  }
+}
+
+.mapa-sit .mapa-popup.maplibregl-popup-anchor-bottom .maplibregl-popup-tip,
+.mapa-sit .mapa-popup.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip,
+.mapa-sit .mapa-popup.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip {
+  border-top-color: var(--pop-borda, var(--m-sup1));
+}
+
+.mapa-sit .mapa-popup.maplibregl-popup-anchor-top .maplibregl-popup-tip,
+.mapa-sit .mapa-popup.maplibregl-popup-anchor-top-left .maplibregl-popup-tip,
+.mapa-sit .mapa-popup.maplibregl-popup-anchor-top-right .maplibregl-popup-tip {
+  border-bottom-color: var(--pop-borda, var(--m-sup1));
+}
+
+.mapa-sit .mapa-popup.maplibregl-popup-anchor-left .maplibregl-popup-tip {
+  border-right-color: var(--pop-borda, var(--m-sup1));
+}
+
+.mapa-sit .mapa-popup.maplibregl-popup-anchor-right .maplibregl-popup-tip {
+  border-left-color: var(--pop-borda, var(--m-sup1));
+}
+
+.mapa-sit .mapa-popup .maplibregl-popup-close-button {
+  top: 4px;
+  right: 4px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: var(--m-mut);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.mapa-sit .mapa-popup .maplibregl-popup-close-button:hover {
+  background: rgba(var(--m-acc-rgb), 0.15);
+  color: var(--m-ink-forte);
+}
+
+.mapa-pop {
+  min-width: min(220px, calc(100cqw - 160px));
+}
+
+.mapa-pop__resumo {
+  margin: 0 0 8px;
+  padding-right: 30px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--m-mut);
+}
+
+.mapa-pop__registro + .mapa-pop__registro {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(var(--m-linha-rgb), 0.09);
+}
+
+.mapa-pop__topo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding-right: 30px;
+}
+
+.mapa-pop__tipo {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--m-mut);
+}
+
+.mapa-pop__titulo {
+  margin: 4px 0 8px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--m-ink-forte);
+  overflow-wrap: anywhere;
+}
+
+.mapa-pop__selo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 8px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.mapa-pop__selo::before {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.mapa-pop__selo[data-tom="ok"] {
+  border: 1px solid rgba(var(--m-ok-rgb), 0.4);
+  background: rgba(var(--m-ok-rgb), 0.14);
+  color: var(--m-ok-txt);
+}
+
+.mapa-pop__selo[data-tom="alerta"] {
+  border: 1px dashed rgba(var(--m-alerta-rgb), 0.55);
+  background: rgba(var(--m-alerta-rgb), 0.13);
+  color: var(--m-alerta-txt);
+}
+
+.mapa-pop__selo[data-tom="alerta"]::before {
+  border-radius: 1px;
+}
+
+.mapa-pop__selo[data-tom="perigo"] {
+  border: 1px solid rgba(var(--m-perigo-rgb), 0.4);
+  background: rgba(var(--m-perigo-rgb), 0.13);
+  color: var(--m-perigo-txt);
+}
+
+.mapa-pop__selo[data-tom="perigo"]::before {
+  border-radius: 1px;
+  transform: rotate(45deg);
+}
+
+.mapa-pop__selo[data-tom="neutro"] {
+  border: 1px solid rgba(var(--m-linha-rgb), 0.22);
+  background: rgba(var(--m-linha-rgb), 0.07);
+  color: var(--m-mut);
+}
+
+.mapa-pop__selo[data-tom="neutro"]::before {
+  background: transparent;
+  box-shadow: inset 0 0 0 2px currentColor;
+}
+
+.mapa-pop__campos {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+}
+
+.mapa-pop__campo {
+  display: grid;
+  grid-template-columns: minmax(92px, 42%) 1fr;
+  gap: 8px;
+  font-size: 12.5px;
+}
+
+.mapa-pop__campo dt {
+  color: var(--m-mut);
+  font-weight: 600;
+}
+
+.mapa-pop__campo dd {
+  margin: 0;
+  color: var(--m-ink);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.mapa-pop__nota {
+  margin: 8px 0 0;
+  font-size: 11.5px;
+  color: var(--m-mut);
+}
+
+/* ── Símbolos (legenda, painel e balão) ─────────────────────────────────── */
+
+.mapa-simbolo,
+.mapa-pop__marca {
+  position: relative;
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+}
+
+.mapa-pop__marca {
+  --sim-cor: var(--pop-cor);
+  width: 16px;
+  height: 16px;
+}
+
+.mapa-simbolo::before,
+.mapa-pop__marca::before {
+  content: "";
+  box-sizing: border-box;
+  display: block;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid #0a0e14;
+  background: var(--sim-cor);
+}
+
+:is(.mapa-simbolo, .mapa-pop__marca)[data-forma="circulo-pequeno"]::before {
+  width: 10px;
+  height: 10px;
+  border-width: 1.5px;
+}
+
+:is(.mapa-simbolo, .mapa-pop__marca)[data-forma="alvo"]::before,
+:is(.mapa-simbolo, .mapa-pop__marca)[data-forma="alvo-apagado"]::before {
+  width: 9px;
+  height: 9px;
+  border-width: 1.5px;
+}
+
+:is(.mapa-simbolo, .mapa-pop__marca)[data-forma="alvo"]::after,
+:is(.mapa-simbolo, .mapa-pop__marca)[data-forma="alvo-apagado"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 2.5px solid var(--sim-cor);
+}
+
+:is(.mapa-simbolo, .mapa-pop__marca)[data-forma="alvo-apagado"]::after {
+  inset: 2px;
+  border-width: 1.5px;
+}
+
+:is(.mapa-simbolo, .mapa-pop__marca)[data-forma="agrupamento"]::before {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sim-cor) 35%, transparent);
+}
+
+:is(.mapa-simbolo, .mapa-pop__marca)[data-forma="area"]::before {
+  width: 18px;
+  height: 13px;
+  border-radius: 3px;
+  border: 2px solid var(--sim-contorno, var(--sim-cor));
+  background: color-mix(in srgb, var(--sim-cor) 55%, transparent);
+}
+
+.mapa-simbolo__n {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #0a0e14;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+/* ── Marcadores HTML (rótulos dos COBs e números dos clusters) ──────────── */
+
+.mapa-rotulo-cob {
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 7px 2px 5px;
+  border-radius: 999px;
+  border: 1px solid var(--m-rotulo-borda);
+  background: var(--m-rotulo-fundo);
+  color: var(--m-rotulo-tinta);
+  font-size: 10.5px;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+.mapa-rotulo-cob::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--cob-cor);
+  box-shadow: 0 0 0 1px rgba(10, 14, 20, 0.5);
+}
+
+.mapa-sit[data-rotulos-cob="off"] .mapa-rotulo-cob {
+  display: none;
+}
+
+.mapa-cluster-n {
+  z-index: 2;
+  color: #0a0e14;
+  font-size: 11.5px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Créditos do MapLibre (visíveis e compactos) ────────────────────────── */
+
+.mapa-sit .maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib {
+  margin: 0;
+  padding: 2px 6px;
+  border-radius: 8px 0 0 0;
+  background: rgba(var(--m-fundo-rgb), 0.8);
+  color: var(--m-ink2);
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+.mapa-sit .maplibregl-ctrl-attrib a {
+  color: var(--m-ink2);
+  text-decoration: underline;
+  text-decoration-color: rgba(var(--m-linha-rgb), 0.35);
+}
+
+.mapa-sit .maplibregl-ctrl-attrib.maplibregl-compact {
+  margin: 0 8px 8px 0;
+  border-radius: 12px;
+}
+
+.mapa-sit .maplibregl-ctrl-attrib-button {
+  background-color: transparent;
+}
+
+.mapa-sit[data-mapa-tema="escuro"] .maplibregl-ctrl-attrib-button {
+  filter: invert(1);
+}
+
+/* ── Legenda ────────────────────────────────────────────────────────────── */
+
+.mapa-legenda {
+  flex: 0 0 auto;
+  min-width: 0;
+  color: var(--m-ink2);
+  font-size: 12.5px;
+}
+
+.mapa-legenda[data-variante="embutida"] {
+  border-top: 1px solid rgba(var(--m-linha-rgb), 0.09);
+  background: var(--m-sup1);
+}
+
+.mapa-legenda[data-variante="solta"] {
+  border-radius: 14px;
+  border: 1px solid rgba(var(--m-linha-rgb), 0.09);
+  background: var(--gr-surface, rgba(var(--m-painel-rgb), 0.6));
+}
+
+.mapa-legenda__alternar {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  background: transparent;
+  color: var(--m-ink2);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mapa-legenda__alternar svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-left: auto;
+  transition: transform 0.15s;
+}
+
+.mapa-legenda__alternar[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+.mapa-legenda__resumo {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--m-mut);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mapa-legenda__titulo {
+  flex: none;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--m-mut);
+}
+
+.mapa-legenda__corpo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px 28px;
+  padding: 10px 14px 12px;
+}
+
+.mapa-legenda__grupo {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.mapa-legenda__rotulo-grupo {
+  margin: 0 0 6px;
+  padding: 0;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--m-faint);
+}
+
+.mapa-legenda__lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mapa-legenda__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 24px;
+  white-space: nowrap;
+}
+
+.mapa-legenda__item[data-oculta="true"] {
+  color: var(--m-faint);
+}
+
+.mapa-legenda__item[data-oculta="true"] .mapa-simbolo {
+  opacity: 0.4;
+}
+
+.mapa-legenda__nota {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--m-mut);
+}
+
+/* ── Celular ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 767.98px) {
+  .mapa-tb {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+  }
+
+  .mapa-tb svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .mapa-sit__ferramentas {
+    top: 8px;
+    left: 8px;
+    gap: 6px;
+  }
+
+  /* Folha na parte de baixo do mapa, ao lado das ferramentas. */
+  .mapa-painel {
+    top: auto;
+    right: 8px;
+    bottom: 8px;
+    left: 60px;
+    width: auto;
+    /* Folha baixa: deixa visível o alto do mapa (e o aviso do mapa base). */
+    max-height: min(calc(100% - 76px), 520px);
+  }
+
+  .mapa-painel__fechar,
+  .mapa-camada__botao,
+  .mapa-camada__tentar,
+  .mapa-base-op {
+    min-height: 44px;
+  }
+
+  .mapa-painel__fechar {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Ao lado das ferramentas, no alto: embaixo ficam os créditos. */
+  .mapa-sit__dica {
+    top: 8px;
+    right: 8px;
+    left: 60px;
+    max-width: none;
+    transform: none;
+  }
+
+  .mapa-sit .mapa-popup .maplibregl-popup-close-button {
+    width: 44px;
+    height: 44px;
+    top: 0;
+    right: 0;
+  }
+
+  .mapa-sit .maplibregl-ctrl-attrib.maplibregl-compact {
+    min-height: 44px;
+    padding-right: 44px;
+  }
+
+  .mapa-sit .maplibregl-ctrl-attrib-button {
+    width: 44px;
+    height: 44px;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .mapa-legenda[data-recolhivel="true"] .mapa-legenda__alternar {
+    display: flex;
+  }
+
+  .mapa-legenda[data-recolhivel="true"][data-aberta="false"] .mapa-legenda__corpo {
+    display: none;
+  }
+
+  .mapa-legenda[data-recolhivel="true"] .mapa-legenda__corpo {
+    padding-top: 0;
+  }
+}
+
+/* ── Menos movimento ────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .mapa-sit *,
+  .mapa-sit *::before,
+  .mapa-sit *::after,
+  .mapa-legenda *,
+  .mapa-esqueleto * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Faixa com as 6 cores dos COBs (camada "Limites dos COBs"). */
+.mapa-simbolo[data-forma="cobs"]::before {
+  width: 18px;
+  height: 13px;
+  border-radius: 3px;
+  border: 1px solid rgba(var(--m-linha-rgb), 0.45);
+  background: linear-gradient(
+    90deg,
+    #f1c23c 0 16.66%,
+    #5fa07a 0 33.33%,
+    #4e86c4 0 50%,
+    #d08a3e 0 66.66%,
+    #9aa0ac 0 83.33%,
+    #c05f58 0
+  );
+}
