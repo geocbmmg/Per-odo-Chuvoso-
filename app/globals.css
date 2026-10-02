@@ -1,26 +1,541 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+ * Sala de Situação · Período Chuvoso — padrão visual do GeoRescue.
+ * Origem dos tokens: GeoRescue Index.html (tema 76-127, acento ouro 135-206,
+ * derivados 210-260, foco 44327, scrollbar 302-305). Documentação: docs/padrao-visual.md.
+ *
+ * O tema vive no atributo data-tema="escuro|claro" do <html> (next-themes).
+ * O acento é OURO fixo (data-acento="ouro"); não há troca de acento nesta plataforma.
+ * Toda cor translúcida é escrita como rgba(var(--X-rgb), α) — o mesmo α vale nos dois temas.
+ */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@custom-variant dark (&:where([data-tema="escuro"], [data-tema="escuro"] *));
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/*
+ * trilho-mini: estilos do trilho lateral recolhido (64px).
+ * Tablet (768–1023px) nasce recolhido; desktop (≥1024px) segue a preferência salva.
+ * O estado vem de data-tablet / data-desktop no <aside>, então funciona já no HTML do servidor.
+ */
+@custom-variant trilho-mini {
+  @media (min-width: 768px) and (max-width: 1023.98px) {
+    &:where([data-tablet="mini"], [data-tablet="mini"] *) {
+      @slot;
+    }
+  }
+  @media (min-width: 1024px) {
+    &:where([data-desktop="mini"], [data-desktop="mini"] *) {
+      @slot;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ------------------------------------------------------------------ */
+/* 1. Tema escuro (padrão) — Index.html:76-99 + acento ouro × escuro   */
+/* ------------------------------------------------------------------ */
+:root,
+[data-tema="escuro"] {
+  color-scheme: dark;
+
+  --gr-bg: #0a0e14;
+  --sup-1: #0f141c;
+  --sup-2: #131922;
+  --sup-3: #1b2330;
+  --gr-surface: rgba(19, 25, 34, 0.6);
+  --painel-rgb: 19, 25, 34;
+  --fundo-rgb: 10, 14, 20;
+  --sup1-rgb: 17, 23, 33;
+  --linha-rgb: 255, 255, 255;
+  --sombra-rgb: 0, 0, 0;
+  --sombra-k: 1;
+
+  --gr-ink: #e6eaf0;
+  --gr-ink2: #aeb6c2;
+  --gr-mut: #868f9c;
+  --gr-faint: #5a6371;
+  --gr-ink-forte: #ffffff;
+
+  --trilho: #0f141c;
+  --polegar: #222b37;
+
+  /* acento ouro × escuro */
+  --acc: #f1c23c;
+  --acc-txt: #f1c23c;
+  --acc-forte: #fbdc74;
+  --acc-fundo: #ce9e22;
+  --acc-ink: #0a0e14;
+  --acc-rgb: 241, 194, 60;
+  --acc-forte-rgb: 251, 220, 116;
+
+  /* semânticas (com acento ouro, "alerta" é laranja para não colidir com a marca) */
+  --ok: #43c67c;
+  --ok-txt: #43c67c;
+  --ok-rgb: 67, 198, 124;
+  --perigo: #e11d48;
+  --perigo-txt: #fb7185;
+  --perigo-rgb: 225, 29, 72;
+  --alerta: #ff8a45;
+  --alerta-txt: #ff8a45;
+  --alerta-rgb: 255, 138, 69;
+  --info: #38bdf8;
+  --info-txt: #38bdf8;
+  --info-rgb: 56, 189, 248;
+
+  --veu-forte: linear-gradient(160deg, rgba(15, 20, 28, 0.66), rgba(10, 14, 20, 0.42));
+
+  /* contorno dos COBs no escuro (Index.html:2657-2662) */
+  --cob-1-contorno: #f6d06a;
+  --cob-2-contorno: #7fc59a;
+  --cob-3-contorno: #74a6e0;
+  --cob-4-contorno: #eaa85a;
+  --cob-5-contorno: #c2c8d2;
+  --cob-6-contorno: #e07e76;
+  --cob-preenchimento-opacidade: 0.16;
+}
+
+/* ------------------------------------------------------------------ */
+/* 2. Tema claro — Index.html:100-127 + acento ouro × claro            */
+/*    Textos aprovados a ≥ 4,5:1 (não são o espelho do escuro).         */
+/* ------------------------------------------------------------------ */
+[data-tema="claro"] {
+  color-scheme: light;
+
+  --gr-bg: #f2f4f7;
+  --sup-1: #ffffff;
+  --sup-2: #f7f9fb;
+  --sup-3: #edf1f6;
+  --gr-surface: rgba(255, 255, 255, 0.82);
+  --painel-rgb: 255, 255, 255;
+  --fundo-rgb: 242, 244, 247;
+  --sup1-rgb: 255, 255, 255;
+  --linha-rgb: 16, 21, 28;
+  --sombra-rgb: 16, 24, 40;
+  --sombra-k: 0.42;
+
+  --gr-ink: #10151c;
+  --gr-ink2: #39424f;
+  --gr-mut: #4a5462;
+  --gr-faint: #545d69;
+  --gr-ink-forte: #0b1017;
+
+  --trilho: #edf1f6;
+  --polegar: #c2cbd7;
+
+  /* acento ouro × claro */
+  --acc: #7a5800;
+  --acc-txt: #6e4f00;
+  --acc-forte: #5a4000;
+  --acc-fundo: #7a5800;
+  --acc-ink: #ffffff;
+  --acc-rgb: 110, 79, 0;
+  --acc-forte-rgb: 90, 64, 0;
+
+  --ok: #0b5c33;
+  --ok-txt: #0b5c33;
+  --ok-rgb: 11, 92, 51;
+  --perigo: #b01f34;
+  --perigo-txt: #a81b30;
+  --perigo-rgb: 176, 31, 52;
+  --alerta: #8f3110;
+  --alerta-txt: #8f3110;
+  --alerta-rgb: 143, 49, 16;
+  --info: #0b6570;
+  --info-txt: #0b6570;
+  --info-rgb: 11, 101, 112;
+
+  --veu-forte: linear-gradient(160deg, rgba(255, 255, 255, 0.86), rgba(242, 244, 247, 0.74));
+
+  /* contorno dos COBs no claro (Index.html:44259-44264) */
+  --cob-1-contorno: #9b7a18;
+  --cob-2-contorno: #3e6e52;
+  --cob-3-contorno: #2f5a88;
+  --cob-4-contorno: #8e5c25;
+  --cob-5-contorno: #646a76;
+  --cob-6-contorno: #863e39;
+  --cob-preenchimento-opacidade: 0.78;
+}
+
+/* ------------------------------------------------------------------ */
+/* 3. Derivados (Index.html:210-260) + mapeamento shadcn                */
+/*    Declarados também em [data-tema] para valerem em subárvores com   */
+/*    tema próprio (ex.: um painel forçado no escuro).                  */
+/* ------------------------------------------------------------------ */
+:root,
+[data-tema] {
+  --gr-line: rgba(var(--linha-rgb), 0.09);
+  --gr-line-2: rgba(var(--linha-rgb), 0.055);
+  --hover: rgba(var(--linha-rgb), 0.055);
+  --zebra: rgba(var(--linha-rgb), 0.02);
+
+  --acc-soft: rgba(var(--acc-rgb), 0.15);
+  --acc-line: rgba(var(--acc-rgb), 0.34);
+  --ok-soft: rgba(var(--ok-rgb), 0.14);
+  --ok-line: rgba(var(--ok-rgb), 0.34);
+  --perigo-soft: rgba(var(--perigo-rgb), 0.16);
+  --perigo-line: rgba(var(--perigo-rgb), 0.4);
+  --alerta-soft: rgba(var(--alerta-rgb), 0.14);
+  --alerta-line: rgba(var(--alerta-rgb), 0.36);
+  --info-soft: rgba(var(--info-rgb), 0.13);
+  --info-line: rgba(var(--info-rgb), 0.32);
+
+  /* tinta sobre preenchimento semântico sólido / sobre chip de cor fixa */
+  --tinta-cheia: #ffffff;
+  --tinta-fixa: #0a0e14;
+
+  /* véus */
+  --veu-gaveta: rgba(var(--sombra-rgb), calc(0.55 * var(--sombra-k)));
+  --veu-modal: rgba(var(--fundo-rgb), 0.66);
+
+  /* shadcn/ui (visual-tokens.md §10) */
+  --radius: 0.75rem;
+  --background: var(--gr-bg);
+  --foreground: var(--gr-ink);
+  --card: var(--sup-1);
+  --card-foreground: var(--gr-ink);
+  --popover: var(--sup-2);
+  --popover-foreground: var(--gr-ink);
+  --primary: var(--acc);
+  --primary-foreground: var(--acc-ink);
+  --secondary: var(--sup-3);
+  --secondary-foreground: var(--gr-ink);
+  --muted: var(--sup-3);
+  --muted-foreground: var(--gr-mut);
+  --accent: rgba(var(--acc-rgb), 0.15);
+  --accent-foreground: var(--acc-forte);
+  --destructive: var(--perigo);
+  --destructive-foreground: var(--tinta-cheia);
+  --border: var(--gr-line);
+  --input: rgba(var(--linha-rgb), 0.12);
+  --ring: var(--acc-forte);
+
+  /* séries genéricas de gráfico; séries por COB usam --cob-1..6 */
+  --chart-1: var(--acc);
+  --chart-2: var(--info);
+  --chart-3: var(--ok);
+  --chart-4: var(--alerta);
+  --chart-5: var(--gr-mut);
+
+  --sidebar: var(--sup-1);
+  --sidebar-foreground: var(--gr-ink2);
+  --sidebar-primary: var(--acc);
+  --sidebar-primary-foreground: var(--acc-ink);
+  --sidebar-accent: rgba(var(--acc-rgb), 0.12);
+  --sidebar-accent-foreground: var(--acc-txt);
+  --sidebar-border: var(--gr-line);
+  --sidebar-ring: var(--acc-forte);
+}
+
+/* ------------------------------------------------------------------ */
+/* 4. Cores-DADO: iguais nos dois temas (cor identifica o dado)         */
+/* ------------------------------------------------------------------ */
+:root {
+  /* COBs — preenchimento (Index.html:2657-2662) */
+  --cob-1: #f1c23c;
+  --cob-2: #5fa07a;
+  --cob-3: #4e86c4;
+  --cob-4: #d08a3e;
+  --cob-5: #9aa0ac;
+  --cob-6: #c05f58;
+
+  /* Escala de risco (recomendação de visual-tokens.md §3; NÃO reaproveita --alerta) */
+  --risco-normal: #2e8b57;
+  --risco-normal-tinta: #ffffff;
+  --risco-atencao: #eab308;
+  --risco-atencao-tinta: #1a1a1a;
+  --risco-alerta: #cc6e1f;
+  --risco-alerta-tinta: #1a1a1a;
+  --risco-perigo: #e11d48;
+  --risco-perigo-tinta: #ffffff;
+}
+
+/* ------------------------------------------------------------------ */
+/* 5. Tailwind: tokens expostos como utilitários                        */
+/*    Cores com -rgb são declaradas como rgb() para aceitar /opacidade  */
+/*    (ex.: bg-acc/12, border-perigo/40, bg-linha/5).                   */
+/* ------------------------------------------------------------------ */
+@theme inline {
+  --font-sans: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* shadcn */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* superfícies e tintas do GeoRescue */
+  --color-gr-bg: var(--gr-bg);
+  --color-sup-1: var(--sup-1);
+  --color-sup-2: var(--sup-2);
+  --color-sup-3: var(--sup-3);
+  --color-superficie: var(--gr-surface);
+  --color-ink: var(--gr-ink);
+  --color-ink-2: var(--gr-ink2);
+  --color-mut: var(--gr-mut);
+  --color-faint: var(--gr-faint);
+  --color-ink-forte: var(--gr-ink-forte);
+  --color-linha: rgb(var(--linha-rgb));
+  --color-painel: rgb(var(--painel-rgb));
+  --color-fundo: rgb(var(--fundo-rgb));
+  --color-tinta-cheia: var(--tinta-cheia);
+  --color-tinta-fixa: var(--tinta-fixa);
+
+  /* acento: bg-primary = preenchimento sólido; acc/α = fundos e molduras translúcidas */
+  --color-acc: rgb(var(--acc-rgb));
+  --color-acc-txt: var(--acc-txt);
+  --color-acc-forte: var(--acc-forte);
+  --color-acc-fundo: var(--acc-fundo);
+  --color-acc-ink: var(--acc-ink);
+
+  /* semânticas */
+  --color-ok: rgb(var(--ok-rgb));
+  --color-ok-txt: var(--ok-txt);
+  --color-perigo: rgb(var(--perigo-rgb));
+  --color-perigo-txt: var(--perigo-txt);
+  --color-alerta: rgb(var(--alerta-rgb));
+  --color-alerta-txt: var(--alerta-txt);
+  --color-info: rgb(var(--info-rgb));
+  --color-info-txt: var(--info-txt);
+
+  /* cores-dado */
+  --color-cob-1: var(--cob-1);
+  --color-cob-2: var(--cob-2);
+  --color-cob-3: var(--cob-3);
+  --color-cob-4: var(--cob-4);
+  --color-cob-5: var(--cob-5);
+  --color-cob-6: var(--cob-6);
+  --color-cob-1-contorno: var(--cob-1-contorno);
+  --color-cob-2-contorno: var(--cob-2-contorno);
+  --color-cob-3-contorno: var(--cob-3-contorno);
+  --color-cob-4-contorno: var(--cob-4-contorno);
+  --color-cob-5-contorno: var(--cob-5-contorno);
+  --color-cob-6-contorno: var(--cob-6-contorno);
+  --color-risco-normal: var(--risco-normal);
+  --color-risco-atencao: var(--risco-atencao);
+  --color-risco-alerta: var(--risco-alerta);
+  --color-risco-perigo: var(--risco-perigo);
+
+  /* raios: sm 8 · md 10 · lg 12 · xl 16 (controles usam 9px e painéis 14px como valor arbitrário) */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* sombras escaladas por --sombra-k (1 no escuro, .42 no claro) */
+  --shadow-cartao: 0 4px 10px rgba(var(--sombra-rgb), calc(0.45 * var(--sombra-k)));
+  --shadow-cartao-hover: 0 8px 20px rgba(var(--sombra-rgb), calc(0.6 * var(--sombra-k)));
+  --shadow-menu: 0 12px 34px rgba(var(--sombra-rgb), calc(0.55 * var(--sombra-k)));
+  --shadow-modal: 0 22px 60px rgba(var(--sombra-rgb), calc(0.6 * var(--sombra-k)));
+  --shadow-acc: 0 8px 22px rgba(var(--acc-rgb), 0.24);
+  --shadow-halo: 0 0 18px rgba(var(--acc-rgb), 0.14);
+}
+
+/* ------------------------------------------------------------------ */
+/* 6. Base                                                              */
+/* ------------------------------------------------------------------ */
+@layer base {
+  *,
+  ::after,
+  ::before {
+    border-color: var(--border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scrollbar-color: var(--polegar) var(--sup-1);
+  }
+
+  body {
+    min-height: 100dvh;
+    background: var(--gr-bg);
+    color: var(--gr-ink);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* sem rolagem horizontal na página: tabelas largas rolam dentro do próprio contêiner */
+    overflow-x: clip;
+  }
+
+  /* Como o reboot do Bootstrap no GeoRescue: botões habilitados com cursor de mão */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
+  ::selection {
+    background: rgba(var(--acc-rgb), 0.3);
+    color: var(--gr-ink-forte);
+  }
+
+  /* Foco visível — Index.html:44327 */
+  :where(a, button, input, select, textarea, summary, [role="button"], [role="tab"], [tabindex]):focus-visible {
+    outline: 2px solid var(--acc-forte);
+    outline-offset: 2px;
+  }
+
+  /* Scrollbar — Index.html:302-305 (WebKit/Safari; Chrome/Firefox usam scrollbar-color) */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 12px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--sup-1);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--polegar);
+    border-radius: 6px;
+    border: 2px solid var(--sup-1);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--acc-txt);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 7. Componentes da casca                                              */
+/* ------------------------------------------------------------------ */
+@layer components {
+  /* Eyebrow — .gr-eyebrow (Index.html:3466-3490) */
+  .gr-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    line-height: 1.3;
+    text-transform: uppercase;
+    color: var(--acc-txt);
+  }
+  .gr-eyebrow::before {
+    content: "";
+    flex: none;
+    width: 22px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--acc-txt), transparent);
+  }
+
+  /* Trilho lateral — .gr-trilho (Index.html:3322-3449) */
+  .sala-trilho {
+    --trilho-w: 244px;
+    width: var(--trilho-w);
+    transition: width 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @media (min-width: 768px) and (max-width: 1023.98px) {
+    .sala-trilho[data-tablet="mini"] {
+      --trilho-w: 64px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .sala-trilho[data-desktop="mini"] {
+      --trilho-w: 64px;
+    }
+  }
+
+  /* Área de conteúdo: padding 20px (12px no celular), como .painel-wrap */
+  .sala-pagina {
+    --pagina-pad: 20px;
+    padding: var(--pagina-pad) var(--pagina-pad) 40px;
+  }
+  @media (max-width: 767.98px) {
+    .sala-pagina {
+      --pagina-pad: 12px;
+    }
+  }
+
+  /* Link "pular para o conteúdo" */
+  .pular-conteudo {
+    position: absolute;
+    left: 12px;
+    top: -100px;
+    z-index: 100;
+    border-radius: 9px;
+    padding: 10px 14px;
+    background: var(--acc);
+    color: var(--acc-ink);
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .pular-conteudo:focus {
+    top: 12px;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 8. Utilitários próprios                                              */
+/* ------------------------------------------------------------------ */
+
+/* Alvo de toque ≥ 44px em telas de toque sem mudar o tamanho visual.
+   O elemento precisa de position: relative (os primitivos já trazem "relative"). */
+@utility alvo-toque {
+  @media (pointer: coarse) {
+    &::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: max(100%, 44px);
+      height: max(100%, 44px);
+      transform: translate(-50%, -50%);
+    }
+  }
+}
+
+/* Rolagem fina para listas internas (Firefox/Chrome) */
+@utility rolagem-fina {
+  scrollbar-width: thin;
+  scrollbar-color: var(--polegar) var(--trilho);
+}
+
+/* Números de KPI: tabular + espaçamento negativo dos números grandes */
+@utility numero {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* ------------------------------------------------------------------ */
+/* 9. Movimento reduzido: animações param; o estado continua visível    */
+/* ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

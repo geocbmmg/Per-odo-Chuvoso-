@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <title>Sala de Situação · Período Chuvoso</title>
+  <rect width="64" height="64" rx="14" fill="#0A0E14"/>
+  <path d="M32 8.5 51.5 15.6V31c0 12.6-8.3 21.6-19.5 25.4C20.8 52.6 12.5 43.6 12.5 31V15.6Z" fill="#F1C23C" fill-opacity=".12" stroke="#F1C23C" stroke-width="3.4" stroke-linejoin="round"/>
+  <path d="M32 20.5c0 0-8.8 10.6-8.8 16.8a8.8 8.8 0 0 0 17.6 0c0-6.2-8.8-16.8-8.8-16.8Z" fill="#F1C23C"/>
+  <path d="M28.2 37.6a4 4 0 0 0 3.2 4.1" fill="none" stroke="#0A0E14" stroke-width="2" stroke-linecap="round" stroke-opacity=".55"/>
+</svg>
