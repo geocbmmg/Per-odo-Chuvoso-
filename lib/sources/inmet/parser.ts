@@ -9,7 +9,9 @@ import type { AvisoInmet, SeveridadeInmet } from "@/lib/dominio/tipos";
  * Status, Evento, Severidade, Início, Fim, Descrição, Área e Link Gráfico.
  * Início/Fim vêm em horário de Brasília sem offset ("2026-10-03 00:00:00.0").
  * A Área lista mesorregiões do IBGE ("Aviso para as Áreas: Zona da Mata, ...").
- * Este módulo é puro (sem rede) para ser testado com o fixture real.
+ * O <pubDate> do item NÃO é a publicação: repete o Início com um "+0000" falso,
+ * por isso é ignorado. O feed também mantém avisos já vencidos (~10 dias).
+ * Formato levantado em docs/fontes-de-dados.md. Módulo puro (sem rede).
  */
 
 export const URL_AVISOS_INMET = "https://apiprevmet3.inmet.gov.br/avisos/rss";
@@ -92,7 +94,7 @@ export function lerTabelaDescricao(html: string): Map<string, string> {
 export function classificarSeveridade(texto: string | null | undefined): SeveridadeInmet {
   const t = chave(texto ?? "");
   if (t.includes("grande perigo") || t === "extreme") return "grande-perigo";
-  if (t.includes("perigo potencial") || t === "moderate") return "perigo-potencial";
+  if (t.includes("perigo potencial") || t === "moderate" || t === "minor") return "perigo-potencial";
   if (t.includes("perigo") || t === "severe") return "perigo";
   return "desconhecida";
 }
@@ -140,7 +142,11 @@ export interface AvisoInmetBruto extends AvisoInmet {
   status: string | null;
 }
 
-/** Interpreta o XML do RSS. Lança erro se não for um RSS de avisos. */
+/**
+ * Interpreta o XML do RSS. Lança erro se não for um RSS ou se vier sem nenhum
+ * <item>: o feed sempre carrega o histórico recente, então vazio indica falha
+ * da fonte, não ausência de avisos.
+ */
 export function interpretarRssInmet(xml: string): AvisoInmetBruto[] {
   const parser = new XMLParser({
     ignoreAttributes: true,
@@ -152,8 +158,10 @@ export function interpretarRssInmet(xml: string): AvisoInmetBruto[] {
   const doc = parser.parse(xml) as { rss?: { channel?: { item?: unknown } } };
   const canal = doc?.rss?.channel;
   if (!canal) throw new Error("Resposta do INMET não é um RSS válido");
+  const itens = comoLista(canal.item as Record<string, unknown> | Record<string, unknown>[]);
+  if (itens.length === 0) throw new Error("Feed do INMET sem nenhum aviso (resposta incompleta)");
 
-  return comoLista(canal.item as Record<string, unknown> | Record<string, unknown>[]).map((item, i) => {
+  return itens.map((item, i) => {
     const titulo = textoDe(item.title);
     const link = textoDe(item.link);
     const guid = textoDe(item.guid);
@@ -165,8 +173,6 @@ export function interpretarRssInmet(xml: string): AvisoInmetBruto[] {
       tabela.get("evento") ?? titulo?.replace(/^Aviso de\s+/i, "").replace(/\.\s*Severidade.*$/i, "").trim() ?? "Aviso";
     const areas = separarAreas(tabela.get("area"));
     const linkGrafico = tabela.get("link grafico") ?? null;
-    const publicado = textoDe(item.pubDate);
-    const publicadoEm = publicado ? new Date(publicado) : null;
 
     return {
       id: idDoLink(link, guid, i),
@@ -178,7 +184,8 @@ export function interpretarRssInmet(xml: string): AvisoInmetBruto[] {
       descricao: tabela.get("descricao") ?? null,
       areas,
       link: linkGrafico ?? link,
-      publicadoEm: publicadoEm && !Number.isNaN(publicadoEm.getTime()) ? publicadoEm.toISOString() : null,
+      // Sem data de publicação confiável no RSS (ver comentário do módulo).
+      publicadoEm: null,
       status: tabela.get("status") ?? null,
     };
   });
@@ -188,7 +195,8 @@ export type VigenciaAviso = "vigente" | "futuro" | "expirado";
 
 export function vigenciaDoAviso(aviso: Pick<AvisoInmet, "inicio" | "fim">, agora: Date): VigenciaAviso {
   const t = agora.getTime();
-  if (aviso.fim && new Date(aviso.fim).getTime() <= t) return "expirado";
+  // Bordas inclusivas: vigente quando início ≤ agora ≤ fim.
+  if (aviso.fim && new Date(aviso.fim).getTime() < t) return "expirado";
   if (aviso.inicio && new Date(aviso.inicio).getTime() > t) return "futuro";
   return "vigente";
 }

@@ -7,7 +7,7 @@ import {
   lerTabelaDescricao,
   mesorregioesMg,
   vigenciaDoAviso,
-} from "@/lib/sources/inmet";
+} from "@/lib/sources/inmet/parser";
 import { RSS_INMET_EXEMPLO } from "@/lib/sources/exemplos/inmet-avisos";
 
 describe("interpretarRssInmet (fixture com a estrutura real do feed)", () => {
@@ -30,6 +30,15 @@ describe("interpretarRssInmet (fixture com a estrutura real do feed)", () => {
     });
     expect(tempestade?.areas).toEqual(["Metropolitana de Belo Horizonte", "Zona da Mata", "Campo das Vertentes"]);
     expect(tempestade?.descricao).toMatch(/^INMET publica aviso/);
+    // pubDate repete o Início com "+0000" falso: não pode virar publicadoEm
+    expect(tempestade?.publicadoEm).toBeNull();
+  });
+
+  it("lê as datas como horário de Brasília (às 22:00 BRT o aviso até 23:59 segue vigente)", () => {
+    const agora = new Date("2026-10-03T01:00:00Z"); // 02/10 22:00 em Brasília
+    const ids = filtrarAvisosMg(avisos, agora).map((a) => a.id);
+    expect(ids).toContain("55928");
+    expect(ids).toContain("55925");
   });
 
   it("filtra MG, remove expirados e ordena por severidade", () => {
@@ -52,6 +61,8 @@ describe("regras auxiliares", () => {
     expect(classificarSeveridade("Perigo")).toBe("perigo");
     expect(classificarSeveridade("Grande Perigo")).toBe("grande-perigo");
     expect(classificarSeveridade("Extreme")).toBe("grande-perigo");
+    expect(classificarSeveridade("Severe")).toBe("perigo");
+    expect(classificarSeveridade("Minor")).toBe("perigo-potencial");
     expect(classificarSeveridade("")).toBe("desconhecida");
   });
 
@@ -66,6 +77,7 @@ describe("regras auxiliares", () => {
     const aviso = { inicio: "2026-10-03T03:00:00Z", fim: "2026-10-04T02:59:00Z" };
     expect(vigenciaDoAviso(aviso, new Date("2026-10-02T15:00:00Z"))).toBe("futuro");
     expect(vigenciaDoAviso(aviso, new Date("2026-10-03T12:00:00Z"))).toBe("vigente");
+    expect(vigenciaDoAviso(aviso, new Date("2026-10-04T02:59:00Z"))).toBe("vigente"); // borda
     expect(vigenciaDoAviso(aviso, new Date("2026-10-04T03:00:00Z"))).toBe("expirado");
   });
 
@@ -74,7 +86,10 @@ describe("regras auxiliares", () => {
     expect(t.get("area")).toBe("A & B");
   });
 
-  it("recusa XML que não é RSS", () => {
+  it("recusa XML que não é RSS e feed vazio", () => {
     expect(() => interpretarRssInmet("<html><body>erro</body></html>")).toThrow(/RSS/);
+    expect(() =>
+      interpretarRssInmet('<?xml version="1.0"?><rss version="2.0"><channel><title>Avisos</title></channel></rss>'),
+    ).toThrow(/sem nenhum aviso/);
   });
 });
