@@ -91,24 +91,23 @@ function ItemLink({
         "aria-[current=page]:bg-acc/12 aria-[current=page]:font-[650] aria-[current=page]:text-acc-txt",
         "before:absolute before:top-1.5 before:bottom-1.5 before:left-0 before:hidden before:w-[3px] before:rounded-r-[3px] before:bg-primary",
         "aria-[current=page]:before:block",
-        variante === "trilho" ? "h-10 trilho-mini:pr-0 trilho-mini:pl-[22px]" : "h-11",
+        // Altura mínima (40px trilho / 44px gaveta); itens "em breve" ganham uma 2ª linha
+        // em vez de cortar o nome do módulo.
+        variante === "trilho" ? "min-h-10 py-1 trilho-mini:h-10 trilho-mini:pr-0 trilho-mini:pl-[22px]" : "min-h-11 py-1",
       )}
     >
       <Icone
         aria-hidden="true"
         className="size-5 shrink-0 text-mut transition-colors group-hover/item:text-ink-2 group-aria-[current=page]/item:text-acc-txt"
       />
-      <span className="min-w-0 flex-1 truncate trilho-mini:sr-only">{item.rotulo}</span>
-      {emBreve ? (
-        <span
-          className={cn(
-            "shrink-0 rounded-full border border-linha/16 bg-linha/5 px-1.5 py-px",
-            "text-[9.5px] font-bold uppercase tracking-[.06em] text-mut trilho-mini:sr-only",
-          )}
-        >
-          em breve
-        </span>
-      ) : null}
+      <span className="flex min-w-0 flex-1 flex-col trilho-mini:sr-only">
+        <span className="leading-tight">{item.rotulo}</span>
+        {emBreve ? (
+          <span className="mt-0.5 text-[9.5px] leading-none font-bold uppercase tracking-[.08em] text-mut">
+            <span className="sr-only">(</span>em breve<span className="sr-only">)</span>
+          </span>
+        ) : null}
+      </span>
     </Link>
   );
 

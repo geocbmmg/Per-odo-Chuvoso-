@@ -79,13 +79,13 @@ export function AlternarTema({
               title={opcao.valor === "system" ? "Automático — segue o tema do sistema" : opcao.rotulo}
               onClick={() => setTheme(opcao.valor)}
               className={cn(
-                "relative alvo-toque flex h-9 min-w-0 flex-1 items-center justify-center gap-1 rounded-full border border-transparent px-1.5",
-                "text-[12.5px] font-semibold text-ink-2 transition-colors hover:text-ink-forte",
+                "relative alvo-toque flex h-9 min-w-0 flex-1 items-center justify-center gap-1 rounded-full border border-transparent px-1",
+                "text-[12px] font-semibold text-ink-2 transition-colors hover:text-ink-forte",
                 "aria-pressed:border-acc/42 aria-pressed:bg-acc/16 aria-pressed:font-bold aria-pressed:text-acc-txt",
               )}
             >
               <Icone className="size-3.5 shrink-0" aria-hidden="true" />
-              <span className="truncate">{opcao.curto}</span>
+              <span className="whitespace-nowrap">{opcao.curto}</span>
             </button>
           );
         })}
