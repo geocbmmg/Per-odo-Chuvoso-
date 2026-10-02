@@ -32,7 +32,10 @@ interface BlocoOpenMeteo {
   };
 }
 
-export function montarUrlPrevisao(pontos: PontoPrevisao[], dias = 4): string {
+/** Dias exibidos na previsão diária. A consulta pede 1 dia a mais para a janela de 72 h. */
+export const DIAS_EXIBIDOS = 4;
+
+export function montarUrlPrevisao(pontos: PontoPrevisao[], dias = DIAS_EXIBIDOS + 1): string {
   const params = new URLSearchParams({
     latitude: pontos.map((p) => p.latitude.toFixed(4)).join(","),
     longitude: pontos.map((p) => p.longitude.toFixed(4)).join(","),
@@ -56,11 +59,10 @@ function numeroOuNull(valor: number | null | undefined): number | null {
   return typeof valor === "number" && Number.isFinite(valor) ? valor : null;
 }
 
-/** Soma ignorando nulos; null se não houver nenhum valor. */
+/** Soma da janela; null se faltar qualquer hora (não inventa acumulado). */
 function somar(valores: (number | null)[]): number | null {
-  const validos = valores.filter((v): v is number => v !== null);
-  if (validos.length === 0) return null;
-  return Math.round(validos.reduce((a, b) => a + b, 0) * 10) / 10;
+  if (valores.length === 0 || valores.some((v) => v === null)) return null;
+  return Math.round((valores as number[]).reduce((a, b) => a + b, 0) * 10) / 10;
 }
 
 function erroOpenMeteo(corpo: unknown): string | null {
@@ -96,13 +98,14 @@ export function interpretarPrevisao(corpo: unknown, pontos: PontoPrevisao[], ago
       probabilidade: numeroOuNull(prob[j]),
     }));
 
-    // Hora corrente: a última hora cujo início é <= agora.
+    // Na Open-Meteo o valor de HH:00 é a chuva da HORA ANTERIOR (HH-1 → HH). A janela
+    // começa no registro de floor(agora)+1h, que cobre a hora em curso.
     const inicioHoraAtual = agora.getTime() - (agora.getTime() % 3_600_000);
-    const futuras = horaria.filter((h) => new Date(h.hora).getTime() >= inicioHoraAtual);
+    const futuras = horaria.filter((h) => new Date(h.hora).getTime() > inicioHoraAtual);
     const acumulado24hMm = futuras.length >= 24 ? somar(futuras.slice(0, 24).map((h) => h.precipitacaoMm)) : null;
     const acumulado72hMm = futuras.length >= 72 ? somar(futuras.slice(0, 72).map((h) => h.precipitacaoMm)) : null;
 
-    const dias = bloco.daily?.time ?? [];
+    const dias = (bloco.daily?.time ?? []).slice(0, DIAS_EXIBIDOS);
     const diaria: PrevisaoDia[] = dias.map((d, j) => ({
       data: d,
       precipitacaoMm: numeroOuNull(bloco.daily?.precipitation_sum?.[j]),

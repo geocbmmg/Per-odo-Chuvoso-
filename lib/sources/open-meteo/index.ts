@@ -5,7 +5,7 @@ import { buscarJson } from "@/lib/fontes/http";
 import { obterLeitura } from "@/lib/fontes/leituras";
 import type { Leitura } from "@/lib/fontes/tipos";
 import { SEDES_COBS } from "@/lib/territorio";
-import { interpretarPrevisao, montarUrlPrevisao, type PontoPrevisao } from "./parser";
+import { DIAS_EXIBIDOS, interpretarPrevisao, montarUrlPrevisao, type PontoPrevisao } from "./parser";
 
 export const PONTOS_PREVISAO: PontoPrevisao[] = SEDES_COBS.map((s) => ({
   local: `${s.cob} — ${s.municipio}`,
@@ -15,7 +15,8 @@ export const PONTOS_PREVISAO: PontoPrevisao[] = SEDES_COBS.map((s) => ({
   longitude: s.longitude,
 }));
 
-const DIAS = 4;
+// Um dia além dos exibidos, para a janela de 72 h nunca ficar curta.
+const DIAS = DIAS_EXIBIDOS + 1;
 
 /**
  * Resposta fictícia no formato da Open-Meteo (modo exemplo): padrão de

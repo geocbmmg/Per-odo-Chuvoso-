@@ -37,32 +37,44 @@ function bloco(lat: number, lon: number, mmPorHora: (h: number) => number | null
 }
 
 describe("Open-Meteo", () => {
-  it("monta a URL com vários pontos, fuso de Brasília e 4 dias", () => {
+  it("monta a URL com vários pontos, fuso de Brasília e 5 dias (4 exibidos + folga de 72 h)", () => {
     const url = new URL(montarUrlPrevisao(pontos));
     expect(url.origin + url.pathname).toBe("https://api.open-meteo.com/v1/forecast");
     expect(url.searchParams.get("latitude")).toBe("-19.9200,-21.7600");
     expect(url.searchParams.get("longitude")).toBe("-43.9400,-43.3500");
     expect(url.searchParams.get("timezone")).toBe("America/Sao_Paulo");
-    expect(url.searchParams.get("forecast_days")).toBe("4");
+    expect(url.searchParams.get("forecast_days")).toBe("5");
     expect(url.searchParams.get("hourly")).toBe("precipitation,precipitation_probability");
   });
 
   it("interpreta a resposta em array e calcula acumulados a partir da hora atual", () => {
-    const corpo = [bloco(-19.92, -43.94, () => 1), bloco(-21.76, -43.35, (h) => (h < 30 ? 0.5 : null))];
-    // 02/10 12:30 em Brasília = 15:30Z → hora corrente começa às 12:00 local (índice 12)
+    const corpo = [bloco(-19.92, -43.94, () => 1), bloco(-21.76, -43.35, (h) => (h < 30 ? 0.5 : 0))];
+    // 02/10 12:30 em Brasília = 15:30Z. O registro das 13:00 cobre 12:00–13:00 (hora em curso):
+    // a janela começa nele (índice 13).
     const agora = new Date("2026-10-02T15:30:00Z");
     const [bh, jf] = interpretarPrevisao(corpo, pontos, agora);
 
     expect(bh.local).toBe("1º COB — Belo Horizonte");
-    expect(bh.horaria[0].hora).toBe("2026-10-02T12:00:00-03:00");
+    expect(bh.horaria[0].hora).toBe("2026-10-02T13:00:00-03:00");
     expect(bh.acumulado24hMm).toBe(24);
     expect(bh.acumulado72hMm).toBe(72);
     expect(bh.diaria[0]).toEqual({ data: "2026-10-02", precipitacaoMm: 24, probabilidadeMax: 90 });
     expect(bh.diaria[3]).toEqual({ data: "2026-10-05", precipitacaoMm: null, probabilidadeMax: null });
 
-    // JF: chuva só até a hora 29 (18 horas a partir das 12:00) → 9 mm; nulos ignorados
-    expect(jf.acumulado24hMm).toBe(9);
-    expect(jf.acumulado72hMm).toBe(9);
+    // JF: chuva nos registros 13 a 29 (17 horas × 0,5 mm) → 8,5 mm
+    expect(jf.acumulado24hMm).toBe(8.5);
+    expect(jf.acumulado72hMm).toBe(8.5);
+  });
+
+  it("não soma chuva que já passou e devolve null com hora faltando na janela", () => {
+    const agora = new Date("2026-10-02T17:35:00Z"); // 14:35 em Brasília
+    // 20 mm só no registro "14:00" (13:00–14:00, já passou)
+    const passado = bloco(-19.92, -43.94, (h) => (h === 14 ? 20 : 0));
+    expect(interpretarPrevisao(passado, [pontos[0]], agora)[0].acumulado24hMm).toBe(0);
+    // registro nulo dentro da janela → sem acumulado
+    const buraco = bloco(-19.92, -43.94, (h) => (h === 20 ? null : 1));
+    const [r] = interpretarPrevisao(buraco, [pontos[0]], agora);
+    expect(r.acumulado24hMm).toBeNull();
   });
 
   it("aceita objeto único quando há um só ponto", () => {
@@ -94,7 +106,7 @@ describe("Open-Meteo — modo exemplo", () => {
     const previsoes = interpretarPrevisao(respostaExemploOpenMeteo(PONTOS_PREVISAO, agora), PONTOS_PREVISAO, agora);
     expect(previsoes.map((p) => p.cob)).toEqual(["1º COB", "2º COB", "3º COB", "4º COB", "5º COB", "6º COB"]);
     expect(previsoes.every((p) => p.acumulado24hMm !== null && p.acumulado72hMm !== null)).toBe(true);
-    expect(previsoes[0].horaria[0].hora).toBe("2026-10-02T12:00:00-03:00");
+    expect(previsoes[0].horaria[0].hora).toBe("2026-10-02T13:00:00-03:00");
     expect(previsoes[0].diaria).toHaveLength(4);
   });
 });
