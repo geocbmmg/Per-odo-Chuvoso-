@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "regions": ["gru1"],
+  "crons": [
+    { "path": "/api/ingest/arcgis", "schedule": "0 9 * * *" },
+    { "path": "/api/ingest/inmet", "schedule": "5 9 * * *" },
+    { "path": "/api/ingest/meteo", "schedule": "10 9 * * *" },
+    { "path": "/api/ingest/hidrologia", "schedule": "15 9 * * *" }
+  ]
+}
