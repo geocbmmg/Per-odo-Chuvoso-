@@ -16,14 +16,18 @@ const esquema = z.object({
   DATABASE_URL: z.string().min(1).optional(),
   ANA_IDENTIFICADOR: z.string().min(1).optional(),
   ANA_TOKEN: z.string().min(1).optional(),
-  CRON_SECRET: z.string().min(16).optional(),
+  // O comprimento mínimo (16) é exigido na rota /api/ingest, que recusa o cron;
+  // aqui só o formato, para um segredo fraco não derrubar as outras rotas.
+  CRON_SECRET: z.string().min(1).optional(),
   DADOS_EXEMPLO: z.enum(["0", "1"]).default("0"),
   FONTES_TIMEOUT_MS: z.coerce.number().int().positive().default(15000),
+  ARMAZEM_LEITURAS: z.enum(["memoria", "postgres"]).default("memoria"),
 });
 
 export type Env = z.infer<typeof esquema>;
 
 let cache: Env | null = null;
+let invalidas: string[] = [];
 
 function vazioParaIndefinido(fonte: NodeJS.ProcessEnv): Record<string, string | undefined> {
   return Object.fromEntries(
@@ -31,16 +35,40 @@ function vazioParaIndefinido(fonte: NodeJS.ProcessEnv): Record<string, string | 
   );
 }
 
+/**
+ * Lê e valida as variáveis uma vez. Uma variável inválida NÃO derruba a
+ * aplicação: ela é descartada (vale o padrão/ausência), o nome vai para o log
+ * — nunca o valor — e fica listado em variaveisInvalidas() para /status.
+ */
 export function env(): Env {
   if (!cache) {
-    const resultado = esquema.safeParse(vazioParaIndefinido(process.env));
+    const entrada = vazioParaIndefinido(process.env);
+    let resultado = esquema.safeParse(entrada);
     if (!resultado.success) {
-      const campos = resultado.error.issues.map((i) => i.path.join(".")).join(", ");
-      throw new Error(`Variáveis de ambiente inválidas: ${campos}. Veja .env.example.`);
+      invalidas = [...new Set(resultado.error.issues.map((i) => String(i.path[0])))];
+      console.error(
+        `[env] variáveis inválidas ignoradas: ${invalidas.join(", ")}. Veja .env.example.`,
+      );
+      const semInvalidas = { ...entrada };
+      for (const nome of invalidas) delete semInvalidas[nome];
+      resultado = esquema.safeParse(semInvalidas);
+      if (!resultado.success) throw new Error("Falha inesperada ao validar variáveis de ambiente.");
     }
     cache = resultado.data;
   }
   return cache;
+}
+
+/** Nomes das variáveis de ambiente descartadas por formato inválido. */
+export function variaveisInvalidas(): string[] {
+  env();
+  return invalidas;
+}
+
+/** Só para testes: força a releitura de process.env. */
+export function reiniciarEnv(): void {
+  cache = null;
+  invalidas = [];
 }
 
 /** DADOS_EXEMPLO=1: as fontes devolvem dados fictícios (desenvolvimento/demonstração). */

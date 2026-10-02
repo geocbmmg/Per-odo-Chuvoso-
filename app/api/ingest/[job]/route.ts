@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "node:crypto";
 import { env } from "@/lib/env";
 import { CATALOGO_FONTES } from "@/lib/fontes/catalogo";
 import type { FonteId } from "@/lib/fontes/tipos";
@@ -75,10 +76,20 @@ async function executarFonte(
   }
 }
 
+const TAMANHO_MINIMO_SEGREDO = 16;
+
 function autorizado(req: Request): boolean {
   const segredo = env().CRON_SECRET;
   if (!segredo) return process.env.NODE_ENV !== "production";
-  return req.headers.get("authorization") === `Bearer ${segredo}`;
+  if (segredo.length < TAMANHO_MINIMO_SEGREDO) {
+    // Falha fechada só para o cron: as demais rotas seguem funcionando.
+    console.error(`[ingest] CRON_SECRET com menos de ${TAMANHO_MINIMO_SEGREDO} caracteres; jobs bloqueados.`);
+    return false;
+  }
+  // Comparação em tempo constante (não vaza o segredo por tempo de resposta).
+  const esperado = Buffer.from(`Bearer ${segredo}`);
+  const recebido = Buffer.from(req.headers.get("authorization") ?? "");
+  return recebido.length === esperado.length && timingSafeEqual(recebido, esperado);
 }
 
 export async function GET(req: Request, ctx: RouteContext<"/api/ingest/[job]">) {
@@ -86,7 +97,8 @@ export async function GET(req: Request, ctx: RouteContext<"/api/ingest/[job]">) 
     return Response.json({ erro: "Não autorizado." }, { status: 401, headers: { "Cache-Control": "no-store" } });
   }
   const { job } = await ctx.params;
-  const definicao = JOBS[job];
+  // Object.hasOwn: "constructor", "__proto__" etc. não podem passar por job válido.
+  const definicao = Object.hasOwn(JOBS, job) ? JOBS[job] : undefined;
   if (!definicao) {
     return Response.json(
       { erro: `Job desconhecido. Use: ${Object.keys(JOBS).join(", ")}.` },
