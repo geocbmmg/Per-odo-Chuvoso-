@@ -162,3 +162,14 @@ describe("modo exemplo e deslocamento de datas", () => {
     expect(deslocamentoEmDiasAte(ref, new Date("2026-10-05T12:00:00Z"))).toBe(3 * 86_400_000);
   });
 });
+
+describe("Cache-Control das rotas", () => {
+  it("revalidação curta e cópia longa só em erro", async () => {
+    const { cabecalhoCache } = await import("@/lib/api/respostas");
+    expect(cabecalhoCache(120, "ao-vivo")).toBe(
+      "public, max-age=0, s-maxage=120, stale-while-revalidate=120, stale-if-error=86400",
+    );
+    expect(cabecalhoCache(600, "ultima-valida")).toContain("s-maxage=30, stale-while-revalidate=30");
+    expect(cabecalhoCache(600, "exemplo")).toBe("no-store");
+  });
+});

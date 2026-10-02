@@ -5,10 +5,12 @@ import { FonteIndisponivelError, type Leitura, type OrigemLeitura } from "@/lib/
 /**
  * Respostas padronizadas dos Route Handlers.
  *
- * Cache-Control: o CDN da Vercel guarda a resposta por `s-maxage` e, se a
- * função falhar depois disso, continua servindo a cópia por até um dia
- * (`stale-while-revalidate`/`stale-if-error`). Leituras de "última válida"
- * ficam pouco tempo no CDN para a recuperação da fonte aparecer logo.
+ * Cache-Control: o CDN da Vercel guarda a resposta por `s-maxage`; depois disso
+ * pode servir a cópia velha por no máximo mais `s-maxage` enquanto revalida
+ * (`stale-while-revalidate` curto, para o mapa não mostrar pontos de horas atrás
+ * ao lado de indicadores atuais) e por até um dia SÓ se a função falhar
+ * (`stale-if-error`). Leituras de "última válida" ficam pouco tempo no CDN para a
+ * recuperação da fonte aparecer logo.
  */
 
 export interface MetaLeitura {
@@ -31,7 +33,7 @@ export function metaDaLeitura(leitura: Leitura<unknown>): MetaLeitura {
 export function cabecalhoCache(sMaxAgeSegundos: number, origem: OrigemLeitura): string {
   if (origem === "exemplo") return "no-store";
   const sMaxAge = origem === "ultima-valida" ? Math.min(30, sMaxAgeSegundos) : sMaxAgeSegundos;
-  return `public, max-age=0, s-maxage=${sMaxAge}, stale-while-revalidate=86400, stale-if-error=86400`;
+  return `public, max-age=0, s-maxage=${sMaxAge}, stale-while-revalidate=${sMaxAge}, stale-if-error=86400`;
 }
 
 export function respostaJson(corpo: unknown, opcoes: { sMaxAge: number; origem: OrigemLeitura }): Response {
