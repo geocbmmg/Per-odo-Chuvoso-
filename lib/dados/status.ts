@@ -1,5 +1,5 @@
 import "server-only";
-import { modoExemplo } from "@/lib/env";
+import { modoExemplo, variaveisInvalidas } from "@/lib/env";
 import { LISTA_FONTES } from "@/lib/fontes/catalogo";
 import { statusDaFonte } from "@/lib/fontes/leituras";
 import type { FonteId, StatusFonte } from "@/lib/fontes/tipos";
@@ -31,6 +31,8 @@ export interface StatusFonteDetalhado extends StatusFonte {
 export interface PainelStatus {
   geradoEm: string;
   modoExemplo: boolean;
+  /** Variáveis de ambiente ignoradas por formato inválido (só os nomes). */
+  variaveisInvalidas: string[];
   fontes: StatusFonteDetalhado[];
   resumo: Record<StatusFonte["estado"], number>;
 }
@@ -87,5 +89,11 @@ export async function obterPainelStatus(): Promise<PainelStatus> {
   };
   for (const f of fontes) resumo[f.estado]++;
 
-  return { geradoEm: agora.toISOString(), modoExemplo: exemplo, fontes, resumo };
+  return {
+    geradoEm: agora.toISOString(),
+    modoExemplo: exemplo,
+    variaveisInvalidas: variaveisInvalidas(),
+    fontes,
+    resumo,
+  };
 }

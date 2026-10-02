@@ -60,8 +60,12 @@ função de escrita, e o montador de URL recusa nomes de serviço fora de `[A-Za
 - **Anéis dos polígonos.** O Esri usa anel externo horário e buraco anti-horário numa lista
   plana. A conversão reagrupa em Polygon/MultiPolygon e reorienta para a RFC 7946.
 - **Nomes de campo variam por formulário.** Cada atributo lógico tem uma lista de
-  candidatos de nome ou alias (`camadas.ts`). A correspondência ignora caixa, acentos e
+  candidatos de nome ou alias (`camadas.ts`), testados **na ordem da lista**: para cada
+  candidato, o nome e depois o alias. Assim um alias específico ("Data de emissão") vence um
+  campo genérico listado depois (`CreationDate`). A correspondência ignora caixa, acentos e
   pontuação. O resultado da resolução aparece em `/status`.
+- **Datas em texto.** `DateOnly` ("2026-10-01") vira 00:00 de Brasília; texto sem offset é
+  horário de Brasília (inclusive `dd/mm/aaaa`); epoch de 10 dígitos é em segundos.
 - **LGPD.** Só os atributos mapeados são copiados para o GeoJSON. Nome do militar, nº BM,
   telefone e comandante do incidente são descartados no servidor, e um teste garante isso.
   O candidato genérico `nome` ficou fora do título das ocorrências por esse motivo.
@@ -91,8 +95,12 @@ Formato confirmado por cópias reais do feed publicadas em repositórios públic
 - **O `pubDate` do item NÃO é a publicação.** Ele repete o Início com um `+0000` falso, por
   isso é ignorado.
 - **O feed mantém avisos vencidos.** Numa cópia real, 87 de 94 itens já tinham expirado. A
-  Sala filtra pelo Fim, com bordas inclusivas, e descarta `Cancel`. Isso resolve o boletim
-  que exibia aviso de julho em outubro.
+  Sala filtra pelo Fim, com bordas inclusivas. Isso resolve o boletim que exibia aviso de
+  julho em outubro.
+- **Cancelamentos e atualizações são itens novos.** O original continua no feed.
+  `consolidarAvisos()` remove o aviso cancelado junto com o cancelamento, além das
+  duplicatas por conteúdo: mesmo evento, severidade, início e fim, com áreas contidas. Fica o
+  item mais completo/recente.
 - **Área:** lista de **mesorregiões do IBGE**, sem UF. O filtro de MG usa o conjunto exato
   das 12 mesorregiões mineiras: buscar "Minas" no texto perderia Zona da Mata, Campo das
   Vertentes, Vale do Rio Doce etc.
@@ -120,11 +128,12 @@ Formato confirmado por cópias reais do feed publicadas em repositórios públic
   é um objeto.
 - **Parâmetros:** `hourly=precipitation,precipitation_probability`,
   `daily=precipitation_sum,precipitation_probability_max`, `timezone=America/Sao_Paulo`,
-  `forecast_days=4`.
+  `forecast_days=5` (4 dias exibidos e 1 de folga para a janela de 72 h).
 - **Horários:** vêm locais sem offset (`2026-10-02T14:00`). O offset sai de
   `utc_offset_seconds`.
-- **Acumulados de 24 h e 72 h** contam a partir da hora corrente. Se faltarem horas, o
-  valor fica `null`, sem estimativa.
+- **Acumulados de 24 h e 72 h** contam a partir da hora em curso. O valor de `HH:00` é a
+  chuva da hora ANTERIOR, então a janela começa no registro de `floor(agora)+1h`. Se faltar
+  qualquer hora na janela, o valor fica `null`, sem estimativa.
 - **Erro:** HTTP 400 com `{"error": true, "reason": "…"}`.
 
 ---

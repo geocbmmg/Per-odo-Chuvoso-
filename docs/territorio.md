@@ -1,8 +1,11 @@
 # Organização territorial do CBMMG na Sala de Situação
 
 A Sala de Situação usa a hierarquia **COB → BBM/UEOp → fração (Cia/Pel/posto) → município**.
-Na Fase 0, só o nível **COB** é normalizado (`lib/territorio.ts`). Os demais chegam como texto
-das fontes e aparecem como estão.
+Os registros normalizados (alertas, ações RRD e ocorrências complexas) carregam os quatro
+níveis: `cob`, `ueop`, `fracao` e `municipio` (`lib/dominio/tipos.ts`). O COB é normalizado
+para o rótulo canônico (`lib/territorio.ts`). UEOp, fração e município chegam como texto das
+fontes e aparecem como estão, nos balões do mapa e na lista de registros. Se o formulário não
+tiver a pergunta da fração, `/status` mostra o atributo como "não encontrado".
 
 ## Rótulo canônico de COB
 

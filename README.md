@@ -19,7 +19,8 @@ Vercel. Segue o padrão de produto do **GeoRescue**.
   da leitura. Se uma fonte cair, a tela continua com a **última leitura válida** e avisa.
 - **Mobile-first, tema claro e escuro, em português.** Datas sempre no horário de Brasília.
 - **Organização territorial do CBMMG em todo lugar:** COB → BBM/UEOp → fração → município.
-  Registros sem COB aparecem como **"Sem COB"**, não somem.
+  Os registros normalizados carregam os quatro níveis. Registros sem COB aparecem como
+  **"Sem COB"**, não somem.
 - **LGPD por construção.** A normalização no servidor copia só os atributos operacionais.
   Nome de militar, nº BM e telefone nunca chegam ao navegador.
 
@@ -49,14 +50,19 @@ Navegador ──► Páginas (Server Components) ──► lib/sources/* ──�
 
 - **Next.js 16 (App Router) + TypeScript.** Páginas server-side; o mapa (MapLibre GL) é o
   único componente pesado no cliente.
-- **Toda chamada externa passa pelo servidor.** O navegador só conversa com `/api/*` e com
-  os tiles do mapa base. Nenhum token chega ao front-end.
+- **Toda chamada às fontes de dados passa pelo servidor.** No navegador ficam só `/api/*`,
+  os tiles do mapa base, o brasão do CBMMG (imagem pública do portal ArcGIS; se não carregar,
+  aparece o monograma) e, se a cópia local faltar, o worker do MapLibre no unpkg. Nenhum
+  token chega ao front-end.
 - **Cache e fallback** (`lib/fontes/leituras.ts`): cada fonte tem um ttl. Requisições
   simultâneas são unificadas. Depois de uma falha, a fonte não é reconsultada por até 60 s,
-  e se ela cair vale a última leitura válida, com `origem: "ultima-valida"`. Nesta fase o
-  armazém fica na memória da instância. A interface `ArmazemLeituras` permite trocar por
-  Postgres na Fase 1 sem mudar quem consome. As respostas da API também vão para o CDN da
-  Vercel com `s-maxage` + `stale-while-revalidate`/`stale-if-error`.
+  e se ela cair vale a última leitura válida, com `origem: "ultima-valida"`. Por padrão o
+  armazém fica **na memória de cada instância serverless**: não é compartilhado e se perde em
+  cold start. Com `ARMAZEM_LEITURAS=postgres` (e `DATABASE_URL`, depois de `npm run db:push`)
+  a leitura também vai para a tabela `leituras_fontes`, sobrevive a cold starts e vale para
+  todas as instâncias (`lib/fontes/armazem-servidor.ts`). As respostas de `/api/*` também vão
+  para o CDN da Vercel com `s-maxage`, um `stale-while-revalidate` curto e `stale-if-error`
+  de um dia (só quando a função falha).
 - **Estado das fontes** (`statusDaFonte`): `ok`, `atrasada` (falhou na última tentativa ou
   passou da tolerância, exibindo a última leitura válida), `fora-do-ar` (sem leitura válida
   ou velha demais) e `nao-implementada` (stubs). Os limites por fonte ficam em
@@ -155,15 +161,18 @@ produção.
 ## Variáveis de ambiente
 
 Documentadas em [`.env.example`](.env.example). Todas são lidas **só no servidor**
-(`lib/env.ts` importa `server-only`). Nenhuma usa o prefixo `NEXT_PUBLIC_`.
+(`lib/env.ts` importa `server-only`). Nenhuma usa o prefixo `NEXT_PUBLIC_`. Uma variável
+com formato inválido não derruba a aplicação: ela é ignorada (vale o padrão), e só o nome
+vai para o log e para `GET /api/status` (`variaveisInvalidas`).
 
 | Variável | Obrigatória | Uso |
 |---|---|---|
 | `ARCGIS_SERVICES_URL` | não (tem padrão) | Base dos feature services hospedados do CBMMG |
-| `ARCGIS_PORTAL`, `ARCGIS_USER`, `ARCGIS_PASS` | não | Reservadas para camadas restritas e escrita nas fases seguintes. **Não usadas na Fase 0** |
+| `ARCGIS_PORTAL`, `ARCGIS_USER`, `ARCGIS_PASS` | não | Reservadas para leitura de camadas restritas em fases futuras. **Não usadas na Fase 0** (somente leitura de serviços públicos) |
 | `DATABASE_URL` | não | Postgres (Neon / Vercel Postgres) |
 | `ANA_IDENTIFICADOR`, `ANA_TOKEN` | não | ANA HidroWebService (stub na Fase 0) |
 | `CRON_SECRET` | **sim em produção** | Protege `/api/ingest/*` (a Vercel envia `Authorization: Bearer …`) |
+| `ARMAZEM_LEITURAS` | não | `memoria` (padrão) ou `postgres` (última leitura válida no banco) |
 | `DADOS_EXEMPLO` | não | `1` = modo demonstração |
 | `FONTES_TIMEOUT_MS` | não | Tempo máximo de cada chamada externa (padrão 15000) |
 
@@ -192,8 +201,9 @@ frequências previstas são:
 | `hidrologia` | 15 min | `*/15 * * * *` |
 
 Essas frequências exigem o plano **Pro** ou um agendador externo (ex.: cron-job.org)
-chamando a rota com `Authorization: Bearer $CRON_SECRET`. Na Fase 0 os jobs só aquecem o
-cache e registram o estado das fontes. As telas funcionam sem eles.
+chamando a rota com `Authorization: Bearer $CRON_SECRET`. Na Fase 0 os jobs só consultam as
+fontes e devolvem o estado de cada uma. Com `ARMAZEM_LEITURAS=postgres`, a leitura também
+fica gravada para todas as instâncias. As telas funcionam sem os jobs.
 
 ---
 
