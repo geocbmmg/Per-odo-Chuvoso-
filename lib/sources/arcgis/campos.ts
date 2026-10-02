@@ -1,3 +1,4 @@
+import { interpretarDataHoraBrasilia } from "@/lib/datas";
 import type { CampoEsri, DominioCodificado } from "./cliente";
 
 /**
@@ -43,15 +44,16 @@ function casa(candidato: string, valor: string | undefined): boolean {
   return normalizarIdentificador(candidato) === normalizarIdentificador(valor);
 }
 
-/** Encontra o campo para uma lista de candidatos (nome tem prioridade sobre alias). */
+/**
+ * Encontra o campo para uma lista de candidatos, NA ORDEM DA LISTA: para cada
+ * candidato tenta o nome e depois o alias. Assim um alias específico
+ * ("Data de emissão") vence um nome genérico listado depois (CreationDate).
+ */
 export function resolverCampo(campos: CampoEsri[], candidatos: readonly string[]): CampoEsri | null {
   for (const candidato of candidatos) {
-    const porNome = campos.find((c) => casa(candidato, c.name));
-    if (porNome) return porNome;
-  }
-  for (const candidato of candidatos) {
-    const porAlias = campos.find((c) => casa(candidato, c.alias));
-    if (porAlias) return porAlias;
+    const campo =
+      campos.find((c) => casa(candidato, c.name)) ?? campos.find((c) => casa(candidato, c.alias));
+    if (campo) return campo;
   }
   return null;
 }
@@ -126,8 +128,13 @@ export function comoNumero(valor: unknown): number | null {
 }
 
 /**
- * Datas do ArcGIS: esriFieldTypeDate chega como epoch em ms (UTC). Também
- * aceita strings ISO (DateOnly/TimestampOffset) e números em texto.
+ * Datas do ArcGIS:
+ * - esriFieldTypeDate: epoch em ms (UTC);
+ * - esriFieldTypeDateOnly ("AAAA-MM-DD"): dia civil de Brasília (00:00 -03:00),
+ *   não meia-noite UTC (que cairia no dia anterior);
+ * - texto sem offset ("AAAA-MM-DD HH:MM", "DD/MM/AAAA HH:MM"): horário de Brasília,
+ *   independentemente do fuso do servidor; com Z/offset (TimestampOffset): como veio;
+ * - número em texto: 10 dígitos = epoch em segundos; 11–13 = epoch em ms.
  */
 export function comoDataIso(valor: unknown): string | null {
   if (valor === null || valor === undefined || valor === "") return null;
@@ -137,9 +144,11 @@ export function comoDataIso(valor: unknown): string | null {
   }
   if (typeof valor === "string") {
     const texto = valor.trim();
-    if (/^\d{10,13}$/.test(texto)) return comoDataIso(Number(texto));
-    const data = new Date(texto);
-    return Number.isNaN(data.getTime()) ? null : data.toISOString();
+    if (/^\d{10}$/.test(texto)) return comoDataIso(Number(texto) * 1000);
+    if (/^\d{11,13}$/.test(texto)) return comoDataIso(Number(texto));
+    const soData = /^(\d{4}-\d{2}-\d{2})$/.exec(texto);
+    const data = soData ? new Date(`${soData[1]}T00:00:00-03:00`) : interpretarDataHoraBrasilia(texto);
+    return data && !Number.isNaN(data.getTime()) ? data.toISOString() : null;
   }
   return null;
 }

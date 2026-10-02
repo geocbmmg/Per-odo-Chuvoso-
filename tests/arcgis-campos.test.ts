@@ -49,13 +49,27 @@ describe("resolução de campos", () => {
     expect(normalizarIdentificador("Município")).toBe("municipio");
   });
 
-  it("resolve por nome, prefixo e alias, com nome tendo prioridade", () => {
+  it("resolve por nome, prefixo e alias, na ordem dos candidatos", () => {
     expect(resolverCampo(campos, ["cob", "cob_*"])?.name).toBe("cob_resp");
     // "cob_*" não pode casar "cobrade" (classificação de desastres).
     expect(resolverCampo(campos.filter((c) => c.name !== "cob_resp"), ["cob_*"])).toBeNull();
     expect(resolverCampo(campos, ["numero_chamada", "Nº da Chamada (CAD)"])?.name).toBe("n_chamada");
     expect(resolverCampo(campos, ["municipio"])?.name).toBe("municipio");
     expect(resolverCampo(campos, ["inexistente"])).toBeNull();
+  });
+
+  it("alias específico vence nome genérico listado depois (CreationDate, tipo)", async () => {
+    const { CANDIDATOS_ALERTA } = await import("@/lib/sources/arcgis/camadas");
+    const formulario: CampoEsri[] = [
+      { name: "dt_hr_emissao", type: "esriFieldTypeDate", alias: "Data de emissão" },
+      { name: "risco_identificado", type: "esriFieldTypeString", alias: "Tipo de risco" },
+      { name: "tipo", type: "esriFieldTypeString", alias: "Tipo de registro" },
+      { name: "CreationDate", type: "esriFieldTypeDate", alias: "CreationDate" },
+    ];
+    expect(resolverCampo(formulario, CANDIDATOS_ALERTA.emitidoEm)?.name).toBe("dt_hr_emissao");
+    expect(resolverCampo(formulario, CANDIDATOS_ALERTA.tipoRisco)?.name).toBe("risco_identificado");
+    // Sem campo específico, o recurso genérico continua valendo.
+    expect(resolverCampo([formulario[3]], CANDIDATOS_ALERTA.emitidoEm)?.name).toBe("CreationDate");
   });
 
   it("resume a resolução para diagnóstico", () => {
@@ -98,6 +112,16 @@ describe("conversões", () => {
     expect(comoDataIso(null)).toBeNull();
     expect(comoDataIso(0)).toBeNull();
     expect(comoDataIso("xyz")).toBeNull();
+  });
+
+  it("datas sem fuso são horário de Brasília (o servidor roda em UTC)", () => {
+    expect(comoDataIso("2026-10-01")).toBe("2026-10-01T03:00:00.000Z"); // DateOnly = 00:00 BRT
+    expect(comoDataIso("2026-10-01T00:30:00")).toBe("2026-10-01T03:30:00.000Z");
+    expect(comoDataIso("2026-10-01 00:30")).toBe("2026-10-01T03:30:00.000Z");
+    expect(comoDataIso("01/10/2026 00:30")).toBe("2026-10-01T03:30:00.000Z"); // dd/mm, não mm/dd
+    expect(comoDataIso("2026-10-01T00:30:00.000-03:00")).toBe("2026-10-01T03:30:00.000Z");
+    expect(comoDataIso("2026-10-01T03:30:00Z")).toBe("2026-10-01T03:30:00.000Z");
+    expect(comoDataIso("1790823600")).toBe(new Date(1790823600000).toISOString()); // epoch em segundos
   });
 
   it("nº de chamada CAD", () => {
