@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { connection } from "next/server";
 import { CloudRain } from "lucide-react";
 
+import { ChipUsuario } from "@/components/auth/chip-usuario";
 import { dentroDoPeriodo, periodoChuvoso } from "@/lib/dominio/periodo";
 import { FUSO_PADRAO } from "@/lib/datas";
 import { cn } from "@/lib/utils";
@@ -29,7 +30,8 @@ const formatoDataIso = new Intl.DateTimeFormat("en-CA", {
  * GeoRescue (visual-shell.md §1.1) com a linha de identificação do .painel-topbar.
  *
  * Esquerda: (celular) ☰ + nome curto; eyebrow com a data por extenso; identificação.
- * Direita: pílula do período chuvoso vigente + espaço `extra` (ex.: saúde das fontes).
+ * Direita: pílula do período chuvoso vigente + espaço `extra` (ex.: saúde das fontes)
+ * + chip do usuário (nome, papel e "Sair"; sem sessão, o link "Entrar").
  *
  * A data é calculada no servidor a cada requisição (`connection()`), nunca no build,
  * e chega pronta no HTML — não há relógio no cliente, então não há mismatch.
@@ -92,6 +94,7 @@ export async function CabecalhoInstitucional({
           </span>
           {extra}
           {children}
+          <ChipUsuario />
         </div>
       </div>
     </header>
