@@ -4,7 +4,8 @@
  * mantendo avisos vigentes e alertas dentro do período chuvoso atual.
  */
 export function deslocamentoAte(referenciaIso: string, agora: Date = new Date()): number {
-  return agora.getTime() - new Date(referenciaIso).getTime();
+  // Arredondado ao minuto: os horários de exemplo continuam "redondos".
+  return Math.round((agora.getTime() - new Date(referenciaIso).getTime()) / 60_000) * 60_000;
 }
 
 export function deslocarIso(iso: string | null, deslocamentoMs: number): string | null {
