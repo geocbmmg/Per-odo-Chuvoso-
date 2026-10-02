@@ -5,8 +5,8 @@ import type {
   FeicoesCobs,
   FeicoesOcorrencias,
 } from "@/lib/dominio/tipos";
-import { env, modoExemplo } from "@/lib/env";
-import { obterLeitura } from "@/lib/fontes/leituras";
+import { env } from "@/lib/env";
+import { obterLeituraServidor } from "@/lib/fontes/armazem-servidor";
 import type { Leitura } from "@/lib/fontes/tipos";
 import { exemploBrutoArcgis } from "@/lib/sources/exemplos/arcgis";
 import { CAMADAS_ARCGIS, type CamadaArcgisId } from "./camadas";
@@ -90,8 +90,7 @@ async function carregar<K extends CamadaArcgisId>(id: K): Promise<DadosCamada<K>
  */
 export function obterCamada<K extends CamadaArcgisId>(id: K): Promise<Leitura<DadosCamada<K>>> {
   const definicao = CAMADAS_ARCGIS[id];
-  return obterLeitura(definicao.fonte, id, () => carregar(id), {
-    modoExemplo: modoExemplo(),
+  return obterLeituraServidor(definicao.fonte, id, () => carregar(id), {
     exemplo: () => {
       // Exemplo em formato bruto do ArcGIS, normalizado pelo mesmo caminho da produção.
       const { metadados, feicoes } = exemploBrutoArcgis(id);

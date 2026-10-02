@@ -18,8 +18,10 @@ import {
  *   4. falha → devolve a última leitura válida (origem "ultima-valida") ou,
  *      se não houver, lança FonteIndisponivelError.
  *
- * Nesta fase o armazém é a memória da instância. A interface `ArmazemLeituras`
- * permite trocar por Postgres (Fase 1) sem mudar quem consome.
+ * O armazém padrão é a memória da instância serverless: não é compartilhado
+ * entre instâncias e se perde em cold start. Com ARMAZEM_LEITURAS=postgres
+ * (lib/fontes/armazem-servidor.ts), a última leitura válida também é gravada na
+ * tabela leituras_fontes e sobrevive a cold starts. A interface é assíncrona.
  */
 
 export interface LeituraGuardada {
@@ -28,8 +30,8 @@ export interface LeituraGuardada {
 }
 
 export interface ArmazemLeituras {
-  ler(chave: string): LeituraGuardada | undefined;
-  gravar(chave: string, leitura: LeituraGuardada): void;
+  ler(chave: string): Promise<LeituraGuardada | undefined>;
+  gravar(chave: string, leitura: LeituraGuardada): Promise<void>;
 }
 
 interface RegistroFonte {
@@ -53,8 +55,8 @@ interface EstadoGlobal {
 export function criarArmazemMemoria(): ArmazemLeituras {
   const mapa = new Map<string, LeituraGuardada>();
   return {
-    ler: (chave) => mapa.get(chave),
-    gravar: (chave, leitura) => {
+    ler: async (chave) => mapa.get(chave),
+    gravar: async (chave, leitura) => {
       mapa.set(chave, leitura);
     },
   };
@@ -150,7 +152,7 @@ export async function obterLeitura<T>(
     return { fonte, dados: opcoes.exemplo(), atualizadoEm: instante, origem: "exemplo" };
   }
 
-  const guardada = estado.armazem.ler(chaveCompleta);
+  const guardada = await estado.armazem.ler(chaveCompleta);
   if (guardada && agora().getTime() - new Date(guardada.atualizadoEm).getTime() < ttlMs) {
     return { fonte, dados: guardada.dados as T, atualizadoEm: guardada.atualizadoEm, origem: "cache" };
   }
@@ -184,7 +186,7 @@ export async function obterLeitura<T>(
     return { fonte, dados: nova.dados as T, atualizadoEm: nova.atualizadoEm, origem: "ao-vivo" };
   } catch (erro) {
     estado.falhas.set(chaveCompleta, { em: agora().getTime(), erro: mensagemDeErro(erro) });
-    const ultima = estado.armazem.ler(chaveCompleta);
+    const ultima = await estado.armazem.ler(chaveCompleta);
     if (ultima) {
       return {
         fonte,
@@ -213,7 +215,7 @@ async function executarCarga<T>(
     const dados = await carregar();
     const fim = agora();
     const leitura: LeituraGuardada = { dados, atualizadoEm: fim.toISOString() };
-    estadoGlobal().armazem.gravar(chaveCompleta, leitura);
+    await estadoGlobal().armazem.gravar(chaveCompleta, leitura);
     r.ultimoSucessoEm = leitura.atualizadoEm;
     r.atualizadoEm = leitura.atualizadoEm;
     r.ultimoErro = null;

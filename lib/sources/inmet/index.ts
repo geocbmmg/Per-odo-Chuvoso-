@@ -1,8 +1,8 @@
 import "server-only";
 import type { AvisoInmet } from "@/lib/dominio/tipos";
-import { env, modoExemplo } from "@/lib/env";
+import { env } from "@/lib/env";
 import { buscarTexto } from "@/lib/fontes/http";
-import { obterLeitura } from "@/lib/fontes/leituras";
+import { obterLeituraServidor } from "@/lib/fontes/armazem-servidor";
 import type { Leitura } from "@/lib/fontes/tipos";
 import { deslocamentoEmDiasAte, deslocarIso } from "@/lib/sources/exemplos/deslocar";
 import { REFERENCIA_RSS_INMET_EXEMPLO, RSS_INMET_EXEMPLO } from "@/lib/sources/exemplos/inmet-avisos";
@@ -38,11 +38,11 @@ function exemplo(): AvisoInmetBruto[] {
  * um aviso saia da tela assim que vencer, mesmo com o cache válido.
  */
 export async function obterAvisosInmet(agora: Date = new Date()): Promise<Leitura<AvisoInmetVigente[]>> {
-  const leitura = await obterLeitura(
+  const leitura = await obterLeituraServidor(
     "inmet-avisos",
     "rss",
     async () => interpretarRssInmet(await buscarTexto(URL_AVISOS_INMET, { timeoutMs: env().FONTES_TIMEOUT_MS })),
-    { modoExemplo: modoExemplo(), exemplo },
+    { exemplo },
   );
   const avisos = filtrarAvisosMg(leitura.dados, agora).map((a) => ({
     ...a,

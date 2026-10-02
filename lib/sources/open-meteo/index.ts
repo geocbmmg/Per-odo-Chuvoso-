@@ -1,8 +1,8 @@
 import "server-only";
 import type { PrevisaoLocal } from "@/lib/dominio/tipos";
-import { env, modoExemplo } from "@/lib/env";
+import { env } from "@/lib/env";
 import { buscarJson } from "@/lib/fontes/http";
-import { obterLeitura } from "@/lib/fontes/leituras";
+import { obterLeituraServidor } from "@/lib/fontes/armazem-servidor";
 import type { Leitura } from "@/lib/fontes/tipos";
 import { SEDES_COBS } from "@/lib/territorio";
 import { DIAS_EXIBIDOS, interpretarPrevisao, montarUrlPrevisao, type PontoPrevisao } from "./parser";
@@ -64,7 +64,7 @@ export function respostaExemploOpenMeteo(pontos: PontoPrevisao[], agora: Date): 
  * cache (1 h); os acumulados são recalculados a partir da hora corrente.
  */
 export async function obterPrevisaoCobs(agora: Date = new Date()): Promise<Leitura<PrevisaoLocal[]>> {
-  const leitura = await obterLeitura(
+  const leitura = await obterLeituraServidor(
     "open-meteo-previsao",
     "sedes-cob",
     () => buscarJson<unknown>(montarUrlPrevisao(PONTOS_PREVISAO, DIAS), { timeoutMs: env().FONTES_TIMEOUT_MS }).then(
@@ -74,7 +74,7 @@ export async function obterPrevisaoCobs(agora: Date = new Date()): Promise<Leitu
         return corpo;
       },
     ),
-    { modoExemplo: modoExemplo(), exemplo: () => respostaExemploOpenMeteo(PONTOS_PREVISAO, agora) },
+    { exemplo: () => respostaExemploOpenMeteo(PONTOS_PREVISAO, agora) },
   );
   return { ...leitura, dados: interpretarPrevisao(leitura.dados, PONTOS_PREVISAO, agora) };
 }
