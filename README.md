@@ -92,20 +92,26 @@ app/
     ingest/[job]/          Jobs da Vercel Cron (stubs na Fase 0)
 components/
   ui/                      Primitivos shadcn/ui no padrão GeoRescue
-  layout/                  Trilho, cabeçalho institucional, carimbo "atualizado às"
-  mapa/                    Mapa MapLibre (COBs, camadas, legenda, controles)
+  layout/                  Trilho, cabeçalho institucional, carimbo "atualizado às", indicador de fontes
+  mapa/                    Mapa MapLibre (COBs, camadas, legenda, controles, balões)
+  visao-geral/ graficos/   KPIs, avisos INMET, gráficos Recharts e tabela por COB
+  monitoramento/ status/   Blocos das páginas de Monitoramento e Status
+  comum/                   Seletor de período, fonte indisponível, atualização automática
 lib/
   sources/                 Clientes tipados: arcgis/, inmet/, open-meteo/ (+ stubs ana/, glofas/, rainviewer/)
   sources/exemplos/        Dados de exemplo (modo demonstração e testes)
   fontes/                  Catálogo, cache/fallback, estado das fontes, fetch com timeout
   dominio/                 Tipos normalizados e período chuvoso
   dados/                   Indicadores, Visão Geral, painel de status
+  mapa/                    Estilo do mapa (função pura), simbologia, mapas base, máscara de MG
   db/                      Drizzle (schema + cliente)
   territorio.ts            COB → BBM/UEOp → fração → município; sedes dos COBs
   datas.ts                 Datas em America/Sao_Paulo
   env.ts                   Variáveis de ambiente (server-only, validadas com zod)
 docs/                      Padrão visual, fontes de dados, território
-tests/                     vitest (parsers das fontes, cache, indicadores, território)
+scripts/                   copiar-worker-maplibre.mjs (postinstall)
+public/geo/                Contorno de Minas Gerais
+tests/                     vitest (parsers das fontes, cache, indicadores, território, mapa)
 ```
 
 ---
@@ -115,10 +121,15 @@ tests/                     vitest (parsers das fontes, cache, indicadores, terri
 Requisitos: **Node.js 22+** e npm.
 
 ```bash
-npm install
+npm install                     # o postinstall copia o worker do MapLibre para public/vendor/
 cp .env.example .env.local      # ajuste se necessário
 npm run dev                     # http://localhost:3000
 ```
+
+> O MapLibre 6 carrega o worker por `import.meta.url`, e o bundle do Next não preserva
+> esse caminho. Por isso `scripts/copiar-worker-maplibre.mjs` copia o worker para
+> `public/vendor/maplibre-gl/` em todo `npm install`, inclusive no build da Vercel. A
+> pasta não é versionada. Sem ela, o mapa usa a mesma versão no unpkg.
 
 Sem acesso às fontes (rede bloqueada, apresentação ou desenvolvimento offline):
 
@@ -210,6 +221,20 @@ A interface segue o padrão do GeoRescue: tema escuro por padrão com acento our
 lateral com o brasão do CBMMG, cartões e pílulas, "dois sinais, nunca só a cor", números
 tabulares e as cores dos 6 COBs tratadas como dado. Referência completa em
 [`docs/padrao-visual.md`](docs/padrao-visual.md).
+
+- **Gráficos:** paleta validada para daltonismo e contraste nos dois temas, com o script
+  da skill de visualização de dados.
+
+  | Série | Escuro | Claro |
+  |---|---|---|
+  | Com ação RRD | `#3B9EDB` | `#1F6FA8` |
+  | Pendente | `#D9692A` | `#B4561F` |
+
+  Barras horizontais com rótulos medidos (quebram linha em vez de se sobrepor), valor no
+  fim da barra e tabela alternativa.
+- **Cores dos COBs:** as herdadas do GeoRescue **não passam** no teste de daltonismo
+  (6º × 2º COB). Por isso o COB é sempre identificado também por **texto**: rótulo no
+  mapa, eixo, legenda e tabela. Nos gráficos, a cor da barra indica o estado, não o COB.
 
 ---
 

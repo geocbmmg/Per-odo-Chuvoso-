@@ -209,6 +209,22 @@ Iguais nos dois temas (a cor identifica o dado). Use as variáveis no mapa e nas
 Opacidade do preenchimento no mapa: `--cob-preenchimento-opacidade` (.16 no escuro, .78 no
 claro). Utilitários: `bg-cob-3`, `border-cob-3-contorno`.
 
+> **Acessibilidade das cores dos COBs.** Esta paleta, herdada do GeoRescue, **falha** no
+> validador de daltonismo da skill de visualização de dados: 6º × 2º COB tem ΔE 5,5
+> (deutan) e 5º × 2º fica abaixo do piso de visão normal. Ela foi mantida por ser a
+> identidade da família, com uma regra obrigatória: **o COB nunca é identificado só pela
+> cor**. Leva sempre o rótulo em texto no mapa (marcadores), nos eixos, nas legendas e nas
+> tabelas. Nos gráficos, as barras não são pintadas pela cor do COB; no máximo um
+> quadradinho ao lado do nome.
+>
+> **Séries dos gráficos** (validadas nos dois temas):
+>
+> | Série | Escuro | Claro |
+> |---|---|---|
+> | Com ação RRD | `#3B9EDB` | `#1F6FA8` |
+> | Pendente | `#D9692A` | `#B4561F` |
+> | Série única | acento ouro | acento ouro |
+
 **Escala de risco** (recomendação do levantamento; não existe como token no GeoRescue):
 
 | Nível | Cor | Tinta sobre a cor |
