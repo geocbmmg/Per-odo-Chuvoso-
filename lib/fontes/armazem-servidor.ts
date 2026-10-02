@@ -58,19 +58,29 @@ export function criarArmazemPostgres(banco: BancoDados): ArmazemLeituras {
   };
 }
 
-/** Memória na frente, armazém persistente atrás; erros do persistente só vão para o log. */
+/**
+ * Memória na frente, armazém persistente atrás; erros do persistente só vão
+ * para o log. Com `atualizadoApos`, uma leitura local vencida não basta: o
+ * persistente é consultado e vale a mais nova das duas — assim uma instância
+ * quente aproveita a renovação feita por outra, em vez de consultar a fonte
+ * de novo (a Open-Meteo conta 853 chamadas por consulta).
+ */
 export function criarArmazemEmCamadas(rapido: ArmazemLeituras, persistente: ArmazemLeituras): ArmazemLeituras {
   return {
-    async ler(chave) {
+    async ler(chave, opcoes) {
       const local = await rapido.ler(chave);
-      if (local) return local;
+      const localBasta = !!local && (!opcoes?.atualizadoApos || local.atualizadoEm > opcoes.atualizadoApos);
+      if (localBasta) return local;
       try {
         const remoto: LeituraGuardada | undefined = await persistente.ler(chave);
-        if (remoto) await rapido.gravar(chave, remoto);
-        return remoto;
+        if (remoto && (!local || remoto.atualizadoEm > local.atualizadoEm)) {
+          await rapido.gravar(chave, remoto);
+          return remoto;
+        }
+        return local;
       } catch (erro) {
         console.error("[leituras] falha ao ler o armazém persistente", erro);
-        return undefined;
+        return local;
       }
     },
     async gravar(chave, leitura) {

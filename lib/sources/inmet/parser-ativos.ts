@@ -349,6 +349,9 @@ export function interpretarAvisosAtivosInmet(corpo: unknown): AvisosInmetAtivos 
   };
   let reconhecidos = 0;
   const candidatos: Candidato[] = [];
+  // Maior versão ENCERRADA de cada aviso: um cancelamento é uma versão nova
+  // do mesmo id_aviso, e ele tem de apagar as versões anteriores.
+  const encerradaPorGrupo = new Map<string, number>();
 
   entradas.forEach((entrada, i) => {
     if (!entrada || typeof entrada !== "object" || Array.isArray(entrada)) {
@@ -362,6 +365,8 @@ export function interpretarAvisosAtivosInmet(corpo: unknown): AvisosInmetAtivos 
 
     if (encerrado(bruto)) {
       descartados.encerrados++;
+      const grupoEncerrado = textoOuNull(bruto.id_aviso) ?? textoOuNull(bruto.id) ?? `aviso-${i}`;
+      encerradaPorGrupo.set(grupoEncerrado, Math.max(encerradaPorGrupo.get(grupoEncerrado) ?? -1, numero(bruto.id_sequencia)));
       return;
     }
     if (!severidade) {
@@ -405,8 +410,13 @@ export function interpretarAvisosAtivosInmet(corpo: unknown): AvisosInmetAtivos 
   const porGrupo = new Map<string, Candidato[]>();
   for (const c of candidatos) porGrupo.set(c.grupo, [...(porGrupo.get(c.grupo) ?? []), c]);
   const avisos: AvisoInmetMunicipios[] = [];
-  for (const grupo of porGrupo.values()) {
+  for (const [chaveGrupo, grupo] of porGrupo) {
     const ultima = Math.max(...grupo.map((c) => c.sequencia));
+    // Versão mais recente encerrada (cancelamento): o aviso sai inteiro do mapa.
+    if ((encerradaPorGrupo.get(chaveGrupo) ?? -1) >= ultima) {
+      descartados.encerrados += grupo.length;
+      continue;
+    }
     const atuais = grupo.filter((c) => c.sequencia === ultima).map((c) => c.aviso);
     descartados.repetidos += grupo.length - 1;
     avisos.push(atuais.reduce(juntar));

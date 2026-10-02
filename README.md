@@ -5,9 +5,11 @@ de Minas Gerais. Substitui gradualmente o painel atual em ArcGIS Experience Buil
 (portal `geoprocessamento.bombeiros.mg.gov.br`) por uma aplicação web própria hospedada na
 Vercel. Segue o padrão de produto do **GeoRescue**.
 
-> **Fase 0 — Fundação e prova de conceito.** O ArcGIS Enterprise continua sendo a fonte
-> de verdade e o acesso é **somente leitura**: só `query`, nunca `applyEdits`. Os
-> formulários Survey123 e o painel atual seguem funcionando durante toda a migração.
+> **Fase 1 — Emissão de alertas, mapa de risco e login.** O ArcGIS Enterprise continua
+> sendo a fonte de verdade e o acesso a ele é **somente leitura**: só `query`, nunca
+> `applyEdits`. A fila de alertas da Sala grava no Postgres até as camadas do ArcGIS serem
+> criadas e a escrita ser autorizada. Os formulários Survey123 e o painel atual seguem
+> funcionando durante toda a migração.
 
 ---
 
@@ -79,8 +81,9 @@ Navegador ──► Páginas (Server Components) ──► lib/sources/* ──�
   sem nº de chamada contam como pendentes e são informados à parte.
 - **Período chuvoso:** de 1º/out a 31/mar no horário de Brasília (`lib/dominio/periodo.ts`).
   A Visão Geral permite alternar entre temporada atual, temporada anterior e todo o histórico.
-- **Banco:** Drizzle ORM + Postgres (Neon / Vercel Postgres) em `lib/db/`. Na Fase 0 nada é
-  migrado e a aplicação funciona sem `DATABASE_URL`.
+- **Banco:** Drizzle ORM + Postgres (Neon / Vercel Postgres) em `lib/db/`. As páginas de
+  leitura funcionam sem `DATABASE_URL`; a fila de alertas em produção exige o banco
+  (`ALERTAS_ARMAZEM=postgres` + `npm run db:push`).
 
 ### Estrutura
 
@@ -121,7 +124,7 @@ lib/
   dominio/                 Tipos normalizados, período chuvoso, matrizes de risco, risco e chuva por município
   dados/                   Indicadores, Visão Geral, risco, chuva, painel de status
   alertas/                 Fila de alertas: domínio, feição ArcGIS, repositórios (memória, Postgres, ArcGIS só leitura), serviço
-  auth/                    Login federado no GeoRescue, papéis, sessão assinada
+  auth/                    Login federado no GeoRescue, papéis, sessão cifrada
   mapa/                    Estilo do mapa (função pura), simbologia, mapas base, máscara de MG, mapa de risco
   db/                      Drizzle (schema + cliente)
   territorio/              COB → BBM/UEOp → fração → município; tabela oficial de frações; sedes
@@ -201,10 +204,11 @@ vai para o log e para `GET /api/status` (`variaveisInvalidas`).
 Quem tem acesso ao GeoRescue entra na Sala com o mesmo CPF e senha (tela `/entrar`). A Sala
 repassa as credenciais **de servidor para servidor** ao `POST <GEORESCUE_BASE_URL>/api/login`,
 não guarda senha, não lê a tabela de usuários e descarta o token do GeoRescue. Em seguida
-emite sessão própria: cookie `__Host-sala_sessao` (HttpOnly, Secure, SameSite=Lax), assinado
-com HMAC-SHA256 (`SALA_SESSION_SECRET`), válido por no máximo 8 h e nunca além da sessão do
-GeoRescue. O CPF não entra no cookie, nas respostas nem nos logs: o usuário é um pseudônimo
-(HMAC).
+emite sessão própria: cookie `__Host-sala_sessao` (HttpOnly, Secure, SameSite=Lax),
+**cifrado e autenticado com AES-256-GCM** (chave derivada de `SALA_SESSION_SECRET`), válido
+por no máximo 8 h e nunca além da sessão do GeoRescue. O cookie é opaco: quem o copia não lê
+nome, posto, nº BM nem unidade. O CPF não entra no cookie, nas respostas nem nos logs: o
+usuário é um pseudônimo (HMAC).
 
 | Rota | Faz |
 |---|---|
@@ -249,28 +253,38 @@ Papéis, decisões e o achado de segurança no GeoRescue: [`docs/fase-1.md`](doc
 
 1. Na Vercel: **Add New… → Project → Import** o repositório `geocbmmg/Per-odo-Chuvoso-`.
    O framework (Next.js) é detectado sozinho. O diretório raiz é a raiz do repositório.
-2. Em **Settings → Environment Variables**, cadastre pelo menos `CRON_SECRET` (marcar como
-   *Sensitive*). As demais são opcionais nesta fase.
+2. Em **Settings → Environment Variables** (marcar os segredos como *Sensitive*):
+   - **sempre:** `CRON_SECRET` (16+ caracteres);
+   - **para a fila de alertas:** `ALERTAS_ARMAZEM=postgres`, `DATABASE_URL` (e rode
+     `npm run db:push` uma vez) e `SALA_PSEUDO_SEGREDO`;
+   - **para o login:** `GEORESCUE_BASE_URL` e `SALA_SESSION_SECRET`;
+   - **recomendado:** `ARMAZEM_LEITURAS=postgres`, para as instâncias compartilharem a
+     última leitura válida e a cota da Open-Meteo.
+   Sem as variáveis da fila e do login, `/alertas-acoes-rrd` só mostra o convite para entrar
+   e `/entrar` responde "login indisponível"; as páginas de leitura funcionam. A página
+   `/status` mostra o que falta.
 3. Deploy. A região das funções é `gru1` (São Paulo), definida em `vercel.json`.
 
 ### Crons
 
-`vercel.json` agenda os jobs `/api/ingest/{arcgis,inmet,meteo,hidrologia}` **uma vez por
-dia** (06:00–06:15 de Brasília). No plano **Hobby** a Vercel **recusa o deploy** de crons
-que rodem mais de uma vez por dia. Quando a ingestão gravar no banco (Fase 1), as
-frequências previstas são:
+`vercel.json` agenda os jobs `/api/ingest/{arcgis,inmet,meteo,hidrologia,risco,chuva}`
+**uma vez por dia** (06:00–06:25 de Brasília). No plano **Hobby** a Vercel **recusa o
+deploy** de crons que rodem mais de uma vez por dia. As frequências-alvo são:
 
 | Job | Frequência alvo | Cron |
 |---|---|---|
 | `inmet` | 10 min | `*/10 * * * *` |
+| `risco` (INMET por município + CEMADEN) | 10 min | `*/10 * * * *` |
 | `arcgis` | 5 min | `*/5 * * * *` |
 | `meteo` | 1 h | `0 * * * *` |
+| `chuva` (Open-Meteo, 853 municípios) | 3 h | `0 */3 * * *` |
 | `hidrologia` | 15 min | `*/15 * * * *` |
 
 Essas frequências exigem o plano **Pro** ou um agendador externo (ex.: cron-job.org)
-chamando a rota com `Authorization: Bearer $CRON_SECRET`. Na Fase 0 os jobs só consultam as
-fontes e devolvem o estado de cada uma. Com `ARMAZEM_LEITURAS=postgres`, a leitura também
-fica gravada para todas as instâncias. As telas funcionam sem os jobs.
+chamando a rota com `Authorization: Bearer $CRON_SECRET`. Os jobs consultam as fontes
+através do cache e devolvem o estado de cada uma. Com `ARMAZEM_LEITURAS=postgres`, a
+leitura fica gravada para todas as instâncias. As telas funcionam sem os jobs: a primeira
+consulta depois de vencido o cache busca a fonte.
 
 ---
 
@@ -320,15 +334,17 @@ tabulares e as cores dos 6 COBs tratadas como dado. Referência completa em
 
 ## Roteiro
 
-- **Fase 0 (este repositório):** fundação, mapa e indicadores lendo o ArcGIS, avisos INMET,
+- **Fase 0 (entregue):** fundação, mapa e indicadores lendo o ArcGIS, avisos INMET,
   previsão Open-Meteo e `/status`.
-- **Fase 1 (desenho em [`docs/fase-1.md`](docs/fase-1.md)):**
-  - emissão e fila de alertas na própria Sala, substituindo o Survey123, com gravação em
-    feições do ArcGIS pré-desenhada;
+- **Fase 1 (entregue; desenho e decisões em [`docs/fase-1.md`](docs/fase-1.md)):**
+  - emissão e fila de alertas na própria Sala, substituindo o Survey123, gravando no
+    Postgres; as camadas do ArcGIS ficam pré-desenhadas (`scripts/arcgis/`) e a escrita
+    nelas desligada até serem criadas;
   - login pelos usuários do GeoRescue;
   - mapa de risco por município (INMET, CEMADEN e alertas do CBMMG);
   - chuva prevista nos 853 municípios, no modelo do GeoRisk, com as matrizes oficiais
     ([`docs/metricas-risco.md`](docs/metricas-risco.md)).
+  Pendentes da fase: as decisões da seção 9 do desenho e a criação das camadas no ArcGIS.
 - **Fase 2:** ANA/SACE e estações hidrológicas, GloFAS, radar, NAC e notificações
   (Telegram).
 - **Fase 3:** migração para o cartão **Período Chuvoso** do GeoRescue e Ocorrências

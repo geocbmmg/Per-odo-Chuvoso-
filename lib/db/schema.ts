@@ -15,9 +15,10 @@ import {
 } from "drizzle-orm/pg-core";
 
 /**
- * Esquema do Postgres (Neon / Vercel Postgres). Na Fase 0 nada é migrado:
- * as tabelas abaixo preparam a Fase 1 (ingestão por cron gravando no banco).
- * Para criar no banco: `npm run db:push` (com DATABASE_URL definido).
+ * Esquema do Postgres (Neon / Vercel Postgres): última leitura válida das
+ * fontes (ARMAZEM_LEITURAS=postgres), registro dos jobs e a fila de alertas da
+ * Sala (ALERTAS_ARMAZEM=postgres, tabelas sala_*, no mesmo formato da feição do
+ * ArcGIS). Para criar no banco: `npm run db:push` (com DATABASE_URL definido).
  */
 
 /** Última leitura válida de cada fonte — substituirá o armazém em memória. */

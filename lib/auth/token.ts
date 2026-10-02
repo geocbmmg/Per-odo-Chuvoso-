@@ -1,23 +1,24 @@
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createCipheriv, createDecipheriv, createHmac, randomBytes } from "node:crypto";
 import { z } from "zod";
 
 import { PAPEIS_SALA, type Sessao } from "./tipos";
 
 /**
- * Sessão própria da Sala, assinada com HMAC-SHA256 (docs/fase-1.md §3.2).
+ * Sessão própria da Sala, CIFRADA E AUTENTICADA com AES-256-GCM (docs/fase-1.md §3.2).
  *
- * Formato compacto, no mesmo espírito do token do GeoRescue (sem cabeçalho
- * JWT): `base64url(JSON da carga).base64url(HMAC-SHA256(chave, primeiro segmento))`.
- * - A chave de assinatura é DERIVADA do SALA_SESSION_SECRET com rótulo próprio,
- *   para que o mesmo segredo nunca assine duas coisas diferentes.
- * - A carga carrega `typ: "sala-sessao"` e `v: 1`: um token de outro tipo
- *   assinado com o mesmo segredo não vira sessão (o defeito do token de campo
- *   no GeoRescue, seção 3.4).
+ * O cookie é opaco: `base64url(iv).base64url(cifrado).base64url(tag)`. Quem
+ * tem o cookie (um proxy que registra cabeçalhos, um backup do navegador) não
+ * lê nome, posto, nº BM nem unidade — só o servidor, com o segredo. O GCM
+ * também autentica: qualquer byte alterado invalida a sessão.
+ * - A chave é DERIVADA do SALA_SESSION_SECRET com rótulo próprio, para que o
+ *   mesmo segredo nunca sirva a duas coisas diferentes.
+ * - A carga leva `typ: "sala-sessao"` e `v: 2`, e o tipo também entra como
+ *   dado associado (AAD): um token de outro tipo feito com o mesmo segredo não
+ *   vira sessão (o defeito do token de campo no GeoRescue, seção 3.4).
  * - `exp` é obrigatório e a sessão dura no máximo 8 h.
- * - Segredo ausente ou com menos de 32 caracteres: não assina (erro) e não
- *   verifica (null) — falha fechada; `hmac("", …)` seria forjável por qualquer um.
- * - A verificação compara a assinatura em tempo constante (timingSafeEqual) e
- *   só então lê a carga, que ainda passa por um esquema zod.
+ * - Segredo ausente ou com menos de 32 caracteres: não cifra (erro) e não
+ *   decifra (null) — falha fechada.
+ * - A carga decifrada ainda passa por um esquema zod.
  *
  * NUNCA o CPF: o usuário é o pseudônimo `usuarioId` (lib/auth/pseudonimo.ts).
  * PURO (node:crypto + zod): sem Next, sem variável de ambiente.
@@ -31,15 +32,18 @@ const FOLGA_RELOGIO_S = 60;
 /** Teto do tamanho do cookie lido (o token real tem bem menos de 1 KB). */
 const TAMANHO_MAXIMO_TOKEN = 4096;
 
-const ROTULO_CHAVE = "sala-situacao/sessao/v1";
+const ROTULO_CHAVE = "sala-situacao/sessao/cifra/v2";
 const TIPO = "sala-sessao";
+const VERSAO = 2;
+const TAMANHO_IV = 12;
+const TAMANHO_TAG = 16;
 
 const texto = (max: number) => z.string().max(max);
 
 const esquemaCarga = z
   .object({
     typ: z.literal(TIPO),
-    v: z.literal(1),
+    v: z.literal(VERSAO),
     sid: z.string().regex(/^[A-Za-z0-9_-]{8,64}$/),
     usuarioId: z.string().regex(/^[0-9a-f]{32}$/),
     nome: texto(200),
@@ -63,24 +67,58 @@ function segredoValido(segredo: string | null | undefined): segredo is string {
   return typeof segredo === "string" && segredo.length >= TAMANHO_MINIMO_SEGREDO;
 }
 
-function chaveAssinatura(segredo: string): Buffer {
+/** Chave AES-256 derivada do segredo (32 bytes). */
+function chaveCifra(segredo: string): Buffer {
   return createHmac("sha256", segredo).update(ROTULO_CHAVE).digest();
-}
-
-function assinatura(segmento: string, segredo: string): Buffer {
-  return createHmac("sha256", chaveAssinatura(segredo)).update(segmento).digest();
 }
 
 export class ErroSegredoSessao extends Error {
   constructor() {
-    super("SALA_SESSION_SECRET ausente ou curto: a Sala não assina sessão sem segredo.");
+    super("SALA_SESSION_SECRET ausente ou curto: a Sala não emite sessão sem segredo.");
     this.name = "ErroSegredoSessao";
   }
 }
 
 /**
- * Assina a sessão. `expiraEm` define o `exp`; ela precisa estar no futuro e a
- * no máximo 8 h de `agoraMs` (quem chama já limitou ao `exp` do GeoRescue).
+ * Cifra uma carga qualquer no formato do token. Exportada para os testes
+ * provarem que o esquema é conferido depois de decifrar; o código da Sala usa
+ * `assinarSessao`.
+ */
+export function cifrarCarga(carga: unknown, segredo: string | null | undefined): string {
+  if (!segredoValido(segredo)) throw new ErroSegredoSessao();
+  const iv = randomBytes(TAMANHO_IV);
+  const cifra = createCipheriv("aes-256-gcm", chaveCifra(segredo), iv);
+  cifra.setAAD(Buffer.from(TIPO, "utf8"));
+  const cifrado = Buffer.concat([cifra.update(JSON.stringify(carga), "utf8"), cifra.final()]);
+  const tag = cifra.getAuthTag();
+  return `${iv.toString("base64url")}.${cifrado.toString("base64url")}.${tag.toString("base64url")}`;
+}
+
+const BASE64URL = /^[A-Za-z0-9_-]+$/;
+
+/** Decifra e devolve a carga (JSON) ou null se o token não for íntegro. */
+export function decifrarCarga(token: string | null | undefined, segredo: string | null | undefined): unknown | null {
+  if (!segredoValido(segredo)) return null;
+  if (typeof token !== "string" || token.length === 0 || token.length > TAMANHO_MAXIMO_TOKEN) return null;
+  const partes = token.split(".");
+  if (partes.length !== 3 || !partes.every((p) => p.length > 0 && BASE64URL.test(p))) return null;
+  const [iv, cifrado, tag] = partes.map((p) => Buffer.from(p, "base64url"));
+  if (iv.length !== TAMANHO_IV || tag.length !== TAMANHO_TAG || cifrado.length === 0) return null;
+  try {
+    const decifra = createDecipheriv("aes-256-gcm", chaveCifra(segredo), iv);
+    decifra.setAAD(Buffer.from(TIPO, "utf8"));
+    decifra.setAuthTag(tag);
+    const texto = Buffer.concat([decifra.update(cifrado), decifra.final()]).toString("utf8");
+    return JSON.parse(texto) as unknown;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Emite o token da sessão. `expiraEm` define o `exp`; ela precisa estar no
+ * futuro e a no máximo 8 h de `agoraMs` (quem chama já limitou ao `exp` do
+ * GeoRescue). O nome segue "assinar" porque o token continua autenticado.
  */
 export function assinarSessao(sessao: Sessao, segredo: string | null | undefined, agoraMs: number = Date.now()): string {
   if (!segredoValido(segredo)) throw new ErroSegredoSessao();
@@ -91,7 +129,7 @@ export function assinarSessao(sessao: Sessao, segredo: string | null | undefined
 
   const carga: CargaSessao = esquemaCarga.parse({
     typ: TIPO,
-    v: 1,
+    v: VERSAO,
     sid: sessao.sid,
     usuarioId: sessao.usuarioId,
     nome: sessao.nome,
@@ -107,11 +145,8 @@ export function assinarSessao(sessao: Sessao, segredo: string | null | undefined
     iat,
     exp,
   });
-  const segmento = Buffer.from(JSON.stringify(carga), "utf8").toString("base64url");
-  return `${segmento}.${assinatura(segmento, segredo).toString("base64url")}`;
+  return cifrarCarga(carga, segredo);
 }
-
-const BASE64URL = /^[A-Za-z0-9_-]+$/;
 
 export interface OpcoesVerificacao {
   agoraMs?: number;
@@ -122,33 +157,17 @@ export interface OpcoesVerificacao {
   demonstracao: boolean;
 }
 
-/** Sessão do token, ou null se a assinatura, o formato, o tipo ou a validade não conferirem. */
+/** Sessão do token, ou null se a integridade, o formato, o tipo ou a validade não conferirem. */
 export function verificarSessao(
   token: string | null | undefined,
   segredo: string | null | undefined,
   opcoes: OpcoesVerificacao,
 ): Sessao | null {
-  if (!segredoValido(segredo)) return null;
-  if (typeof token !== "string" || token.length === 0 || token.length > TAMANHO_MAXIMO_TOKEN) return null;
-  const partes = token.split(".");
-  if (partes.length !== 2) return null;
-  const [segmento, assinado] = partes;
-  if (!BASE64URL.test(segmento) || !BASE64URL.test(assinado)) return null;
-
-  // Compara o TEXTO base64url (forma canônica): decodificar antes aceitaria
-  // variações do último caractere que dão os mesmos bytes.
-  const recebida = Buffer.from(assinado, "utf8");
-  const esperada = Buffer.from(assinatura(segmento, segredo).toString("base64url"), "utf8");
-  if (recebida.length !== esperada.length || !timingSafeEqual(recebida, esperada)) return null;
-
-  let carga: CargaSessao;
-  try {
-    const resultado = esquemaCarga.safeParse(JSON.parse(Buffer.from(segmento, "base64url").toString("utf8")));
-    if (!resultado.success) return null;
-    carga = resultado.data;
-  } catch {
-    return null;
-  }
+  const bruto = decifrarCarga(token, segredo);
+  if (bruto === null) return null;
+  const resultado = esquemaCarga.safeParse(bruto);
+  if (!resultado.success) return null;
+  const carga = resultado.data;
 
   const agora = Math.floor((opcoes.agoraMs ?? Date.now()) / 1000);
   if (carga.exp <= agora) return null;

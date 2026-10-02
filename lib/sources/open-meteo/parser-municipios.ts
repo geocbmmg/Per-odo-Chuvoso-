@@ -208,13 +208,16 @@ export function ehCacheChuvaMunicipios(dados: unknown): dados is CacheChuvaMunic
 /**
  * Início da janela em `agora`: a hora cheia corrente (ISO, UTC) e o índice,
  * no cache, do 1º registro usado (o de floor(agora)+1h, que traz a chuva da
- * hora em curso). Índice negativo = a janela começa antes do cache.
+ * hora em curso). Se o relógio desta instância estiver atrás do da instância
+ * que gravou o cache (a janela "começaria antes do cache"), vale o 1º registro
+ * guardado: um segundo de diferença não pode apagar o mapa inteiro.
  */
 export function inicioDaJanela(cache: CacheChuvaMunicipios, agora: Date): { inicioJanela: string; indice: number } {
-  const primeiro = primeiroRegistroDaJanela(agora);
+  const primeiroCache = Date.parse(cache.primeiraHoraIso);
+  const primeiro = Math.max(primeiroRegistroDaJanela(agora), primeiroCache);
   return {
     inicioJanela: new Date(primeiro - HORA_MS).toISOString(),
-    indice: Math.ceil((primeiro - Date.parse(cache.primeiraHoraIso)) / HORA_MS),
+    indice: Math.max(0, Math.ceil((primeiro - primeiroCache) / HORA_MS)),
   };
 }
 

@@ -60,7 +60,9 @@ grava num repositório local (seção 4.4).
    de 15 s) e recebe papel, domínios, grupos, Nº BM e nome.
 3. A Sala emite **sessão própria**:
    - cookie `__Host-sala_sessao`, HttpOnly, Secure, SameSite=Lax;
-   - assinado com `SALA_SESSION_SECRET`, que é diferente do segredo do GeoRescue;
+   - cifrado e autenticado (AES-256-GCM) com chave derivada de `SALA_SESSION_SECRET`, que é
+     diferente do segredo do GeoRescue; o cookie é opaco (nome, posto, nº BM e unidade não
+     são legíveis sem o segredo);
    - validade de no máximo 8 h.
    O token do GeoRescue é descartado.
 4. A Sala não guarda senha e não lê a tabela de usuários. O CPF não vai para cookie nem para
@@ -98,7 +100,7 @@ emissão, a fila e os dados com texto livre exigem login.
 ### 3.5 Implementação
 
 - Código: `lib/auth/` (cliente do GeoRescue em `georescue.ts`, tabela de papéis pura em `papeis.ts`,
-  sessão assinada em `token.ts`, leitura em `sessao.ts`), rotas `app/api/auth/*`, tela `app/entrar`,
+  sessão cifrada em `token.ts`, leitura em `sessao.ts`), rotas `app/api/auth/*`, tela `app/entrar`,
   chip do usuário no cabeçalho (`components/auth/`).
 - Contrato lido do `login.py` (origin/homolog): pedido `{usuario, senha}`; resposta
   `{ok, usuario, nome, cpf (mascarado), bm, unidade, papel, dominios, escopo_global, troca_senha, token,
@@ -106,7 +108,8 @@ emissão, a fila e os dados com texto livre exigem login.
   Do token a Sala lê só a carga (`sub`, `gr_dgrupo`, `gr_pg`, `gr_situacao`, `gr_optotal`, `exp`), sem
   conferir a assinatura: ele chegou por TLS, direto do GeoRescue, na resposta ao próprio login. Token com
   `typ` (o de campo) é recusado. O teste de contrato fica em `tests/auth-georescue.test.ts`.
-- Sessão da Sala: `base64url(carga).base64url(HMAC-SHA256)`, com `typ: "sala-sessao"`, `exp` obrigatório
+- Sessão da Sala: `base64url(iv).base64url(cifrado).base64url(tag)` em AES-256-GCM (chave derivada do
+  segredo; o tipo entra como dado associado), com `typ: "sala-sessao"`, `exp` obrigatório
   (≤ 8 h e ≤ `exp` do GeoRescue), sem CPF (`usuarioId` = HMAC do CPF com `SALA_PSEUDO_SEGREDO` ou, sem
   ele, com chave derivada do `SALA_SESSION_SECRET`). Sessão de demonstração nunca vale fora do modo
   demonstração.
@@ -215,10 +218,10 @@ Mesmo contrato do módulo INSARAG, para migrar sem reescrever o cliente:
   - Datas em ISO 8601 com fuso.
 - Erros: `{ok: false, erro, motivo[, campos][, alteradoEmAtual]}`.
   - `erro` é a mensagem para a tela; `motivo` é o código estável: `entrada_invalida`,
-    `campo_travado`, `sessao`, `permissao`, `escopo`, `origem`, `nao_encontrado`,
-    `conflito`, `transicao_invalida`, `ja_ciente`, `armazem`, `escrita_desligada`,
-    `configuracao`, `armazem_nao_configurado`.
-  - Status: 400, 401, 403, 404, 409, 502 ou 503.
+    `formato`, `corpo_grande`, `campo_travado`, `sessao`, `permissao`, `escopo`, `origem`,
+    `nao_encontrado`, `conflito`, `transicao_invalida`, `ja_ciente`, `armazem`,
+    `escrita_desligada`, `configuracao`, `armazem_nao_configurado` e `interno` (500).
+  - Status: 400, 401, 403, 404, 409, 500, 502 ou 503.
 - Sempre `Cache-Control: no-store`, para que dado recortado por usuário nunca fique no CDN.
 - O POST só é aceito com `Origin` da própria aplicação (proteção contra CSRF).
 
@@ -248,11 +251,18 @@ Código em `lib/alertas/` (regras puras em `dominio.ts`, `feicao.ts`, `cap.ts`; 
 | EMITIDO, CIENTE, EM_AÇÃO, AÇÃO_REGISTRADA | cancelar com motivo (operador) | CANCELADO |
 
 - Registrar ação num alerta só emitido dá a ciência implícita.
+- Só quem responde pelo alerta muda a situação: o operador da Sala ou uma unidade do COB
+  do destinatário principal. Uma unidade apenas notificada registra a ação como apoio, e o
+  alerta segue aguardando o principal.
+- A ação é gravada antes da situação: uma falha no meio nunca deixa "ação registrada" sem
+  ação. Se alguém alterou o alerta entre a leitura e a ação, a transição é refeita sobre a
+  versão atual.
 - Ação "não realizada" fica registrada, mas o alerta segue pendente.
 - Encerrar exige ação registrada; sem ação, cancela-se com motivo.
 - Rascunho não se cancela: apaga-se (o histórico fica com o evento `APAGADO` e o número
   não é reaproveitado).
-- Depois de emitido, território, destinatários e natureza não mudam. As demais edições
+- Depois de emitido, território, destinatários, natureza e nº da chamada CAD não mudam (o
+  número é a chave das ações e do Survey123). As demais edições
   geram uma mensagem CAP *Update* (evento `ATUALIZADO`, ou `PRAZO_ALTERADO` se só o
   prazo mudou).
 

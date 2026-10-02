@@ -1,5 +1,5 @@
 import { timingSafeEqual } from "node:crypto";
-import { env } from "@/lib/env";
+import { env, TAMANHO_MINIMO_CRON_SECRET } from "@/lib/env";
 import { CATALOGO_FONTES } from "@/lib/fontes/catalogo";
 import type { FonteId } from "@/lib/fontes/tipos";
 import { CAMADAS_ARCGIS, obterCamada } from "@/lib/sources/arcgis";
@@ -93,14 +93,12 @@ async function executarFonte(
   }
 }
 
-const TAMANHO_MINIMO_SEGREDO = 16;
-
 function autorizado(req: Request): boolean {
   const segredo = env().CRON_SECRET;
   if (!segredo) return process.env.NODE_ENV !== "production";
-  if (segredo.length < TAMANHO_MINIMO_SEGREDO) {
+  if (segredo.length < TAMANHO_MINIMO_CRON_SECRET) {
     // Falha fechada só para o cron: as demais rotas seguem funcionando.
-    console.error(`[ingest] CRON_SECRET com menos de ${TAMANHO_MINIMO_SEGREDO} caracteres; jobs bloqueados.`);
+    console.error(`[ingest] CRON_SECRET com menos de ${TAMANHO_MINIMO_CRON_SECRET} caracteres; jobs bloqueados.`);
     return false;
   }
   // Comparação em tempo constante (não vaza o segredo por tempo de resposta).

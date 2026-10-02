@@ -1,5 +1,5 @@
 import "server-only";
-import { env, modoExemplo, variaveisInvalidas } from "@/lib/env";
+import { env, modoExemplo, TAMANHO_MINIMO_CRON_SECRET, variaveisInvalidas } from "@/lib/env";
 import { LISTA_FONTES } from "@/lib/fontes/catalogo";
 import { statusDaFonte } from "@/lib/fontes/leituras";
 import type { FonteId, StatusFonte } from "@/lib/fontes/tipos";
@@ -52,7 +52,8 @@ export function configuracaoStatus(): ConfiguracaoStatus {
     pseudonimoConfigurado: Boolean(e.SALA_PSEUDO_SEGREDO),
     loginConfigurado: Boolean(e.GEORESCUE_BASE_URL && e.SALA_SESSION_SECRET),
     grupoOperador: e.SALA_GRUPO_OPERADOR,
-    cronProtegido: Boolean(e.CRON_SECRET),
+    // A mesma regra de /api/ingest: segredo curto bloqueia os jobs (não protege).
+    cronProtegido: Boolean(e.CRON_SECRET && e.CRON_SECRET.length >= TAMANHO_MINIMO_CRON_SECRET),
   };
 }
 

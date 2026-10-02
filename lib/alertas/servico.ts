@@ -976,14 +976,21 @@ async function despachar(p: Pedido, sessao: Sessao, ctx: ContextoServico, autor:
         "transicao_invalida",
         `Não cabe ação RRD num alerta ${alerta.situacao.toLowerCase()}.`,
       );
-      const passos = passosDoRegistroDeAcao(alerta.situacao, p.resultado);
-      const situacaoFinal = aplicarPassos(alerta.situacao, passos);
-      if (situacaoFinal !== alerta.situacao) {
-        await repo.atualizar(
-          { ...alerta, situacao: situacaoFinal, alteradoPorId: autor.id, alteradoEm: proximaVersao(alerta.alteradoEm, ctx.agora) },
-          alerta.alteradoEm,
-        );
+      // Só quem responde pelo alerta muda a situação: o operador da Sala ou a
+      // unidade do COB do destinatário PRINCIPAL. Uma unidade só notificada
+      // registra a ação como apoio, e o alerta segue aguardando o principal.
+      const principal = destinatarios.find((d) => d.principal) ?? null;
+      const cobResponsavel = principal?.cob ?? alerta.cob;
+      const respondePeloAlerta =
+        capacidadesDoPapel(sessao.papel).verTodosCobs || (cobResponsavel !== null && alcancaCob(sessao, cobResponsavel));
+      const avisos: string[] = [];
+      if (!respondePeloAlerta) {
+        avisos.push("Ação registrada como apoio: a situação do alerta segue com a unidade principal.");
       }
+
+      // A ação é gravada ANTES da situação: se a gravação da situação falhar,
+      // o alerta continua pendente com a ação registrada — nunca "ação
+      // registrada" sem ação alguma.
       const acao = await comNumeracao(repo, "acao", ctx.agora, (acaoId) =>
         repo.criarAcao({
           objectid: null,
@@ -1021,8 +1028,38 @@ async function despachar(p: Pedido, sessao: Sessao, ctx: ContextoServico, autor:
         }),
       );
 
+      let base = alerta;
+      let passos = respondePeloAlerta ? passosDoRegistroDeAcao(base.situacao, p.resultado) : [];
+      let situacaoFinal = aplicarPassos(base.situacao, passos);
+      if (situacaoFinal !== base.situacao) {
+        const gravarSituacao = (de: AlertaSala, para: SituacaoAlerta) =>
+          repo.atualizar(
+            { ...de, situacao: para, alteradoPorId: autor.id, alteradoEm: proximaVersao(de.alteradoEm, ctx.agora) },
+            de.alteradoEm,
+          );
+        try {
+          await gravarSituacao(base, situacaoFinal);
+        } catch (erro) {
+          if (!(erro instanceof ErroConflito)) throw erro;
+          // Alguém gravou entre a leitura e a ação: a ação já está registrada,
+          // então a transição é refeita sobre a versão atual, se ela ainda couber.
+          const atual = await repo.obter(alerta.alertaId);
+          if (atual && aceitaCienciaOuAcao(atual.situacao)) {
+            base = atual;
+            passos = passosDoRegistroDeAcao(base.situacao, p.resultado);
+            situacaoFinal = aplicarPassos(base.situacao, passos);
+            if (situacaoFinal !== base.situacao) await gravarSituacao(base, situacaoFinal);
+          } else {
+            base = atual ?? alerta;
+            passos = [];
+            situacaoFinal = base.situacao;
+            avisos.push("O alerta mudou de situação enquanto a ação era registrada: ela ficou registrada sem alterar a situação.");
+          }
+        }
+      }
+
       const eventos: EventoHistorico[] = [];
-      let situacao = alerta.situacao;
+      let situacao = base.situacao;
       for (const passo of passos) {
         const para = transicao(situacao, passo) as SituacaoAlerta;
         if (passo === "ciencia") {
@@ -1048,13 +1085,13 @@ async function despachar(p: Pedido, sessao: Sessao, ctx: ContextoServico, autor:
           evento: situacaoFinal === "EM_ACAO" && transicaoDaAcao ? "EM_ACAO" : "ACAO_REGISTRADA",
           alvoTipo: "ACAO",
           alvoId: acao.acaoId,
-          situacaoDe: transicaoDaAcao ? (passos.includes("ciencia") ? "CIENTE" : alerta.situacao) : null,
+          situacaoDe: transicaoDaAcao ? (passos.includes("ciencia") ? "CIENTE" : base.situacao) : null,
           situacaoPara: transicaoDaAcao ? situacaoFinal : null,
-          detalhe: `${acao.tipoAcao} · ${acao.resultado}`,
+          detalhe: `${acao.tipoAcao} · ${acao.resultado}${respondePeloAlerta ? "" : " (apoio de unidade notificada)"}`,
         }),
       );
       await repo.acrescentarHistorico(eventos);
-      return { id: alerta.alertaId, alerta: await visaoAtual(ctx, sessao, alerta.alertaId), avisos: [], acaoId: acao.acaoId };
+      return { id: alerta.alertaId, alerta: await visaoAtual(ctx, sessao, alerta.alertaId), avisos, acaoId: acao.acaoId };
     }
 
     case "encerrar":

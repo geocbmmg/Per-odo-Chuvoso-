@@ -29,8 +29,17 @@ export interface LeituraGuardada {
   atualizadoEm: string;
 }
 
+export interface OpcoesLerArmazem {
+  /**
+   * Leitura local mais antiga que isto (ISO) não basta: um armazém em camadas
+   * consulta o persistente antes de a fonte ser chamada de novo, para outra
+   * instância que já renovou a leitura ser aproveitada (cota compartilhada).
+   */
+  atualizadoApos?: string;
+}
+
 export interface ArmazemLeituras {
-  ler(chave: string): Promise<LeituraGuardada | undefined>;
+  ler(chave: string, opcoes?: OpcoesLerArmazem): Promise<LeituraGuardada | undefined>;
   gravar(chave: string, leitura: LeituraGuardada): Promise<void>;
 }
 
@@ -152,7 +161,9 @@ export async function obterLeitura<T>(
     return { fonte, dados: opcoes.exemplo(), atualizadoEm: instante, origem: "exemplo" };
   }
 
-  const guardada = await estado.armazem.ler(chaveCompleta);
+  const guardada = await estado.armazem.ler(chaveCompleta, {
+    atualizadoApos: new Date(agora().getTime() - ttlMs).toISOString(),
+  });
   if (guardada && agora().getTime() - new Date(guardada.atualizadoEm).getTime() < ttlMs) {
     return { fonte, dados: guardada.dados as T, atualizadoEm: guardada.atualizadoEm, origem: "cache" };
   }

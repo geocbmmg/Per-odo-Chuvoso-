@@ -2,8 +2,10 @@
 
 Regras comuns a todas as fontes:
 
-- **Toda chamada externa sai do servidor.** O navegador só usa `/api/*`, mais os tiles do
-  mapa base.
+- **Toda chamada externa sai do servidor.** O navegador só usa `/api/*`, os tiles do mapa
+  base, as malhas estáticas em `/geo/*.json`, o brasão (imagem pública do portal do CBMMG)
+  e, só se faltar a cópia local, o worker do MapLibre no unpkg. Nenhum token chega ao
+  front-end.
 - **Fallback.** Cada fonte tem cache com ttl, unificação de requisições simultâneas e
   espera após falha. Se a fonte cair, vale a última leitura válida
   (`lib/fontes/leituras.ts`).

@@ -9,7 +9,15 @@ import {
   nomeCookieSessao,
 } from "@/lib/auth/cookie";
 import { chavePseudonimo, identificadorDaConta, pseudonimoUsuario } from "@/lib/auth/pseudonimo";
-import { assinarSessao, DURACAO_MAXIMA_SESSAO_S, ErroSegredoSessao, segundosAteExpirar, verificarSessao } from "@/lib/auth/token";
+import {
+  assinarSessao,
+  cifrarCarga,
+  decifrarCarga,
+  DURACAO_MAXIMA_SESSAO_S,
+  ErroSegredoSessao,
+  segundosAteExpirar,
+  verificarSessao,
+} from "@/lib/auth/token";
 import type { Sessao } from "@/lib/auth/tipos";
 
 const SEGREDO = "s".repeat(40);
@@ -36,56 +44,65 @@ function sessao(extra: Partial<Sessao> = {}): Sessao {
   };
 }
 
-function decodificarCarga(token: string): Record<string, unknown> {
-  return JSON.parse(Buffer.from(token.split(".")[0], "base64url").toString("utf8")) as Record<string, unknown>;
+function carga(token: string): Record<string, unknown> {
+  return decifrarCarga(token, SEGREDO) as Record<string, unknown>;
 }
 
-describe("token de sessão da Sala (HMAC-SHA256)", () => {
-  it("assina e verifica: formato compacto base64url(carga).base64url(assinatura)", () => {
+/** Troca um caractere base64url de um segmento do token (adulteração). */
+function adulterar(segmento: string, posicao = 3): string {
+  const c = segmento[posicao] === "A" ? "B" : "A";
+  return segmento.slice(0, posicao) + c + segmento.slice(posicao + 1);
+}
+
+describe("token de sessão da Sala (AES-256-GCM)", () => {
+  it("cifra e verifica: formato base64url(iv).base64url(cifrado).base64url(tag)", () => {
     const token = assinarSessao(sessao(), SEGREDO, AGORA);
-    expect(token).toMatch(/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{43}$/);
+    expect(token).toMatch(/^[A-Za-z0-9_-]{16}\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{22}$/);
     const lida = verificarSessao(token, SEGREDO, { agoraMs: AGORA + 1000, demonstracao: false });
     expect(lida).toEqual(sessao());
-    const carga = decodificarCarga(token);
-    expect(carga).toMatchObject({ typ: "sala-sessao", v: 1, iat: AGORA / 1000, exp: AGORA / 1000 + 4 * 3600 });
+    expect(carga(token)).toMatchObject({ typ: "sala-sessao", v: 2, iat: AGORA / 1000, exp: AGORA / 1000 + 4 * 3600 });
+    // Dois tokens da mesma sessão nunca são iguais (iv aleatório).
+    expect(assinarSessao(sessao(), SEGREDO, AGORA)).not.toBe(token);
   });
 
-  it("nunca carrega o CPF (só o pseudônimo de 32 hex)", () => {
+  it("o cookie é opaco: nem CPF, nem nome, nº BM ou unidade legíveis sem o segredo", () => {
     const token = assinarSessao(sessao(), SEGREDO, AGORA);
-    const texto = Buffer.from(token.split(".")[0], "base64url").toString("utf8");
-    expect(texto).not.toContain(CPF);
-    expect(token).not.toContain(CPF);
-    expect(decodificarCarga(token).usuarioId).toMatch(/^[0-9a-f]{32}$/);
+    const legivel = token.split(".").map((p) => Buffer.from(p, "base64url").toString("latin1")).join(" ") + " " + token;
+    for (const dado of [CPF, "Fulano", "123456-7", "BELO HORIZONTE", "sala-sessao", "unidade"]) {
+      expect(legivel).not.toContain(dado);
+    }
+    expect(carga(token).usuarioId).toMatch(/^[0-9a-f]{32}$/);
+    expect(decifrarCarga(token, OUTRO_SEGREDO)).toBeNull();
   });
 
-  it("adulteração da carga ou da assinatura → null", () => {
+  it("adulteração do iv, do conteúdo ou da tag → null", () => {
     const token = assinarSessao(sessao(), SEGREDO, AGORA);
-    const [carga, assinatura] = token.split(".");
-    const promovida = Buffer.from(
-      JSON.stringify({ ...decodificarCarga(token), papel: "admin", escopoGlobal: true }),
-      "utf8",
-    ).toString("base64url");
+    const [iv, cifrado, tag] = token.split(".");
     const opcoes = { agoraMs: AGORA, demonstracao: false };
-    expect(verificarSessao(`${promovida}.${assinatura}`, SEGREDO, opcoes)).toBeNull();
-    const trocaUltimo = assinatura.slice(0, -1) + (assinatura.endsWith("A") ? "B" : "A");
-    expect(verificarSessao(`${carga}.${trocaUltimo}`, SEGREDO, opcoes)).toBeNull();
-    expect(verificarSessao(`${carga}.${assinatura}x`, SEGREDO, opcoes)).toBeNull();
-    expect(verificarSessao(`${carga}.${assinatura}.extra`, SEGREDO, opcoes)).toBeNull();
-    expect(verificarSessao(carga, SEGREDO, opcoes)).toBeNull();
+    expect(verificarSessao(`${adulterar(iv)}.${cifrado}.${tag}`, SEGREDO, opcoes)).toBeNull();
+    expect(verificarSessao(`${iv}.${adulterar(cifrado)}.${tag}`, SEGREDO, opcoes)).toBeNull();
+    expect(verificarSessao(`${iv}.${cifrado}.${adulterar(tag)}`, SEGREDO, opcoes)).toBeNull();
+    expect(verificarSessao(`${iv}.${cifrado}.${tag}.extra`, SEGREDO, opcoes)).toBeNull();
+    expect(verificarSessao(`${iv}.${cifrado}`, SEGREDO, opcoes)).toBeNull();
     expect(verificarSessao("", SEGREDO, opcoes)).toBeNull();
-    expect(verificarSessao("lixo.lixo", SEGREDO, opcoes)).toBeNull();
-    // Assinado com outro segredo
+    expect(verificarSessao("lixo.lixo.lixo", SEGREDO, opcoes)).toBeNull();
+    // Cifrado com outro segredo
     expect(verificarSessao(assinarSessao(sessao(), OUTRO_SEGREDO, AGORA), SEGREDO, opcoes)).toBeNull();
   });
 
-  it("token de outro tipo assinado com o mesmo segredo não vira sessão", () => {
-    // Mesmo HMAC sobre uma carga sem typ (o defeito do token de campo do GeoRescue).
-    const token = assinarSessao(sessao(), SEGREDO, AGORA);
-    const semTipo = { ...decodificarCarga(token) };
+  it("carga de outro tipo cifrada com o mesmo segredo não vira sessão (esquema conferido após decifrar)", () => {
+    const base = carga(assinarSessao(sessao(), SEGREDO, AGORA));
+    const opcoes = { agoraMs: AGORA, demonstracao: false };
+    const semTipo = { ...base };
     delete semTipo.typ;
-    const segmento = Buffer.from(JSON.stringify(semTipo), "utf8").toString("base64url");
-    // Sem o segredo não há como reassinar; e mesmo uma carga bem assinada sem typ é recusada pelo esquema.
-    expect(verificarSessao(`${segmento}.${token.split(".")[1]}`, SEGREDO, { agoraMs: AGORA, demonstracao: false })).toBeNull();
+    expect(verificarSessao(cifrarCarga(semTipo, SEGREDO), SEGREDO, opcoes)).toBeNull();
+    expect(verificarSessao(cifrarCarga({ ...base, typ: "campo" }, SEGREDO), SEGREDO, opcoes)).toBeNull();
+    expect(verificarSessao(cifrarCarga({ ...base, v: 1 }, SEGREDO), SEGREDO, opcoes)).toBeNull();
+    expect(verificarSessao(cifrarCarga({ ...base, papel: "root" }, SEGREDO), SEGREDO, opcoes)).toBeNull();
+    expect(verificarSessao(cifrarCarga({ ...base, usuarioId: CPF }, SEGREDO), SEGREDO, opcoes)).toBeNull();
+    expect(verificarSessao(cifrarCarga("texto", SEGREDO), SEGREDO, opcoes)).toBeNull();
+    // A mesma carga intacta continua valendo.
+    expect(verificarSessao(cifrarCarga(base, SEGREDO), SEGREDO, opcoes)).toEqual(sessao());
   });
 
   it("expiração: vale até o exp e não depois", () => {

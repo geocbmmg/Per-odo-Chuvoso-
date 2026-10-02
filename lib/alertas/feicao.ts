@@ -69,8 +69,13 @@ export type CamadaSala = (typeof CAMADAS_SALA)[number];
 export type TipoCampoSala = "texto" | "data" | "double" | "inteiro";
 
 type Conversao =
-  /** Código de um domínio (valor desconhecido na leitura → null, ou erro se `exigido`). */
-  | { tipo: "codigo"; codigos: readonly string[]; exigido?: boolean }
+  /**
+   * Código de um domínio (valor desconhecido na leitura → null; erro se
+   * `exigido`; o texto bruto se `desconhecido: "manter"` — o histórico não
+   * tem domínio e um evento gravado por uma versão futura não pode derrubar
+   * a linha do tempo).
+   */
+  | { tipo: "codigo"; codigos: readonly string[]; exigido?: boolean; desconhecido?: "null" | "manter" }
   /** nivel_alerta: "LARANJA" ↔ "laranja". */
   | { tipo: "nivel" }
   /** S/N ↔ boolean; vazio = não respondido (null). */
@@ -210,9 +215,9 @@ export const CAMPOS_DESTINATARIO: readonly CampoSala<Destinatario>[] = [
 /** Histórico SEM domínio na camada: aqui os códigos só são conferidos na leitura (desconhecido → null). */
 export const CAMPOS_HISTORICO: readonly CampoSala<EventoHistorico>[] = [
   { nome: "alerta_id", chave: "alertaId", tipo: "texto", tamanho: T_ID },
-  { nome: "alvo_tipo", chave: "alvoTipo", tipo: "texto", tamanho: 12, conversao: { tipo: "codigo", codigos: ALVOS_HISTORICO, exigido: true } },
+  { nome: "alvo_tipo", chave: "alvoTipo", tipo: "texto", tamanho: 12, conversao: { tipo: "codigo", codigos: ALVOS_HISTORICO, desconhecido: "manter" } },
   { nome: "alvo_id", chave: "alvoId", tipo: "texto", tamanho: T_ID },
-  { nome: "evento", chave: "evento", tipo: "texto", tamanho: 30, conversao: { tipo: "codigo", codigos: EVENTOS_HISTORICO, exigido: true } },
+  { nome: "evento", chave: "evento", tipo: "texto", tamanho: 30, conversao: { tipo: "codigo", codigos: EVENTOS_HISTORICO, desconhecido: "manter" } },
   { nome: "situacao_de", chave: "situacaoDe", tipo: "texto", tamanho: 20, conversao: { tipo: "codigo", codigos: CODIGOS_SITUACAO } },
   { nome: "situacao_para", chave: "situacaoPara", tipo: "texto", tamanho: 20, conversao: { tipo: "codigo", codigos: CODIGOS_SITUACAO } },
   { nome: "quando", chave: "quando", tipo: "data" },
@@ -262,14 +267,8 @@ export function tamanhoTexto(camada: CamadaSala, campo: string): number {
  * feição inteira. "< 50 mm" vira "menor que 50 mm"; "<=" e ">=" viram
  * "menor ou igual a"/"maior ou igual a". "≤"/"≥" passam (não são "<"/">").
  */
-export function textoSeguro(texto: string): string {
-  return texto
-    .replace(/ ?<= ?/g, " menor ou igual a ")
-    .replace(/ ?>= ?/g, " maior ou igual a ")
-    .replace(/ ?< ?/g, " menor que ")
-    .replace(/ ?> ?/g, " maior que ")
-    .trim();
-}
+export { textoSeguro } from "./texto";
+import { textoSeguro } from "./texto";
 
 function paraEpoch(iso: unknown): number | null {
   if (typeof iso !== "string" || !iso) return null;
@@ -364,7 +363,7 @@ function lerValor<T>(campo: CampoSala<T>, valor: unknown): unknown {
           if (conv.exigido) {
             throw new ErroFeicao(`Valor fora do domínio em ${campo.nome}: ${JSON.stringify(valor)}`);
           }
-          return null;
+          return conv.desconhecido === "manter" ? texto : null;
       }
     }
   }

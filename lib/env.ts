@@ -38,6 +38,9 @@ const esquema = z.object({
 
 export type Env = z.infer<typeof esquema>;
 
+/** /api/ingest recusa o cron com CRON_SECRET abaixo disto (falha fechada só para o cron). */
+export const TAMANHO_MINIMO_CRON_SECRET = 16;
+
 let cache: Env | null = null;
 let invalidas: string[] = [];
 

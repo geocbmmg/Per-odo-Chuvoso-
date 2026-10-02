@@ -44,6 +44,7 @@ import {
   type TipoRiscoSala,
 } from "./codigos";
 import { tamanhoTexto } from "./feicao";
+import { textoSeguro } from "./texto";
 
 /**
  * Domínio da emissão e da fila de alertas da Sala (docs/fase-1.md §4).
@@ -577,7 +578,15 @@ function texto(camada: Parameters<typeof tamanhoTexto>[0], campo: string) {
   return z
     .string({ error: "Texto esperado." })
     .transform(limparTexto)
-    .pipe(z.string().max(max, { error: `No máximo ${max} caracteres.` }))
+    .pipe(
+      z
+        .string()
+        .max(max, { error: `No máximo ${max} caracteres.` })
+        // Na gravação "<" e ">" viram palavras (textoSeguro): o tamanho vale para o texto gravado.
+        .refine((s) => textoSeguro(s).length <= max, {
+          error: `No máximo ${max} caracteres (os sinais < e > são gravados por extenso).`,
+        }),
+    )
     .transform((s) => (s === "" ? null : s))
     .nullable()
     .optional();
@@ -964,8 +973,13 @@ export const CAMPOS_EDITAVEIS = [
   "latitude",
 ] as const satisfies readonly (keyof AlertaSala & keyof CamposAlerta)[];
 
-/** Depois de emitido, o território e a natureza não mudam: cancela-se e emite-se outro. */
-export const CAMPOS_TRAVADOS_APOS_EMISSAO = ["natureza", "fracao", "codIbge", "municipio", "destinatarios"] as const;
+/**
+ * Depois de emitido, o território, a natureza e o nº da chamada CAD não mudam:
+ * cancela-se e emite-se outro. O nº da chamada é a chave que liga o alerta às
+ * ações RRD já registradas e ao Survey123 (dedupe); trocá-lo depois deixaria as
+ * ações com o número antigo.
+ */
+export const CAMPOS_TRAVADOS_APOS_EMISSAO = ["natureza", "fracao", "codIbge", "municipio", "destinatarios", "numeroChamada"] as const;
 
 /** Copia para o alerta os campos editáveis presentes no pedido (undefined = não mexe). */
 export function aplicarCampos(alerta: AlertaSala, campos: CamposAlerta): AlertaSala {

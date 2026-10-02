@@ -11,7 +11,8 @@
  * http em todos os casos. Os dois nomes nunca se misturam: em produção o nome
  * sem prefixo é ignorado.
  *
- * O cookie leva só o token assinado (lib/auth/token.ts): nada de CPF ou senha.
+ * O cookie leva só o token cifrado e autenticado (lib/auth/token.ts): quem o
+ * copia não lê nome, posto, nº BM nem unidade; CPF e senha nunca entram.
  */
 
 export const NOME_COOKIE_SESSAO_SEGURO = "__Host-sala_sessao";
@@ -48,7 +49,7 @@ export function atributosCookieSessao(maxAgeS: number, seguro: boolean = cookieS
   return { httpOnly: true, secure: seguro, sameSite: "lax", path: "/", maxAge: Math.max(0, Math.floor(maxAgeS)) };
 }
 
-/** Valor de um cookie no cabeçalho `Cookie` da requisição (sem decodificar: o token é base64url). */
+/** Valor de um cookie no cabeçalho `Cookie` da requisição (sem decodificar: o token é base64url e pontos). */
 export function lerCookieDoCabecalho(cabecalho: string | null | undefined, nome: string): string | undefined {
   if (!cabecalho) return undefined;
   for (const parte of cabecalho.split(";")) {
