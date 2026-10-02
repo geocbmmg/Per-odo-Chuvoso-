@@ -1504,3 +1504,393 @@
     #c05f58 0
   );
 }
+
+/* ══ Mapa de Risco (/risco) — acréscimos; o mapa da Visão Geral não usa ══════
+ * Mesma casca (.mapa-sit), com barra de nível no topo, rótulos de área por
+ * nível (data-nivel-area na raiz), nomes dos municípios e o balão de risco.
+ * As cores dos níveis vêm de CORES_NIVEL por variável (--risco-cor).
+ */
+
+.risco-mapa {
+  --r-rotulo-fundo: rgba(10, 14, 20, 0.8);
+  --r-rotulo-tinta: #ffffff;
+  --r-rotulo-borda: rgba(255, 255, 255, 0.22);
+}
+
+.risco-mapa[data-mapa-tema="claro"] {
+  --r-rotulo-fundo: rgba(255, 255, 255, 0.9);
+  --r-rotulo-tinta: #10151c;
+  --r-rotulo-borda: rgba(16, 21, 28, 0.24);
+}
+
+/* ── Barra de nível (Exibindo: COB · Automático | COB | UEOp | Município) ── */
+
+.risco-nivel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 12px;
+  padding: 7px 10px 7px 12px;
+  border-bottom: 1px solid rgba(var(--m-linha-rgb), 0.09);
+  background: var(--m-sup1);
+}
+
+.risco-nivel__atual {
+  margin: 0;
+  min-width: 0;
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: var(--m-ink2);
+}
+
+.risco-nivel__atual strong {
+  color: var(--m-ink-forte);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.risco-nivel__modo {
+  color: var(--m-mut);
+}
+
+.risco-nivel__opcoes {
+  display: inline-flex;
+  min-width: 0;
+  gap: 2px;
+  margin: 0;
+  padding: 3px;
+  border: 1px solid rgba(var(--m-linha-rgb), 0.16);
+  border-radius: 999px;
+  background: rgba(var(--m-linha-rgb), 0.06);
+}
+
+.risco-nivel__op {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  color: var(--m-ink2);
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.risco-nivel__op:hover {
+  background: rgba(var(--m-linha-rgb), 0.08);
+  color: var(--m-ink-forte);
+}
+
+.risco-nivel__op[data-ativo="true"] {
+  border-color: rgba(var(--m-acc-rgb), 0.42);
+  background: rgba(var(--m-acc-rgb), 0.16);
+  color: var(--m-acc-txt);
+  font-weight: 750;
+}
+
+.risco-nivel__op input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.risco-nivel__op:has(input:focus-visible) {
+  outline: 2px solid var(--m-acc-forte);
+  outline-offset: 2px;
+}
+
+/* Aviso da camada (carregando / indisponível): mesma pílula do mapa base. */
+.risco-mapa__aviso {
+  z-index: 4;
+}
+
+/* ── Rótulos das áreas (COB, UEOp) e dos municípios ─────────────────────── */
+
+.risco-rotulo {
+  z-index: 1;
+  display: none;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px 2px 5px;
+  border-radius: 999px;
+  border: 1px solid var(--r-rotulo-borda);
+  background: var(--r-rotulo-fundo);
+  color: var(--r-rotulo-tinta);
+  font-size: 10.5px;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+.risco-mapa[data-nivel-area="cob"] .risco-rotulo[data-nivel-area="cob"],
+.risco-mapa[data-nivel-area="ueop"] .risco-rotulo[data-nivel-area="ueop"] {
+  display: inline-flex;
+}
+
+.risco-rotulo__cor {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  background: var(--risco-cor);
+  box-shadow: 0 0 0 1px rgba(10, 14, 20, 0.55);
+}
+
+.risco-rotulo__cor[data-vazia="true"] {
+  background: transparent;
+  box-shadow: none;
+  border: 1.5px dashed currentColor;
+}
+
+.risco-rotulo__nivel {
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.risco-rotulo__nivel::before {
+  content: "· ";
+}
+
+.risco-rotulo-mun {
+  z-index: 1;
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: var(--r-rotulo-fundo);
+  color: var(--r-rotulo-tinta);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.3;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Balão de risco (sobre as classes .mapa-pop) ────────────────────────── */
+
+.risco-amostra {
+  flex: none;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background: var(--risco-cor);
+  box-shadow: inset 0 0 0 1px rgba(10, 14, 20, 0.45);
+}
+
+.risco-amostra[data-vazia="true"] {
+  background: transparent;
+  box-shadow: none;
+  border: 1.5px dashed var(--m-ink2);
+}
+
+/* Nível com cor + palavra; tinta de CORES_NIVEL (contraste ≥ 4,5:1). */
+.risco-selo {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  margin: 0 0 8px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  background: var(--risco-cor);
+  color: var(--risco-tinta);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: inset 0 0 0 1px rgba(10, 14, 20, 0.25);
+}
+
+.risco-selo[data-vazio="true"] {
+  border: 1px dashed rgba(var(--m-linha-rgb), 0.4);
+  background: transparent;
+  color: var(--m-ink2);
+  box-shadow: none;
+}
+
+.risco-pop__secao {
+  margin: 10px 0 5px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--m-mut);
+}
+
+.risco-pop__contagem,
+.risco-pop__itens {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.risco-pop__contagem li {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--m-ink);
+}
+
+.risco-pop__n {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.risco-pop__itens li + li {
+  padding-top: 6px;
+  border-top: 1px solid rgba(var(--m-linha-rgb), 0.09);
+}
+
+.risco-pop__item-titulo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--m-ink);
+  overflow-wrap: anywhere;
+}
+
+.risco-pop__item-meta {
+  margin: 2px 0 0 19px;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--m-mut);
+  overflow-wrap: anywhere;
+}
+
+.risco-pop__aproximar {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  margin-top: 10px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(var(--m-acc-rgb), 0.45);
+  background: transparent;
+  color: var(--m-acc-txt);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.risco-pop__aproximar:hover {
+  background: rgba(var(--m-acc-rgb), 0.12);
+}
+
+.risco-pop__aproximar:focus-visible {
+  outline: 2px solid var(--m-acc-forte);
+  outline-offset: 2px;
+}
+
+@media (max-width: 767.98px) {
+  .risco-nivel {
+    padding: 8px;
+  }
+
+  .risco-nivel__opcoes {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: 100%;
+    border-radius: 12px;
+  }
+
+  .risco-nivel__op {
+    min-height: 44px;
+    padding: 0 4px;
+    border-radius: 9px;
+    font-size: 12px;
+  }
+
+  .risco-pop__aproximar {
+    height: 44px;
+  }
+}
+
+/* Balão de risco: um pouco mais alto que o padrão (contagem por nível e itens). */
+.risco-mapa .mapa-popup .maplibregl-popup-content {
+  max-height: min(460px, calc(58cqh - 64px));
+}
+
+.risco-pop:focus {
+  outline: none;
+}
+
+.risco-pop:focus-visible {
+  outline: 2px solid var(--m-acc-forte);
+  outline-offset: 4px;
+}
+
+@container (max-width: 559px) {
+  .risco-mapa .mapa-popup .maplibregl-popup-content {
+    max-height: calc(62cqh - 64px);
+  }
+}
+
+/* Rótulo de área que encostaria em outro de nível mais grave. */
+.risco-rotulo[data-colide="true"] {
+  visibility: hidden;
+}
+
+/* Rótulos numa linha só e alinhados em coluna: o balão fica baixo e raramente rola. */
+.risco-pop .mapa-pop__campos {
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 4px 12px;
+}
+
+.risco-pop .mapa-pop__campo {
+  display: contents;
+}
+
+/* Celular: MG inteiro ocupa ~300 px; o rótulo da área fica só com cor + nome
+   (a palavra do nível está no balão, na lista e na tabela). */
+@media (max-width: 767.98px) {
+  .risco-rotulo__nivel {
+    display: none;
+  }
+}
+
+@container (max-width: 559px) {
+  .risco-pop .mapa-pop__campos {
+    gap: 3px 10px;
+  }
+
+  .risco-pop .mapa-pop__campo {
+    font-size: 12px;
+  }
+}
+
+.risco-pop .mapa-pop__titulo {
+  margin-bottom: 2px;
+}
+
+.risco-pop__subtitulo {
+  margin: 0 0 8px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--m-ink2);
+  overflow-wrap: anywhere;
+}
+
+/* Mais largo que o balão da Visão Geral: a linha "fonte · vigência" cabe numa linha. */
+.mapa-sit.risco-mapa .mapa-popup {
+  max-width: min(390px, calc(100cqw - 128px)) !important;
+}

@@ -3,6 +3,7 @@ import {
   CloudRain,
   FileText,
   LayoutDashboard,
+  MapIcon,
   ShieldAlert,
   Siren,
   Users,
@@ -59,11 +60,20 @@ export const NAVEGACAO: readonly ItemNavegacao[] = [
     grupo: "modulos",
   },
   {
+    rota: "/risco",
+    rotulo: "Mapa de Risco",
+    descricao:
+      "Chuva prevista e riscos meteorológico, geológico e hidrológico por município, do COB ao município conforme o zoom (modelo GeoRisk).",
+    icone: MapIcon,
+    situacao: "ativo",
+    grupo: "modulos",
+  },
+  {
     rota: "/alertas-acoes-rrd",
     rotulo: "Alertas & Ações RRD",
     descricao: "Emissão de alertas e acompanhamento das ações de Redução do Risco de Desastres.",
     icone: Siren,
-    situacao: "em-breve",
+    situacao: "ativo",
     grupo: "modulos",
   },
   {
