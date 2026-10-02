@@ -1,7 +1,6 @@
 import { Clock, FlaskConical, TriangleAlert } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatarDataHora, formatarHora } from "@/lib/datas";
 import type { OrigemLeitura } from "@/lib/fontes/tipos";
 import { cn } from "@/lib/utils";
@@ -18,13 +17,20 @@ export interface CarimboAtualizacaoProps {
   fonte?: string;
   /** Mostra o nome da fonte antes do horário. */
   mostrarFonte?: boolean;
+  /**
+   * Com origem = "ultima-valida", escreve o motivo da falha e a data da leitura
+   * exibida numa linha visível sob a pílula (padrão). Use `false` só quando o
+   * bloco já mostra o mesmo texto em <AvisoUltimaValida>.
+   */
+  motivoVisivel?: boolean;
   className?: string;
 }
 
 /**
  * Carimbo "Atualizado às HH:MM · há 3 min" de todo bloco de dados (horário de Brasília).
  * - "ultima-valida": pílula de alerta "Fonte indisponível · última leitura válida"
- *   com o erro na dica (e também para leitores de tela).
+ *   e, logo abaixo, uma linha VISÍVEL com a data da leitura exibida e o motivo da
+ *   falha (texto, não dica: dica não abre por toque no celular).
  * - "exemplo": pílula info "Dados de exemplo".
  * Pode ser usado em componentes de servidor e de cliente.
  */
@@ -34,6 +40,7 @@ export function CarimboAtualizacao({
   erro,
   fonte,
   mostrarFonte = false,
+  motivoVisivel = true,
   className,
 }: CarimboAtualizacaoProps) {
   const dataHora = formatarDataHora(atualizadoEm);
@@ -60,21 +67,22 @@ export function CarimboAtualizacao({
       </span>
 
       {origem === "ultima-valida" ? (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button type="button" className="relative alvo-toque inline-flex cursor-help rounded-full">
-              <Badge variant="alerta">
-                <TriangleAlert aria-hidden="true" />
-                Fonte indisponível · última leitura válida
-              </Badge>
-              <span className="sr-only">{`Erro: ${mensagemErro}`}</span>
-            </button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" className="max-w-[320px]">
-            <span className="block font-semibold text-alerta-txt">Exibindo a última leitura válida</span>
-            <span className="mt-0.5 block text-ink-2">{mensagemErro}</span>
-          </TooltipContent>
-        </Tooltip>
+        <>
+          {/* Pílula longa: quebra linha em vez de vazar do cartão no celular. */}
+          <Badge variant="alerta" className="max-w-full whitespace-normal text-left">
+            <TriangleAlert aria-hidden="true" />
+            Fonte indisponível · última leitura válida
+          </Badge>
+          {motivoVisivel ? (
+            <p className="min-w-0 basis-full break-words text-[12px] leading-snug text-ink-2">
+              Exibindo a leitura de{" "}
+              <time dateTime={atualizadoEm} className="font-semibold tabular-nums">
+                {formatarDataHora(atualizadoEm)}
+              </time>
+              . <span className="font-semibold text-alerta-txt">Motivo:</span> {mensagemErro}
+            </p>
+          ) : null}
+        </>
       ) : null}
 
       {origem === "exemplo" ? (

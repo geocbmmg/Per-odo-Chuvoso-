@@ -123,11 +123,13 @@ export function BlocoPrevisao({
           icone={CloudRain}
           descricao="Precipitação prevista nas sedes dos seis COBs: acumulados a partir da hora atual e totais por dia."
           carimbo={
+            // O motivo da falha já aparece por extenso em <AvisoUltimaValida>, logo abaixo.
             <CarimboAtualizacao
               atualizadoEm={atualizadoEm}
               origem={origem}
               erro={erro}
               fonte="Previsão Open-Meteo"
+              motivoVisivel={false}
             />
           }
         />

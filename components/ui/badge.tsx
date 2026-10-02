@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
  * fundo rgba(cor, .14–.16), borda rgba(cor, .40), tinta --X-txt, caixa alta, peso 800.
  * Estado nunca só por cor: a pílula sempre leva a palavra; com `marcador`, ganha
  * também uma FORMA própria por variante (redondo, quadrado, losango…).
+ * A neutra usa --gr-ink2 (não --gr-mut): sobre o fundo .12 composto nas superfícies
+ * escuras, --gr-mut ficava em 3,3–4,4:1; --gr-ink2 dá 5,3–7:1 (e 7–7,9:1 no claro).
  */
 const badgeVariants = cva(
   [
@@ -20,7 +22,7 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        neutro: "border-linha/30 bg-linha/12 text-mut",
+        neutro: "border-linha/30 bg-linha/12 text-ink-2",
         acento: "border-acc/40 bg-acc/16 text-acc-txt",
         ok: "border-ok/40 bg-ok/14 text-ok-txt",
         alerta: "border-alerta/40 bg-alerta/14 text-alerta-txt",

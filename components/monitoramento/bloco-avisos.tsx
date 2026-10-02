@@ -38,7 +38,14 @@ export function BlocoAvisos({
           icone={TriangleAlert}
           descricao="Avisos oficiais vigentes e programados que atingem mesorregiões de MG, do mais grave ao menos grave."
           carimbo={
-            <CarimboAtualizacao atualizadoEm={atualizadoEm} origem={origem} erro={erro} fonte="Avisos do INMET" />
+            // O motivo da falha já aparece por extenso em <AvisoUltimaValida>, logo abaixo.
+            <CarimboAtualizacao
+              atualizadoEm={atualizadoEm}
+              origem={origem}
+              erro={erro}
+              fonte="Avisos do INMET"
+              motivoVisivel={false}
+            />
           }
         />
         <CardContent className="flex flex-col gap-3">

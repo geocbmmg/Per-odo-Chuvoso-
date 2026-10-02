@@ -116,20 +116,31 @@ export function ResumoAvisosInmet({
         />
       </header>
 
+      {/*
+       * Ladrilhos de 1/3 da largura ficam com ~70px úteis em 360px e no desktop de
+       * 1280px com o trilho aberto: a amostra de cor vai para a linha do número
+       * (o rótulo ganha a largura toda), o rótulo quebra entre palavras e, se uma
+       * palavra ainda não couber, hifeniza/quebra dentro dela em vez de vazar.
+       * O tracking só abre quando o ladrilho é largo (container query).
+       */}
       <ul aria-label="Avisos por severidade" className="grid grid-cols-3 gap-2">
         {SEVERIDADES_INMET.map((s) => {
           const n = contagem.get(s.id) ?? 0;
           return (
             <li
               key={s.id}
-              className="flex min-w-0 flex-col gap-1.5 rounded-[10px] border border-linha/12 bg-linha/4 px-2.5 py-2"
+              className="@container flex min-w-0 flex-col justify-between gap-1.5 rounded-[10px] border border-linha/12 bg-linha/4 px-2.5 py-2"
             >
-              <span className="flex items-start gap-1.5 text-[10.5px] font-bold uppercase leading-tight tracking-[.04em] text-ink-2">
-                <AmostraSeveridade severidade={s.id} className="mt-px" />
-                <span className="min-w-0">{s.rotulo}</span>
+              <span className="min-w-0 text-[10.5px] font-bold uppercase leading-tight tracking-normal text-ink-2 [overflow-wrap:anywhere] hyphens-auto @min-[6.5rem]:tracking-[.04em]">
+                {s.rotulo}
               </span>
-              <span className={cn("numero text-[22px] font-extrabold leading-none", n > 0 ? "text-ink" : "text-mut")}>
-                {formatarNumero(n)}
+              <span className="flex items-center gap-1.5">
+                <AmostraSeveridade severidade={s.id} />
+                <span
+                  className={cn("numero text-[22px] font-extrabold leading-none", n > 0 ? "text-ink" : "text-mut")}
+                >
+                  {formatarNumero(n)}
+                </span>
               </span>
             </li>
           );

@@ -52,7 +52,7 @@ Toda cor translúcida é `rgba(var(--X-rgb), α)` — o mesmo α funciona nos do
 | `--gr-bg` | `#0A0E14` | `#F2F4F7` | fundo da página | `bg-gr-bg`, `bg-background` |
 | `--sup-1/2/3` | `#0F141C` `#131922` `#1B2330` | `#FFF` `#F7F9FB` `#EDF1F6` | superfícies em camadas | `bg-sup-1`… |
 | `--gr-surface` | `rgba(19,25,34,.6)` | `rgba(255,255,255,.82)` | cartões/painéis | `bg-superficie` |
-| `--gr-ink` / `ink2` / `mut` / `faint` | `#E6EAF0` `#AEB6C2` `#868F9C` `#5A6371` | `#10151C` `#39424F` `#4A5462` `#545D69` | texto: principal / secundário / apagado / micro | `text-ink`, `text-ink-2`, `text-mut`, `text-faint` |
+| `--gr-ink` / `ink2` / `mut` / `faint` | `#E6EAF0` `#AEB6C2` `#868F9C` `#838C9A`¹ | `#10151C` `#39424F` `#4A5462` `#545D69` | texto: principal / secundário / apagado / micro | `text-ink`, `text-ink-2`, `text-mut`, `text-faint` |
 | `--gr-ink-forte` | `#FFF` | `#0B1017` | títulos | `text-ink-forte` |
 | `--linha-rgb` | `255,255,255` | `16,21,28` | bordas e véus | `border-linha/12`, `bg-linha/5` |
 | `--gr-line` | `rgba(linha,.09)` | idem | borda padrão | `border-border` |
@@ -65,6 +65,14 @@ Toda cor translúcida é `rgba(var(--X-rgb), α)` — o mesmo α funciona nos do
 | `--alerta` | `#FF8A45` | `#8F3110` | atenção (laranja: com acento ouro o âmbar é a marca) | `bg-alerta/14`, `text-alerta-txt` |
 | `--info` | `#38BDF8` | `#0B6570` | informação | `bg-info/16`, `text-info-txt` |
 | `--sombra-k` | `1` | `.42` | escala de todas as sombras | — |
+
+¹ **Desvio do GeoRescue.** No escuro, o GeoRescue usa `--gr-faint: #5A6371`, que dá só
+3,2:1 sobre `--gr-bg`, 3,0:1 sobre `--sup-1`, 2,9:1 sobre `--sup-2` e 2,6:1 sobre `--sup-3`
+— ilegível em cabeçalho de tabela (10px), rodapé de créditos e micro-rótulos num monitor com
+brilho baixo. A Sala usa `#838C9A`: 5,7:1 / 5,4:1 / 5,2:1 / 4,65:1 sobre essas superfícies
+(WCAG AA para texto pequeno), mantendo-se um degrau abaixo de `--gr-mut` (5,9 / 5,7 / 5,4 /
+4,8:1). O espaço entre os dois é estreito: a hierarquia "micro" vem também do tamanho, do
+peso e da caixa alta. O claro não mudou (`#545D69` já passava de 5,8:1).
 
 Derivados prontos: `--acc-soft/-line`, `--ok-soft/-line`, `--perigo-soft/-line`,
 `--alerta-soft/-line`, `--info-soft/-line`, `--hover`, `--zebra`, `--tinta-cheia` (`#FFF`
