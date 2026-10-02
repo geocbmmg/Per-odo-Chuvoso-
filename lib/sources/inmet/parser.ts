@@ -213,9 +213,52 @@ const ORDEM_SEVERIDADE: Record<SeveridadeInmet, number> = {
  * sem cancelados, ordenados por severidade e início. Remove o problema do
  * boletim que exibia aviso expirado.
  */
+const ehCancelamento = (a: AvisoInmetBruto) => /cancel/i.test(a.status ?? "");
+const numeroId = (a: AvisoInmetBruto) => Number(a.id) || 0;
+
+function mesmoPeriodoEEvento(a: AvisoInmetBruto, b: AvisoInmetBruto): boolean {
+  return chave(a.evento) === chave(b.evento) && a.inicio === b.inicio && a.fim === b.fim;
+}
+
+function areasSobrepostas(a: AvisoInmetBruto, b: AvisoInmetBruto): boolean {
+  const areasB = new Set(b.areas.map(chave));
+  return a.areas.some((x) => areasB.has(chave(x)));
+}
+
+/**
+ * Cada mensagem do INMET (alerta, atualização, cancelamento) é um item NOVO no
+ * feed, e o original continua lá por ~10 dias. Esta função:
+ *   1. remove os avisos cancelados (mesmo evento e período de um item Cancel,
+ *      com áreas em comum) e os próprios itens de cancelamento;
+ *   2. remove duplicatas por conteúdo — mesmo evento, severidade, início e fim,
+ *      com as áreas de um contidas nas do outro —, mantendo o de mais áreas e,
+ *      no empate, o de ID mais recente.
+ */
+export function consolidarAvisos(avisos: AvisoInmetBruto[]): AvisoInmetBruto[] {
+  const cancelamentos = avisos.filter(ehCancelamento);
+  const ativos = avisos.filter(
+    (a) =>
+      !ehCancelamento(a) &&
+      !cancelamentos.some((c) => numeroId(c) > numeroId(a) && mesmoPeriodoEEvento(a, c) && areasSobrepostas(a, c)),
+  );
+
+  const ordenados = [...ativos].sort((a, b) => b.areas.length - a.areas.length || numeroId(b) - numeroId(a));
+  const mantidos: { aviso: AvisoInmetBruto; areas: Set<string> }[] = [];
+  for (const aviso of ordenados) {
+    const areas = new Set(aviso.areas.map(chave));
+    const coberto = mantidos.some(
+      (m) =>
+        mesmoPeriodoEEvento(m.aviso, aviso) &&
+        m.aviso.severidade === aviso.severidade &&
+        [...areas].every((x) => m.areas.has(x)),
+    );
+    if (!coberto) mantidos.push({ aviso, areas });
+  }
+  return mantidos.map((m) => m.aviso);
+}
+
 export function filtrarAvisosMg(avisos: AvisoInmetBruto[], agora: Date): AvisoInmet[] {
-  return avisos
-    .filter((a) => !/cancel/i.test(a.status ?? ""))
+  return consolidarAvisos(avisos)
     .filter((a) => afetaMinasGerais(a.areas))
     .filter((a) => vigenciaDoAviso(a, agora) !== "expirado")
     .sort(

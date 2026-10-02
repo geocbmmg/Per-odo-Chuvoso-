@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  type AvisoInmetBruto,
   afetaMinasGerais,
+  consolidarAvisos,
   classificarSeveridade,
   filtrarAvisosMg,
   interpretarRssInmet,
@@ -91,5 +93,43 @@ describe("regras auxiliares", () => {
     expect(() =>
       interpretarRssInmet('<?xml version="1.0"?><rss version="2.0"><channel><title>Avisos</title></channel></rss>'),
     ).toThrow(/sem nenhum aviso/);
+  });
+});
+
+describe("consolidarAvisos (cancelamentos e duplicatas do feed)", () => {
+  const base: AvisoInmetBruto = {
+    id: "100",
+    evento: "Acumulado de Chuva",
+    severidade: "perigo",
+    severidadeRotulo: "Perigo",
+    inicio: "2026-10-03T03:00:00.000Z",
+    fim: "2026-10-04T02:59:00.000Z",
+    descricao: null,
+    areas: ["Zona da Mata", "Campo das Vertentes"],
+    link: null,
+    publicadoEm: null,
+    status: "Alert",
+  };
+
+  it("mantém só um entre itens idênticos (o de ID mais recente)", () => {
+    const r = consolidarAvisos([base, { ...base, id: "108" }]);
+    expect(r.map((a) => a.id)).toEqual(["108"]);
+  });
+
+  it("fica com o item de mais áreas quando um contém o outro", () => {
+    const maior = { ...base, id: "99", areas: [...base.areas, "Sul Fluminense"] };
+    expect(consolidarAvisos([base, maior]).map((a) => a.id)).toEqual(["99"]);
+  });
+
+  it("separa avisos com período ou severidade diferentes", () => {
+    const outroFim = { ...base, id: "101", fim: "2026-10-04T15:00:00.000Z" };
+    const outraSev = { ...base, id: "102", severidade: "grande-perigo" as const };
+    expect(consolidarAvisos([base, outroFim, outraSev])).toHaveLength(3);
+  });
+
+  it("remove o aviso cancelado e o próprio cancelamento", () => {
+    const cancel = { ...base, id: "140", status: "Cancel" };
+    const outro = { ...base, id: "141", evento: "Tempestade" };
+    expect(consolidarAvisos([base, cancel, outro]).map((a) => a.id)).toEqual(["141"]);
   });
 });
