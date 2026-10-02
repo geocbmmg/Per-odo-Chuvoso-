@@ -141,7 +141,10 @@
   min-height: 0;
 }
 
-.mapa-sit__canvas {
+/* O MapLibre adiciona .maplibregl-map (position: relative) a este mesmo elemento e
+   o CSS dele pode carregar depois deste no bundle do Next: a especificidade maior
+   garante o posicionamento absoluto independentemente da ordem dos arquivos. */
+.mapa-sit .mapa-sit__canvas {
   position: absolute;
   inset: 0;
   background: var(--m-bg);
