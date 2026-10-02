@@ -3,15 +3,20 @@ import { env } from "@/lib/env";
 import { CATALOGO_FONTES } from "@/lib/fontes/catalogo";
 import type { FonteId } from "@/lib/fontes/tipos";
 import { CAMADAS_ARCGIS, obterCamada } from "@/lib/sources/arcgis";
+import { obterAlertasCemaden } from "@/lib/sources/cemaden";
 import { obterAvisosInmet } from "@/lib/sources/inmet";
+import { obterAvisosInmetMunicipios } from "@/lib/sources/inmet/ativos";
 import { obterPrevisaoCobs } from "@/lib/sources/open-meteo";
+import { obterSeriesChuvaMunicipios } from "@/lib/sources/open-meteo/municipios";
 
 /**
  * GET /api/ingest/{job} — jobs agendados no vercel.json (Vercel Cron).
  *
- * FASE 0 (stub): cada job só consulta as fontes através do cache, aquecendo
- * a instância e registrando o estado. Na Fase 1 os jobs gravarão as leituras
- * no Postgres (tabelas leituras_fontes / execucoes_ingestao em lib/db/schema.ts).
+ * Cada job consulta as fontes através do cache, aquecendo a instância e
+ * registrando o estado. Com ARMAZEM_LEITURAS=postgres a leitura vai para a
+ * tabela leituras_fontes, compartilhada por todas as instâncias. O plano Hobby
+ * da Vercel só roda cron uma vez por dia; para "risco" (10 min) e "chuva" (3 h)
+ * use um agendador externo chamando estas rotas com o CRON_SECRET.
  *
  * Proteção: a Vercel envia "Authorization: Bearer <CRON_SECRET>". Sem
  * CRON_SECRET configurado, o job só roda em desenvolvimento.
@@ -43,6 +48,18 @@ const JOBS: Record<string, { descricao: string; executar: () => Promise<Resultad
   meteo: {
     descricao: "Previsão Open-Meteo nas sedes dos COBs",
     executar: async () => [await executarFonte("open-meteo-previsao", () => obterPrevisaoCobs())],
+  },
+  risco: {
+    descricao: "Mapa de risco: avisos do INMET por município e alertas do CEMADEN",
+    executar: () =>
+      Promise.all([
+        executarFonte("inmet-municipios", () => obterAvisosInmetMunicipios()),
+        executarFonte("cemaden-alertas", () => obterAlertasCemaden()),
+      ]),
+  },
+  chuva: {
+    descricao: "Chuva prevista nos 853 municípios (Open-Meteo, uma consulta com as sedes)",
+    executar: async () => [await executarFonte("open-meteo-municipios", () => obterSeriesChuvaMunicipios())],
   },
   hidrologia: {
     descricao: "ANA HidroWebService e Open-Meteo Flood (GloFAS) — ainda não implementados",
@@ -112,7 +129,6 @@ export async function GET(req: Request, ctx: RouteContext<"/api/ingest/[job]">) 
     {
       job,
       descricao: definicao.descricao,
-      fase: "Fase 0 — stub (aquece o cache; persistência no Postgres na Fase 1)",
       iniciadoEm,
       concluidoEm: new Date().toISOString(),
       resultados,

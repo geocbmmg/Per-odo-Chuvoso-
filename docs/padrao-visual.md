@@ -251,6 +251,9 @@ os dois continuam iguais. Detalhes das matrizes em `docs/metricas-risco.md`.
 - Use os preenchimentos sólidos em mapa, legenda e números grandes. Em texto pequeno, use
   amostra de cor + palavra em `text-ink`.
 - O vermelho leva tinta escura: branco sobre `#EE312D` daria só 4,11:1.
+- No mapa de risco o preenchimento usa opacidade .78 (escuro) e .72 (claro): abaixo de ~.75 o
+  amarelo vira oliva sobre o fundo escuro. Contornos de COB/UEOp/município em tinta neutra
+  (branco no escuro, `#10151C` no claro) com "casco" do tema por baixo, nunca nas cores dos COBs.
 
 Contorno de MG: `public/geo/mg-outline.json` (GeoJSON `Feature`/`MultiPolygon`, WGS84) —
 camada `line` branca, 1.4px, opacidade .85, como no GeoRescue.
@@ -261,7 +264,7 @@ camada `line` branca, 1.4px, opacidade .85, como no GeoRescue.
 |---|---|
 | Só o acento ouro, sem seletor de acento | A Sala é uma tela operacional única; o eixo de acento não agrega e só multiplica casos de contraste. |
 | `next-themes` no lugar do script anti-piscada próprio | Mesmo efeito (atributo no `<html>` antes da pintura), suportado pelo React/Next. Chaves de armazenamento próprias da Sala. |
-| Cabeçalho institucional compacto (gr-hero sem saudação nem logo do produto) | A Sala não tem login pessoal nesta fase; o nome do produto fica no trilho, junto do brasão. A data é do servidor, no fuso de Brasília. |
+| Cabeçalho institucional compacto (gr-hero sem saudação nem logo do produto) | O cabeçalho leva o chip do usuário (iniciais; nome e papel a partir de 640 px) com "Sair", ou o link "Entrar"; o nome do produto fica no trilho, junto do brasão. A data é do servidor, no fuso de Brasília. |
 | Pílula do período chuvoso no cabeçalho | Contexto operacional permanente da Sala (tracejada quando fora do período). |
 | Tarja de demonstração em tom **info** (não vermelho) | É aviso de dado fictício, não alarme; o vermelho fica reservado a perigo real. |
 | Ícone próprio (`app/icon.svg`: gota sobre escudo, ouro sobre `#0A0E14`) | A águia e o logotipo são marca do GeoRescue. |

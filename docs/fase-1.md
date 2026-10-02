@@ -95,6 +95,30 @@ emissão, a fila e os dados com texto livre exigem login.
 | `SALA_SESSION_SECRET` | assina a sessão da Sala (32+ bytes, aleatório) |
 | `SALA_GRUPO_OPERADOR` | nome do domínio de grupo dos operadores (ex.: `SALA`) |
 
+### 3.5 Implementação
+
+- Código: `lib/auth/` (cliente do GeoRescue em `georescue.ts`, tabela de papéis pura em `papeis.ts`,
+  sessão assinada em `token.ts`, leitura em `sessao.ts`), rotas `app/api/auth/*`, tela `app/entrar`,
+  chip do usuário no cabeçalho (`components/auth/`).
+- Contrato lido do `login.py` (origin/homolog): pedido `{usuario, senha}`; resposta
+  `{ok, usuario, nome, cpf (mascarado), bm, unidade, papel, dominios, escopo_global, troca_senha, token,
+  expira_em_horas}`. O administrador de emergência vem sem `cpf`/`bm`/`unidade` e com token `{u, exp}`.
+  Do token a Sala lê só a carga (`sub`, `gr_dgrupo`, `gr_pg`, `gr_situacao`, `gr_optotal`, `exp`), sem
+  conferir a assinatura: ele chegou por TLS, direto do GeoRescue, na resposta ao próprio login. Token com
+  `typ` (o de campo) é recusado. O teste de contrato fica em `tests/auth-georescue.test.ts`.
+- Sessão da Sala: `base64url(carga).base64url(HMAC-SHA256)`, com `typ: "sala-sessao"`, `exp` obrigatório
+  (≤ 8 h e ≤ `exp` do GeoRescue), sem CPF (`usuarioId` = HMAC do CPF com `SALA_PSEUDO_SEGREDO` ou, sem
+  ele, com chave derivada do `SALA_SESSION_SECRET`). Sessão de demonstração nunca vale fora do modo
+  demonstração.
+- Decisões adotadas até a confirmação (seção 9, item 2):
+  - **CEB:** Gestor/Operador com o domínio CEB (ou `gr_optotal`) entra como Unidade com escopo do Estado
+    inteiro, a mesma exceção do GeoRescue; visualizador do CEB não ganha a exceção.
+  - **Domínio que não é COB** (CG, DRH…) não dá recorte; sem COB e sem escopo global, a conta é recusada.
+  - **Visualizador com o grupo `SALA`** entra como Leitura do Estado inteiro.
+- Limitações: sessão sem estado (sem tabela `sala_sessoes` nesta fase; revogação em massa trocando o
+  `SALA_SESSION_SECRET`); limite de tentativas em memória por instância; suspensão no GeoRescue só pesa
+  no próximo login.
+
 > **Achado de segurança no GeoRescue (para a equipe do GeoRescue).** O token do App de
 > Campo (`typ: "campo"`) é assinado com o mesmo segredo do token da mesa. O
 > `sessao_do_header` aceita token sem `gr_papel` como **administrador**. Resultado: um token de
@@ -177,12 +201,26 @@ troca para o ArcGIS (e depois para o GeoRescue) não muda a tela nem a API.
 ### 4.5 API (no formato do GeoRescue)
 
 Mesmo contrato do módulo INSARAG, para migrar sem reescrever o cliente:
-- `GET /api/alertas?so=fila|contagem` devolve `{ok, perfil, capacidades, alertas, resumo, truncado}`.
-- `POST /api/alertas` com `{acao: "salvar" | "emitir" | "ciencia" | "registrar_acao" | "encerrar" | "cancelar", ...}`
-  devolve `{ok, id, ...}`.
-- Erros: `{ok: false, erro, motivo}` com 400, 401, 403, 409 (alguém alterou antes) ou 502.
-- Respostas autenticadas usam `Cache-Control: no-store`, para que dado recortado por usuário
-  nunca fique no CDN.
+- `GET /api/alertas?so=fila|contagem[&situacao=EMITIDO,PENDENTE,VENCIDO][&cob=1º COB][&tipo=GEOLOGICO][&id=AL-…]`
+  devolve `{ok, perfil, capacidades, alertas, resumo, truncado}`.
+  - Cada alerta traz os estados derivados (`pendente`, `vencido`, `vigenciaExpirada`),
+    `destinatarios`, `acoes` e, com `id`, o `historico`.
+  - `resumo` traz `{total, porSituacao, pendentes, vencidos, vigenciaExpirada}`.
+  - Unidade e leitura veem só o próprio COB (ou alertas que notificam o COB) e nunca
+    rascunho.
+- `POST /api/alertas` com `{acao: "salvar" | "emitir" | "ciencia" | "registrar_acao" | "encerrar" | "cancelar" | "apagar", ...}`
+  devolve `{ok, id, alerta, avisos[, acaoId]}`.
+  - `alteradoEm` (a versão lida) é obrigatório para editar, emitir um rascunho
+    existente, encerrar, cancelar e apagar.
+  - Datas em ISO 8601 com fuso.
+- Erros: `{ok: false, erro, motivo[, campos][, alteradoEmAtual]}`.
+  - `erro` é a mensagem para a tela; `motivo` é o código estável: `entrada_invalida`,
+    `campo_travado`, `sessao`, `permissao`, `escopo`, `origem`, `nao_encontrado`,
+    `conflito`, `transicao_invalida`, `ja_ciente`, `armazem`, `escrita_desligada`,
+    `configuracao`, `armazem_nao_configurado`.
+  - Status: 400, 401, 403, 404, 409, 502 ou 503.
+- Sempre `Cache-Control: no-store`, para que dado recortado por usuário nunca fique no CDN.
+- O POST só é aceito com `Origin` da própria aplicação (proteção contra CSRF).
 
 ### 4.6 Convivência com o Survey123
 
@@ -192,6 +230,93 @@ A Sala lê as duas fontes:
 - a deduplicação é feita pelo Nº da chamada.
 
 O Survey123 fica como plano B durante a temporada.
+
+### 4.7 Implementação (backend)
+
+Código em `lib/alertas/` (regras puras em `dominio.ts`, `feicao.ts`, `cap.ts`; serviço em
+`servico.ts`) e rota em `app/api/alertas/route.ts`.
+
+**Transições** (tabela explícita em `lib/alertas/dominio.ts`; o resto é recusado com 409):
+
+| De | Passo | Para |
+|---|---|---|
+| RASCUNHO | emitir | EMITIDO |
+| EMITIDO | ciência do destinatário **principal** | CIENTE |
+| CIENTE | ação "em andamento" | EM_AÇÃO |
+| CIENTE, EM_AÇÃO | ação "concluída" ou "parcial" | AÇÃO_REGISTRADA |
+| AÇÃO_REGISTRADA | encerrar (operador) | ENCERRADO |
+| EMITIDO, CIENTE, EM_AÇÃO, AÇÃO_REGISTRADA | cancelar com motivo (operador) | CANCELADO |
+
+- Registrar ação num alerta só emitido dá a ciência implícita.
+- Ação "não realizada" fica registrada, mas o alerta segue pendente.
+- Encerrar exige ação registrada; sem ação, cancela-se com motivo.
+- Rascunho não se cancela: apaga-se (o histórico fica com o evento `APAGADO` e o número
+  não é reaproveitado).
+- Depois de emitido, território, destinatários e natureza não mudam. As demais edições
+  geram uma mensagem CAP *Update* (evento `ATUALIZADO`, ou `PRAZO_ALTERADO` se só o
+  prazo mudou).
+
+**Gerado pelo servidor:**
+- `alerta_id` = `AL-AAAAMMDD-NNNN`, sequencial por dia de Brasília (`AC-…` nas ações);
+- `cap_identifier` = `BR-MG-CBMMG-SALA-<alerta_id>` (`-U<n>` nas atualizações, `-C` no
+  cancelamento);
+- datas de emissão e de encerramento;
+- prazo padrão pelo nível e `area_desc` padrão ("Município/MG");
+- toda a autoria.
+
+**Autoria (LGPD):** `*_por_id` = HMAC-SHA256 do identificador da sessão com
+`SALA_PSEUDO_SEGREDO` (32 hex). Nunca CPF, nome ou nº BM. Quem não é operador da Sala
+recebe os pseudônimos de outras pessoas como `null`.
+
+**Validação da emissão:** campos "E" do esquema, mais os do tipo de risco:
+- meteorológico: mm/h ou mm em 24 h;
+- hidrológico: bacia, rio e cota;
+- geológico: índice.
+
+Confere também a cascata tipo → evento e a ordem das datas. A fração precisa estar na
+lista oficial e o município em MG. Município de outro COB pela tabela aproximada só gera
+**aviso**. Nível diferente da sugestão da matriz (`sugerirNivel`) também só avisa.
+
+**Armazém** (`ALERTAS_ARMAZEM`):
+- `memoria`: desenvolvimento e testes; recusado em produção;
+- `postgres`: tabelas `sala_*`, no mesmo formato da feição;
+- `arcgis`: só leitura; escrita responde 503 "escrita desligada".
+
+Com `DADOS_EXEMPLO=1`, a fila usa sempre a memória, com 10 alertas de exemplo em todos os
+estados.
+
+**Concorrência:** `alteradoEm` é a versão do alerta. Edição, emissão, encerramento,
+cancelamento e exclusão exigem a versão lida; versão velha responde 409 com
+`alteradoEmAtual`. A ciência no mesmo destinatário não tem versão: se duas pessoas derem
+ao mesmo tempo, a última vence.
+
+**Mapa de risco:** os alertas EMITIDO, CIENTE e EM_AÇÃO, reais e vigentes, entram na
+camada "Alertas do CBMMG" junto com os do Survey123, deduplicados pelo nº da chamada.
+
+### 4.8 Telas da fila e da emissão (`/alertas-acoes-rrd`)
+
+- **Acesso:** a página lê a sessão no servidor (`obterSessao`). Sem sessão, mostra só o convite
+  "Entre com seu usuário do GeoRescue" (`/entrar?voltar=/alertas-acoes-rrd`); os totais públicos
+  continuam na Visão Geral. Se a sessão acabar com a tela aberta (401), a fila vira o mesmo cartão.
+- **Fila:** vem inteira do escopo da sessão (o servidor recorta por COB) e é relida a cada minuto
+  com a aba visível. Abas: Pendentes (padrão; vencidos primeiro, depois pelo prazo), A encerrar
+  (ação RRD registrada; quem encerra), Rascunhos (quem emite), Encerrados/cancelados e Todos.
+  Filtros por COB, tipo e nível. Contadores: pendentes, vencidos, emitidos hoje (Brasília) e a
+  encerrar. Pendente/vencido são recalculados com o relógio da tela.
+- **Detalhe:** gaveta lateral (tela cheia no celular; Esc fecha), com campos, destinatários e
+  ciência, ações RRD, linha do tempo e só as ações que as capacidades da sessão permitem: Emitir,
+  Editar/Atualizar (CAP Update, território travado), Dar ciência, Registrar ação RRD, Encerrar,
+  Cancelar (motivo + confirmação) e Apagar rascunho. Um 409 mostra "alguém alterou este alerta —
+  recarregue" sem perder o que foi digitado. `?alerta=AL-…` abre o detalhe por link.
+- **Formulário:** COB → fração (lista oficial) → município (sugerido pela cidade da fração; busca
+  por nome); tipo de risco e campos do tipo; **nível sugerido ao vivo** pela matriz
+  ("Sugerido: Laranja — Perigo, porque 45 mm/h > 30"); nível diferente do sugerido exige
+  justificativa (vai, por ora, no fim da descrição); nº da chamada com máscara AAAA-NNNNNNNN-N;
+  validade padrão de 24 h; prazo "pelo nível" (calculado na emissão) ou definido; texto CAP com
+  urgência "Esperada" e certeza "Provável" por padrão; destinatários adicionais (frações ou COB
+  inteiro). A validação da tela usa os mesmos esquemas do servidor (`lib/alertas/dominio.ts`).
+- Pendências: campo próprio `justificativa_nivel` na camada; paginação dos finalizados acima
+  de 500; `emitidosHoje` calculado no servidor.
 
 ## 5. Mapa de risco (camadas no mesmo mapa)
 
@@ -213,6 +338,19 @@ Cuidados:
 - O endpoint do CEMADEN não é documentado. A Sala valida o formato e, se ele mudar, mostra
   a camada como "fonte indisponível". Os créditos "Cemaden/MCTI" e "INMET" ficam visíveis.
 
+**Implementação (`GET /api/risco`, `lib/dados/risco.ts`):**
+- **As três fontes são lidas em paralelo,** cada uma com cache e última leitura válida. Uma
+  fonte fora do ar sem leitura deixa só a sua camada com `camada: null` e `erro`; as outras
+  continuam. A rota devolve 503 só quando todas falham.
+- **Cada camada traz** o carimbo (`meta`), os municípios com itens (`ItemRisco` com início e
+  fim), o resumo por COB e por UEOp (`areas`) e os registros descartados por motivo.
+- **Combinada:** pior nível por município entre as camadas disponíveis, com os itens de todas
+  (cada um com a sua `camada`) e as áreas.
+- **Alertas do CBMMG:** contam os alertas com validade não vencida ou, sem validade,
+  emitidos nas últimas 24 h, mais os alertas pendentes da fila da Sala. O município vira
+  código IBGE pelo nome. A deduplicação é por nº da chamada + município + tipo.
+- **CDN:** 60 s, ou 30 s se faltar alguma camada. A vigência é recalculada a cada resposta.
+
 ## 6. Chuva prevista no modelo GeoRisk
 
 - **Pontos:** as **853 sedes municipais** formam a "grade regional". O valor de cada ponto é
@@ -224,6 +362,10 @@ Cuidados:
   - O modelo só atualiza a cada 6 h, então a Sala busca **a cada 3 h** (cerca de 6.800
     chamadas por dia, dentro do limite gratuito de 10.000).
   - Os acumulados são recalculados a cada hora sobre a série em cache.
+  - **Implementado:** `GET /api/chuva` devolve `{meta, credito, inicioJanela, modelo, municipios (853),
+    areas: {"24h"|"72h": {cob, ueop}}, ranking: {acumulado24h, pior24hEm72h} (15 cada)}`.
+    A consulta é um único POST em formulário com as 853 sedes (evidência em
+    `docs/fontes-de-dados.md`). O cache guarda só a série compacta (~270 KB).
 - **Classificação** pela matriz de chuva (`classificarChuva`): o nível é o pior entre o
   critério por hora e o acumulado em 24 h. O mapa tem as janelas **próximas 24 h** e
   **próximas 72 h** (pior janela de 24 h dentro das 72 h). A cor é a do nível.
@@ -244,6 +386,31 @@ Cuidados:
     última leitura válida, chave paga (cerca de US$ 29/mês) ou ingestão pelo ArcGIS Notebook
     do CBMMG.
   - O uso é não comercial, com atribuição "Open-Meteo.com (CC BY 4.0)".
+
+### Na tela: `/risco`
+
+- **Uma pintura por vez** ("Pintar municípios por"): Chuva prevista (próximas 24 h | 72 h),
+  Meteorológico (INMET), Geológico e Hidrológico (Cemaden), Alertas do CBMMG ou Maior risco
+  (combinado). A escolha fica na URL: `/risco?camada=geologico&janela=72h&nivel=ueop` (padrão:
+  chuva, 24 h, automático).
+- **Zoom pela hierarquia:** abaixo de z6, cada município pinta com o pior nível do seu COB
+  (contorno oficial dos COBs, `/api/arcgis/cobs`); de z6 a z7, o nível da UEOp (contorno de
+  `public/geo/ueops-mg.json`, tracejado); a partir de z7, o nível do próprio município; nomes dos
+  municípios a partir de z8. Os limiares são inteiros porque o MapLibre avalia a cor (expressão
+  composta zoom + propriedade) no zoom do tile. Os botões Automático · COB · UEOp · Município
+  fixam o nível (`?nivel=`).
+- **Cores:** `CORES_NIVEL`, iguais nos dois temas; sem dado = sem preenchimento, com contorno.
+  Contornos em tinta neutra, não nas cores dos COBs (aqui a cor é o risco).
+- **Legenda** gerada de `lib/dominio/matrizes.ts` (chuva: `MATRIZ_CHUVA` + `descreverFaixa`) e
+  das tabelas de conversão de cada fonte (INMET, Cemaden), com cobertura, crédito e carimbo
+  "Atualizado às".
+- **Alternativa textual:** "Municípios com mais chuva prevista" (ranking da API) ou
+  "Municípios em risco", e a tabela "Resumo por COB"; cada linha centraliza o mapa e abre o
+  balão.
+- Os dados são lidos no navegador e atualizados com a aba visível: chuva a cada 10 min, risco
+  a cada 5 min. Uma camada fora do ar mostra "Fonte indisponível" só para ela.
+- Código: regras puras em `lib/mapa/risco.ts` e `lib/mapa/dados-risco.ts` (testes em
+  `tests/mapa-risco.test.ts`); tela em `components/risco/`.
 
 ## 7. Atualização periódica
 
@@ -299,7 +466,9 @@ O rewrite exige uma mudança no GeoRescue, que fica para quando a equipe decidir
    marcar um domínio explícito na conta, o administrador precisa marcar também o COB da
    pessoa (ex.: `1COB` + `SALA`), senão ela perde o COB.
 2. **Recorte por COB e o CEB:** a exceção do CEB vale para alertas? O que fazer com os
-   registros "Sem COB"?
+   registros "Sem COB"? Nesta fase: CEB (Gestor/Operador) alcança todos os COBs; conta sem
+   COB (só CG, DRH…) é recusada; visualizador com o grupo SALA lê o Estado inteiro
+   (`lib/auth/papeis.ts`).
 3. **Nº da chamada CAD:** é obrigatório na emissão, como hoje, ou a Sala passa a ser a
    origem do alerta?
 4. **Prazo da ação RRD por nível:** proposta de 24 h (verde), 12 h (amarelo), 6 h (laranja)

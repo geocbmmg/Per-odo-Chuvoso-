@@ -156,6 +156,67 @@ Formato confirmado por cópias reais do feed publicadas em repositórios públic
 
 ---
 
+## INMET — Avisos por município (`/avisos/ativos`)
+
+**URL:** `https://apiprevmet3.inmet.gov.br/avisos/ativos`. Domínio público. Código em
+`lib/sources/inmet/parser-ativos.ts` e `ativos.ts`. Alimenta a camada **Meteorológico** do mapa
+de risco.
+
+O endpoint não é documentado. O formato foi conferido em código público de 2026
+(controle-popular, mw-ha-leticia-weather, werlang/weather, climabr.app, family-dashboard):
+
+- **Resposta:** `{hoje: [...], futuro: [...]}`, com o Brasil inteiro (~420 KB).
+- **O mesmo aviso aparece em `hoje` e em `futuro`.** Fica uma entrada por `id_aviso`: a de
+  maior `id_sequencia` (versão do aviso alterado). Repetições da mesma versão são juntadas.
+- **Evento:** campo `descricao` ("Chuvas Intensas"). **Severidade:** `severidade`.
+  - Perigo Potencial → amarelo; Perigo → laranja; Grande Perigo → vermelho.
+  - Severidade desconhecida: o aviso é descartado e contado.
+- **Datas:** `inicio`/`fim` ("AAAA-MM-DD HH:MM") em **horário de Brasília sem offset**. Na
+  falta deles, `data_inicio` (só a data; o "Z" é falso) + `hora_inicio`.
+- **Municípios:** `geocodes` é TEXTO separado por vírgula; `municipios` é TEXTO
+  "Nome - UF (IBGE7),…". A atribuição usa essa lista, só com códigos de MG (31xxxxx). O
+  `poligono` (GeoJSON dentro de string) corta municípios vizinhos e serve só de contorno.
+- **Eventos do período chuvoso** (`EVENTOS_PERIODO_CHUVOSO`): Chuvas Intensas, Acumulado de
+  Chuva, Tempestade, Vendaval, Granizo. Ficam de fora Baixa Umidade, Onda de Calor, Declínio
+  de Temperatura, Onda de Frio, Geada, Ventos Costeiros etc.
+- **Janela:** avisos vigentes ou que começam nas próximas 24 h (`vigencia: "vigente" | "futuro"`;
+  a UI diz "a partir de"). Encerrados e cancelados ficam de fora.
+- **Formato inválido = falha da fonte:** sem `hoje` em lista, ou nenhum aviso com severidade
+  e municípios, gera erro e vale a última leitura válida. Lista vazia é válida.
+- O RSS (`inmet-avisos`) continua como reserva e alimenta o Monitoramento.
+
+---
+
+## CEMADEN — Alertas geo-hidrológicos (`wsAlertas2`)
+
+**URL:** `https://painelalertas.cemaden.gov.br/wsAlertas2`. Crédito **"Cemaden/MCTI"**,
+uso não comercial. Código em `lib/sources/cemaden/`. Alimenta as camadas **Geológico** e
+**Hidrológico**.
+
+- **Endpoint interno do Painel de Alertas, não documentado:**
+  - um JSON com o Brasil inteiro, sem rota por município;
+  - sem CORS, então é lido só no servidor;
+  - a Sala envia o seu User-Agent e o Origin/Referer do painel.
+- **Resposta:** `{atualizado: "DD-MM-AAAA HH:MM:SS UTC", alertas: [{cod_alerta, datahoracriacao,
+  ult_atualizacao, codibge, evento, nivel, status, uf, municipio}]}`.
+- **Camada pelo `evento`:** "Movimentos de Massa - …" → Geológico; "Risco Hidrológico - …",
+  enxurrada, inundação ou alagamento → Hidrológico.
+- **Conversão adotada:** Moderado → amarelo, Alto → laranja, Muito Alto → vermelho. O
+  CEMADEN não usa roxo.
+- **Filtros:**
+  - `status` 1 = aberto (ausente conta como aberto);
+  - MG pelo `codibge`, ou por `uf` + nome quando falta o código;
+  - `cod_alerta` repetido: fica a última atualização.
+- **Datas:** formatos variados ("DD-MM-AAAA HH:MM:SS", "AAAA-MM-DD HH:MM:SS",
+  "DD/MM/AAAA HH:MM", epoch). Sem fuso explícito vale **UTC** (convenção do CEMADEN;
+  confiança média, conferir no primeiro deploy).
+- **Sem fim informado:** o alerta vale até o CEMADEN fechá-lo (`fim: null`).
+- **Só municípios monitorados:** "sem alerta" não é "sem risco" (texto em `cobertura`, para a legenda).
+- **Validação de contrato:** sem `alertas` em lista, ou sem nenhum evento reconhecível, gera
+  erro e a camada aparece como "fonte indisponível" ou com a última leitura válida.
+
+---
+
 ## Open-Meteo — Previsão
 
 **URL:** `https://api.open-meteo.com/v1/forecast`. Uso não comercial, com atribuição
@@ -176,7 +237,46 @@ Formato confirmado por cópias reais do feed publicadas em repositórios públic
 
 ---
 
-## Fontes da Fase 1 (stubs tipados)
+## Open-Meteo — Chuva nos municípios (Fase 1)
+
+**Rota:** `GET /api/chuva`. Código em `lib/sources/open-meteo/{parser-municipios,municipios}.ts`
+e `lib/dados/chuva.ts`. Fonte `open-meteo-municipios` (cache de 3 h).
+
+- **Uma requisição POST com as 853 sedes municipais** (`MUNICIPIOS_MG`), corpo em formulário
+  (`application/x-www-form-urlencoded`, ~19 KB) com os mesmos parâmetros do GET:
+  `latitude`, `longitude` (listas com vírgula), `hourly=precipitation`,
+  `timezone=America/Sao_Paulo`, `forecast_days=5`. Modelo: `best_match` (ECMWF IFS 9 km no Brasil).
+  - Evidência no código da Open-Meteo: `Sources/App/routes.swift` (`getAndPost`, corpo de até
+    128 KB); `Helper/Vapor/ApiKeyManager.swift` (`parseApiParams`: POST → `content.decode`,
+    GET → `query.decode`; POST sem chave aceito na API gratuita); Vapor 4.122
+    `ContentConfiguration.swift` (o mesmo `URLEncodedFormDecoder` para formulário e query);
+    o cliente oficial em Python envia `session.post(url, data=params)`; `configure.swift`:
+    até 1.000 locais por requisição.
+  - Se o POST falhar em produção, o mesmo `URLSearchParams` serve como query string de um GET
+    em lotes.
+- **Resposta:** array na ordem pedida; a partir do 2º bloco vem `location_id` = índice. O
+  parser confere a ordem (`location_id` e coordenada a até 0,5°), o eixo horário e a cobertura
+  de 72 h. Erro: `{"error": true, "reason": "…"}`. O motivo também aparece em 429.
+- **Cache compacto:** a última leitura válida (memória ou Postgres) guarda
+  `{primeiraHoraIso, offsetSegundos, modelo, series: {ibge: mm por hora}}`, sem as horas já
+  passadas: ~270 KB, contra ~2,5 MB da resposta bruta. Resposta inválida nunca é gravada.
+- **Janelas** recalculadas a cada requisição: a partir do registro de `floor(agora)+1h`
+  (o valor de HH:00 é a chuva da hora anterior). Próximas 24 h: maior mm/h e acumulado.
+  Próximas 72 h: maior mm/h e pior acumulado em 24 h consecutivas. Classificação por
+  `classificarChuva` (o pior dos dois critérios). Hora faltando deixa a janela sem dado.
+- **Cota:** 1 chamada por local, ou seja 853 por consulta, ~6.800/dia a cada 3 h (limite gratuito:
+  10.000/dia, 600/min, por IP). Uma consulta pesa mais que o limite por minuto: ela passa, mas o
+  IP fica bloqueado pelo resto daquele minuto, e a previsão das sedes dos COBs pode cair na
+  última válida nesse minuto. Depois de uma falha, nova tentativa só após 30 min.
+  Recomendado `ARMAZEM_LEITURAS=postgres` em produção, para as instâncias compartilharem a leitura.
+- **Modo exemplo:** resposta bruta fictícia e determinística para os 853 pontos
+  (`lib/sources/exemplos/open-meteo-municipios.ts`), alinhada à hora corrente e passando pelo
+  mesmo parser: forte na Zona da Mata, com roxo em Juiz de Fora (72 h); laranja na RMBH;
+  amarelo no Sul de Minas; pancadas no Triângulo; Norte de Minas seco.
+
+---
+
+## Fontes seguintes (stubs tipados)
 
 | Fonte | Endpoint | Observações |
 |---|---|---|

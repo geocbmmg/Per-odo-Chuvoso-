@@ -6,6 +6,7 @@ import { CarimboAtualizacao } from "@/components/layout/carimbo-atualizacao";
 import { BotaoAtualizar } from "@/components/status/botao-atualizar";
 import { CartaoFonteIndisponivel } from "@/components/status/cartao-fonte-indisponivel";
 import { ComoCalculado } from "@/components/status/como-calculado";
+import { ConfiguracaoStatus } from "@/components/status/configuracao";
 import { GRUPOS_FONTES, GrupoFontes } from "@/components/status/lista-fontes";
 import { ResumoStatus } from "@/components/status/resumo-status";
 import { obterPainelStatus, type PainelStatus } from "@/lib/dados/status";
@@ -75,6 +76,8 @@ export default async function PaginaStatus() {
             ) : null}
 
             <ResumoStatus painel={resultado.painel} />
+
+            <ConfiguracaoStatus configuracao={resultado.painel.configuracao} modoExemplo={resultado.painel.modoExemplo} />
 
             {GRUPOS_FONTES.map((g) => (
               <GrupoFontes

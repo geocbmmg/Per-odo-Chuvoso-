@@ -26,11 +26,12 @@ Vercel. Segue o padrão de produto do **GeoRescue**.
 
 ### Módulos
 
-| Módulo | Situação na Fase 0 | Substitui |
+| Módulo | Situação | Substitui |
 |---|---|---|
 | **Visão Geral** | Mapa de MG (COBs, alertas, ações RRD, ocorrências complexas) + indicadores | Panorama |
 | **Monitoramento** | Avisos INMET vigentes para MG + previsão de chuva por COB (Open-Meteo) | Risco Meteorológico |
-| Alertas & Ações RRD | Placeholder | Aba Alertas |
+| **Mapa de Risco** (`/risco`, Fase 1) | Chuva prevista (24 h / 72 h) e camadas Meteorológico (INMET), Geológico e Hidrológico (Cemaden), Alertas do CBMMG e a combinada, por município; zoom COB → UEOp → município (modelo GeoRisk) | Risco Meteorológico (mapa) |
+| **Alertas & Ações RRD** (login, Fase 1) | Fila de alertas por COB com prazos ("vence em…"/"vencido há…"), detalhe com ciência, ações RRD e histórico, e o formulário de emissão com o nível sugerido pela matriz oficial | Aba Alertas + Survey123 de emissão |
 | NAC | Placeholder | Aba NAC |
 | Ocorrências Complexas | Placeholder | Oc. Complexas + Histórico |
 | Boletim | Placeholder | Boletim v1/v2 + Relatório Final |
@@ -42,10 +43,10 @@ Vercel. Segue o padrão de produto do **GeoRescue**.
 
 ```
 Navegador ──► Páginas (Server Components) ──► lib/sources/* ──► ArcGIS REST (só /query)
-    │                                              │            INMET (RSS)
-    └──► /api/* (Route Handlers) ─────────────────┘            Open-Meteo
-                  ▲                         cache + última leitura válida
-     Vercel Cron ─┘ /api/ingest/*           (lib/fontes/leituras.ts)
+    │                                              │            INMET (RSS e avisos/ativos)
+    └──► /api/* (Route Handlers) ─────────────────┘            CEMADEN (wsAlertas2)
+                  ▲                         cache + última leitura válida   Open-Meteo
+     Vercel Cron ─┘ /api/ingest/*           (lib/fontes/leituras.ts)        GeoRescue (/api/login)
 ```
 
 - **Next.js 16 (App Router) + TypeScript.** Páginas server-side; o mapa (MapLibre GL) é o
@@ -87,37 +88,49 @@ Navegador ──► Páginas (Server Components) ──► lib/sources/* ──�
 app/
   page.tsx                 Visão Geral
   monitoramento/           Avisos INMET + previsão por COB
+  risco/                   Mapa de risco e chuva por município (modelo GeoRisk)
+  alertas-acoes-rrd/       Fila e emissão de alertas (exige login)
+  entrar/                  Login pelo GeoRescue
   status/                  Estado das fontes
-  alertas-acoes-rrd/ nac/ ocorrencias-complexas/ boletim/   (placeholders)
+  nac/ ocorrencias-complexas/ boletim/   (placeholders)
   api/
     arcgis/[camada]/       GeoJSON normalizado das camadas do CBMMG
     indicadores/           Totais, pendentes, por COB, por tipo de risco
     inmet/avisos/          Avisos vigentes/futuros que afetam MG
     meteo/previsao/        Chuva prevista nas sedes dos COBs
+    chuva/                 Chuva prevista nos 853 municípios: matriz 24 h/72 h, COB/UEOp e ranking
+    risco/                 Mapa de risco por município: Meteorológico, Geológico, Hidrológico, Alertas do CBMMG e combinada
+    alertas/               Fila e emissão de alertas (contrato do GeoRescue; sessão obrigatória)
+    auth/                  login, logout e sessão (login federado no GeoRescue)
     status/                Estado das fontes + resolução de campos
-    ingest/[job]/          Jobs da Vercel Cron (stubs na Fase 0)
+    ingest/[job]/          Jobs de atualização (Vercel Cron ou agendador externo)
 components/
   ui/                      Primitivos shadcn/ui no padrão GeoRescue
   layout/                  Trilho, cabeçalho institucional, carimbo "atualizado às", indicador de fontes
   mapa/                    Mapa MapLibre (COBs, camadas, legenda, controles, balões)
+  risco/                   Mapa de risco: seletor de pintura, legenda das matrizes, ranking, resumo por COB
+  alertas/                 Fila, detalhe e formulário de emissão de alertas
+  auth/                    Tela de login, chip do usuário, perfis de demonstração
   visao-geral/ graficos/   KPIs, avisos INMET, gráficos Recharts e tabela por COB
   monitoramento/ status/   Blocos das páginas de Monitoramento e Status
   comum/                   Seletor de período, fonte indisponível, atualização automática
 lib/
-  sources/                 Clientes tipados: arcgis/, inmet/, open-meteo/ (+ stubs ana/, glofas/, rainviewer/)
+  sources/                 Clientes tipados: arcgis/, inmet/, cemaden/, open-meteo/ (+ stubs ana/, glofas/, rainviewer/)
   sources/exemplos/        Dados de exemplo (modo demonstração e testes)
   fontes/                  Catálogo, cache/fallback, estado das fontes, fetch com timeout
-  dominio/                 Tipos normalizados e período chuvoso
-  dados/                   Indicadores, Visão Geral, painel de status
-  mapa/                    Estilo do mapa (função pura), simbologia, mapas base, máscara de MG
+  dominio/                 Tipos normalizados, período chuvoso, matrizes de risco, risco e chuva por município
+  dados/                   Indicadores, Visão Geral, risco, chuva, painel de status
+  alertas/                 Fila de alertas: domínio, feição ArcGIS, repositórios (memória, Postgres, ArcGIS só leitura), serviço
+  auth/                    Login federado no GeoRescue, papéis, sessão assinada
+  mapa/                    Estilo do mapa (função pura), simbologia, mapas base, máscara de MG, mapa de risco
   db/                      Drizzle (schema + cliente)
   territorio/              COB → BBM/UEOp → fração → município; tabela oficial de frações; sedes
   datas.ts                 Datas em America/Sao_Paulo
   env.ts                   Variáveis de ambiente (server-only, validadas com zod)
 docs/                      Padrão visual, fontes de dados, território, métricas de risco, Fase 1
 scripts/                   copiar-worker-maplibre.mjs (postinstall); arcgis/ (criação das camadas da Fase 1)
-public/geo/                Contorno de Minas Gerais
-tests/                     vitest (parsers das fontes, cache, indicadores, território, mapa)
+public/geo/                Contorno de MG, malha dos 853 municípios e áreas das UEOp
+tests/                     vitest (parsers das fontes, cache, indicadores, território, matrizes, mapa, alertas, login)
 ```
 
 ---
@@ -172,9 +185,63 @@ vai para o log e para `GET /api/status` (`variaveisInvalidas`).
 | `DATABASE_URL` | não | Postgres (Neon / Vercel Postgres) |
 | `ANA_IDENTIFICADOR`, `ANA_TOKEN` | não | ANA HidroWebService (stub na Fase 0) |
 | `CRON_SECRET` | **sim em produção** | Protege `/api/ingest/*` (a Vercel envia `Authorization: Bearer …`) |
-| `ARMAZEM_LEITURAS` | não | `memoria` (padrão) ou `postgres` (última leitura válida no banco) |
+| `ARMAZEM_LEITURAS` | não | `memoria` (padrão) ou `postgres` (última leitura válida no banco; recomendado em produção) |
+| `ALERTAS_ARMAZEM` | **sim em produção** | Fila de alertas: `memoria` (padrão; só desenvolvimento e testes), `postgres` ou `arcgis` (só leitura) |
+| `SALA_PSEUDO_SEGREDO` | sim para a fila | Segredo do pseudônimo de autoria (HMAC); sem ele a fila não grava |
+| `GEORESCUE_BASE_URL` | sim para o login | URL de produção do GeoRescue (não é segredo) |
+| `SALA_SESSION_SECRET` | sim para o login | Assina o cookie de sessão da Sala (32+ caracteres; diferente do segredo do GeoRescue) |
+| `SALA_GRUPO_OPERADOR` | não (padrão `SALA`) | Domínio de grupo do GeoRescue que faz o "Operador da Sala" |
 | `DADOS_EXEMPLO` | não | `1` = modo demonstração |
 | `FONTES_TIMEOUT_MS` | não | Tempo máximo de cada chamada externa (padrão 15000) |
+
+---
+
+## Login (GeoRescue)
+
+Quem tem acesso ao GeoRescue entra na Sala com o mesmo CPF e senha (tela `/entrar`). A Sala
+repassa as credenciais **de servidor para servidor** ao `POST <GEORESCUE_BASE_URL>/api/login`,
+não guarda senha, não lê a tabela de usuários e descarta o token do GeoRescue. Em seguida
+emite sessão própria: cookie `__Host-sala_sessao` (HttpOnly, Secure, SameSite=Lax), assinado
+com HMAC-SHA256 (`SALA_SESSION_SECRET`), válido por no máximo 8 h e nunca além da sessão do
+GeoRescue. O CPF não entra no cookie, nas respostas nem nos logs: o usuário é um pseudônimo
+(HMAC).
+
+| Rota | Faz |
+|---|---|
+| `POST /api/auth/login` | `{cpf, senha}` (ou `{perfilDemonstracao}` no modo demonstração) → `{ok, sessao}` + cookie |
+| `POST /api/auth/logout` | apaga o cookie |
+| `GET /api/auth/sessao` | `{ok: true, sessao: SessaoPublica \| null}` |
+
+- Sem `GEORESCUE_BASE_URL` e `SALA_SESSION_SECRET`, o login responde 503 e nenhuma sessão é
+  aceita (falha fechada).
+- Proteções: Origin da própria Sala (CSRF); 10 tentativas por IP e 5 por conta a cada 10 min
+  (em memória, por instância); `?voltar=` só aceita caminho interno.
+- Em `next dev` (http://localhost) o cookie se chama `sala_sessao` e não leva Secure.
+- **Modo demonstração** (`DADOS_EXEMPLO=1`): o GeoRescue não é chamado. `/entrar` oferece três
+  perfis fictícios (Operador da Sala; Unidade 3º COB/4º BBM; Leitura do 1º COB) que emitem a
+  mesma sessão assinada, marcada como demonstração. Sem cookie, vale o "Operador de
+  demonstração"; "Sair" desliga isso até um perfil ser escolhido.
+- Páginas públicas (Visão Geral, Monitoramento, Mapa de Risco, Status) não exigem login; a
+  fila e a emissão de alertas exigem.
+- Revogação: "Sair" apaga o cookie neste navegador; para encerrar todas as sessões, troque o
+  `SALA_SESSION_SECRET`.
+
+Papéis, decisões e o achado de segurança no GeoRescue: [`docs/fase-1.md`](docs/fase-1.md), seção 3.
+
+---
+
+## Fila de alertas (Fase 1)
+
+`/api/alertas` emite e acompanha os alertas da Sala (desenho em `docs/fase-1.md`, seção 4).
+
+- **Modo demonstração** (`DADOS_EXEMPLO=1`): a sessão implícita é um operador da Sala, e a fila
+  vem com 10 alertas de exemplo em todos os estados. Nada é gravado fora da memória da
+  instância.
+- **Produção:** `ALERTAS_ARMAZEM=postgres`, com `DATABASE_URL` e `npm run db:push` (cria as
+  tabelas `sala_*`), e `SALA_PSEUDO_SEGREDO` com 32+ caracteres aleatórios
+  (`openssl rand -hex 32`). Não troque o segredo depois de em uso.
+- **ArcGIS:** a escrita está **desligada**. `ALERTAS_ARMAZEM=arcgis` só lê, depois que as
+  camadas forem criadas por `scripts/arcgis/criar_camadas_sala.py` (ainda não executado).
 
 ---
 
@@ -209,12 +276,15 @@ fica gravada para todas as instâncias. As telas funcionam sem os jobs.
 
 ## Fontes de dados
 
-| Fonte | Estado na Fase 0 | Crédito exibido |
+| Fonte | Estado | Crédito exibido |
 |---|---|---|
-| ArcGIS do CBMMG: limites dos COBs, Emissão de Alertas (camada 1), Ações RRD, Ocorrências Complexas | Implementada (só leitura) | CBMMG — ArcGIS Enterprise |
+| ArcGIS do CBMMG: limites dos COBs, Emissão de Alertas, Ações RRD (com a repetição de ações), Ocorrências Complexas | Implementada (só leitura; camada escolhida pelos campos do formulário) | CBMMG — ArcGIS Enterprise |
 | ArcGIS do CBMMG: Cotas SACE, Anúncio NAC | Catalogada (próximas fases) | — |
 | INMET — Avisos (RSS) | Implementada | Avisos: INMET (domínio público) |
-| Open-Meteo — Previsão | Implementada | Previsão: Open-Meteo.com (CC BY 4.0) |
+| INMET — Avisos por município (`/avisos/ativos`) | Implementada (mapa de risco) | Avisos: INMET (domínio público) |
+| CEMADEN — Alertas geo-hidrológicos (`wsAlertas2`) | Implementada (mapa de risco) | Alertas: Cemaden/MCTI |
+| Open-Meteo — Previsão nas sedes dos COBs | Implementada | Previsão: Open-Meteo.com (CC BY 4.0) |
+| Open-Meteo — Chuva nos 853 municípios | Implementada (mapa de chuva) | Previsão: Open-Meteo.com (CC BY 4.0) |
 | ANA — HidroWebService | Stub | — |
 | Open-Meteo Flood (GloFAS) | Stub | — |
 | RainViewer (radar) | Stub | — |

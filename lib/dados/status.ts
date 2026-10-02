@@ -1,12 +1,15 @@
 import "server-only";
-import { modoExemplo, variaveisInvalidas } from "@/lib/env";
+import { env, modoExemplo, variaveisInvalidas } from "@/lib/env";
 import { LISTA_FONTES } from "@/lib/fontes/catalogo";
 import { statusDaFonte } from "@/lib/fontes/leituras";
 import type { FonteId, StatusFonte } from "@/lib/fontes/tipos";
 import { CAMADAS_ARCGIS, obterCamada, type CamadaArcgisId, type OrigemCamada } from "@/lib/sources/arcgis";
 import type { Diagnostico } from "@/lib/sources/arcgis/normalizar";
+import { obterAlertasCemaden } from "@/lib/sources/cemaden";
 import { obterAvisosInmet } from "@/lib/sources/inmet";
+import { obterAvisosInmetMunicipios } from "@/lib/sources/inmet/ativos";
 import { obterPrevisaoCobs } from "@/lib/sources/open-meteo";
+import { obterSeriesChuvaMunicipios } from "@/lib/sources/open-meteo/municipios";
 
 /**
  * Estado de cada fonte de dados para a página /status.
@@ -27,11 +30,38 @@ export interface StatusFonteDetalhado extends StatusFonte {
   diagnostico?: DiagnosticoCamada;
 }
 
+/** O que está configurado no servidor: só sim/não e nomes de modo, nunca valores. */
+export interface ConfiguracaoStatus {
+  armazemLeituras: "memoria" | "postgres";
+  alertasArmazem: "memoria" | "postgres" | "arcgis";
+  bancoConfigurado: boolean;
+  /** SALA_PSEUDO_SEGREDO presente (a fila só grava com ele). */
+  pseudonimoConfigurado: boolean;
+  /** GEORESCUE_BASE_URL e SALA_SESSION_SECRET presentes (login real ligado). */
+  loginConfigurado: boolean;
+  grupoOperador: string;
+  cronProtegido: boolean;
+}
+
+export function configuracaoStatus(): ConfiguracaoStatus {
+  const e = env();
+  return {
+    armazemLeituras: e.ARMAZEM_LEITURAS,
+    alertasArmazem: e.ALERTAS_ARMAZEM,
+    bancoConfigurado: Boolean(e.DATABASE_URL),
+    pseudonimoConfigurado: Boolean(e.SALA_PSEUDO_SEGREDO),
+    loginConfigurado: Boolean(e.GEORESCUE_BASE_URL && e.SALA_SESSION_SECRET),
+    grupoOperador: e.SALA_GRUPO_OPERADOR,
+    cronProtegido: Boolean(e.CRON_SECRET),
+  };
+}
+
 export interface PainelStatus {
   geradoEm: string;
   modoExemplo: boolean;
   /** Variáveis de ambiente ignoradas por formato inválido (só os nomes). */
   variaveisInvalidas: string[];
+  configuracao: ConfiguracaoStatus;
   fontes: StatusFonteDetalhado[];
   resumo: Record<StatusFonte["estado"], number>;
 }
@@ -52,7 +82,10 @@ async function sondar(fonte: FonteId): Promise<DiagnosticoCamada | undefined> {
     };
   }
   if (fonte === "inmet-avisos") await obterAvisosInmet();
+  if (fonte === "inmet-municipios") await obterAvisosInmetMunicipios();
+  if (fonte === "cemaden-alertas") await obterAlertasCemaden();
   if (fonte === "open-meteo-previsao") await obterPrevisaoCobs();
+  if (fonte === "open-meteo-municipios") await obterSeriesChuvaMunicipios();
   return undefined;
 }
 
@@ -93,6 +126,7 @@ export async function obterPainelStatus(): Promise<PainelStatus> {
     geradoEm: agora.toISOString(),
     modoExemplo: exemplo,
     variaveisInvalidas: variaveisInvalidas(),
+    configuracao: configuracaoStatus(),
     fontes,
     resumo,
   };
