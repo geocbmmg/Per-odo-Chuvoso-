@@ -223,7 +223,7 @@ usuário é um pseudônimo (HMAC).
 - Em `next dev` (http://localhost) o cookie se chama `sala_sessao` e não leva Secure.
 - **Modo demonstração** (`DADOS_EXEMPLO=1`): o GeoRescue não é chamado. `/entrar` oferece três
   perfis fictícios (Operador da Sala; Unidade 3º COB/4º BBM; Leitura do 1º COB) que emitem a
-  mesma sessão assinada, marcada como demonstração. Sem cookie, vale o "Operador de
+  mesma sessão cifrada, marcada como demonstração. Sem cookie, vale o "Operador de
   demonstração"; "Sair" desliga isso até um perfil ser escolhido.
 - Páginas públicas (Visão Geral, Monitoramento, Mapa de Risco, Status) não exigem login; a
   fila e a emissão de alertas exigem.
