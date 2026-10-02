@@ -108,13 +108,15 @@ function contagemVazia(): ContagemNiveis {
  * Agrega níveis por município em áreas (COB ou COB + UEOp). Municípios sem
  * nível entram no total, mas não na contagem.
  */
+const COLLATOR = new Intl.Collator("pt-BR", { numeric: true });
+
 export function agregarPorArea(
   municipios: readonly MunicipioTerritorio[],
   niveis: ReadonlyMap<string, NivelRisco>,
   nivelDeArea: "cob" | "ueop",
 ): ResumoArea[] {
   const areas = new Map<string, ResumoArea>();
-  const ordenados = [...municipios].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+  const ordenados = [...municipios].sort((a, b) => COLLATOR.compare(a.nome, b.nome));
   for (const m of ordenados) {
     const chave = nivelDeArea === "cob" ? m.cob : `${m.cob} · ${m.ueop}`;
     let area = areas.get(chave);
@@ -139,5 +141,5 @@ export function agregarPorArea(
     }
     area.nivel = maisGrave(area.nivel, nivel);
   }
-  return [...areas.values()].sort((a, b) => a.chave.localeCompare(b.chave, "pt-BR", { numeric: true }));
+  return [...areas.values()].sort((a, b) => COLLATOR.compare(a.chave, b.chave));
 }

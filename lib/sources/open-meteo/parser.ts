@@ -55,7 +55,7 @@ function offsetIso(segundos: number): string {
   return `${sinal}${h}:${m}`;
 }
 
-function numeroOuNull(valor: number | null | undefined): number | null {
+export function numeroOuNull(valor: unknown): number | null {
   return typeof valor === "number" && Number.isFinite(valor) ? valor : null;
 }
 
@@ -65,11 +65,23 @@ function somar(valores: (number | null)[]): number | null {
   return Math.round((valores as number[]).reduce((a, b) => a + b, 0) * 10) / 10;
 }
 
-function erroOpenMeteo(corpo: unknown): string | null {
+/** Motivo do erro quando o corpo é {"error": true, "reason": "..."}; null caso contrário. */
+export function erroOpenMeteo(corpo: unknown): string | null {
   if (corpo && typeof corpo === "object" && !Array.isArray(corpo) && (corpo as { error?: unknown }).error) {
     return String((corpo as { reason?: unknown }).reason ?? "erro desconhecido");
   }
   return null;
+}
+
+const HORA_MS = 3_600_000;
+
+/**
+ * Na Open-Meteo o valor de HH:00 é a chuva da HORA ANTERIOR (HH-1 → HH). As
+ * janelas começam no registro de floor(agora)+1h, que cobre a hora em curso.
+ * Devolve o instante (ms) desse primeiro registro.
+ */
+export function primeiroRegistroDaJanela(agora: Date): number {
+  return agora.getTime() - (agora.getTime() % HORA_MS) + HORA_MS;
 }
 
 /**
@@ -98,10 +110,9 @@ export function interpretarPrevisao(corpo: unknown, pontos: PontoPrevisao[], ago
       probabilidade: numeroOuNull(prob[j]),
     }));
 
-    // Na Open-Meteo o valor de HH:00 é a chuva da HORA ANTERIOR (HH-1 → HH). A janela
-    // começa no registro de floor(agora)+1h, que cobre a hora em curso.
-    const inicioHoraAtual = agora.getTime() - (agora.getTime() % 3_600_000);
-    const futuras = horaria.filter((h) => new Date(h.hora).getTime() > inicioHoraAtual);
+    // A janela começa no registro de floor(agora)+1h, que cobre a hora em curso.
+    const primeiro = primeiroRegistroDaJanela(agora);
+    const futuras = horaria.filter((h) => new Date(h.hora).getTime() >= primeiro);
     const acumulado24hMm = futuras.length >= 24 ? somar(futuras.slice(0, 24).map((h) => h.precipitacaoMm)) : null;
     const acumulado72hMm = futuras.length >= 72 ? somar(futuras.slice(0, 72).map((h) => h.precipitacaoMm)) : null;
 

@@ -1,0 +1,176 @@
+/**
+ * Resposta de EXEMPLO de https://painelalertas.cemaden.gov.br/wsAlertas2 (modo
+ * DADOS_EXEMPLO=1 e testes), no formato bruto da fonte: o Brasil inteiro num
+ * JSON só, datas "DD-MM-AAAA HH:MM:SS" em UTC, `codibge` ora número, ora texto.
+ * Passa pelo MESMO parser da produção (lib/sources/cemaden/parser.ts); as datas
+ * são deslocadas depois, para o instante de referência virar "agora".
+ *
+ * Referência temporal: 2026-10-02 15:00 UTC (12:00 em Brasília). Alertas e
+ * códigos de alerta fictícios; municípios e códigos IBGE reais. Inclui, de
+ * propósito, alertas de outras UFs (RJ, BA) e um alerta FECHADO (status 0) em
+ * Uberlândia, que o parser deve ignorar.
+ */
+
+export const REFERENCIA_CEMADEN_EXEMPLO = "2026-10-02T15:00:00.000Z";
+
+export const ALERTAS_CEMADEN_EXEMPLO = {
+  atualizado: "02-10-2026 14:58:00 UTC",
+  alertas: [
+    {
+      cod_alerta: 2095,
+      datahoracriacao: "02-10-2026 06:15:00",
+      ult_atualizacao: "02-10-2026 11:30:00",
+      codibge: 3143906,
+      evento: "Risco Hidrológico - Alto",
+      nivel: "Alto",
+      status: 1,
+      uf: "MG",
+      municipio: "Muriaé",
+    },
+    {
+      cod_alerta: 2097,
+      datahoracriacao: "02-10-2026 08:44:10",
+      ult_atualizacao: "02-10-2026 08:44:10",
+      codibge: "3169901",
+      evento: "Risco Hidrológico - Alto",
+      nivel: "Alto",
+      status: 1,
+      uf: "MG",
+      municipio: "Ubá",
+    },
+    {
+      cod_alerta: 2098,
+      datahoracriacao: "02-10-2026 09:05:47",
+      ult_atualizacao: "02-10-2026 13:20:05",
+      codibge: 3146107,
+      evento: "Movimentos de Massa - Muito Alto",
+      nivel: "Muito Alto",
+      status: 1,
+      uf: "MG",
+      municipio: "Ouro Preto",
+    },
+    {
+      cod_alerta: 2099,
+      datahoracriacao: "02-10-2026 10:22:18",
+      ult_atualizacao: "02-10-2026 10:22:18",
+      codibge: 3127701,
+      evento: "Risco Hidrológico - Moderado",
+      nivel: "Moderado",
+      status: 1,
+      uf: "MG",
+      municipio: "Governador Valadares",
+    },
+    {
+      cod_alerta: 2100,
+      datahoracriacao: "02-10-2026 10:57:33",
+      ult_atualizacao: "02-10-2026 10:57:33",
+      codibge: 3115300,
+      evento: "Risco Hidrológico - Moderado",
+      nivel: "Moderado",
+      status: 1,
+      uf: "MG",
+      municipio: "Cataguases",
+    },
+    {
+      cod_alerta: 2101,
+      datahoracriacao: "02-10-2026 11:40:12",
+      ult_atualizacao: "02-10-2026 11:40:12",
+      codibge: 3136702,
+      evento: "Movimentos de Massa - Alto",
+      nivel: "Alto",
+      status: 1,
+      uf: "MG",
+      municipio: "Juiz de Fora",
+    },
+    {
+      cod_alerta: 2102,
+      datahoracriacao: "02-10-2026 12:01:09",
+      ult_atualizacao: "02-10-2026 12:01:09",
+      codibge: 3152105,
+      evento: "Risco Hidrológico - Alto",
+      nivel: "Alto",
+      status: 1,
+      uf: "MG",
+      municipio: "Ponte Nova",
+    },
+    {
+      cod_alerta: 2103,
+      datahoracriacao: "02-10-2026 12:48:40",
+      ult_atualizacao: "02-10-2026 12:48:40",
+      codibge: 3144805,
+      evento: "Movimentos de Massa - Moderado",
+      nivel: "Moderado",
+      status: 1,
+      uf: "MG",
+      municipio: "Nova Lima",
+    },
+    {
+      cod_alerta: 2104,
+      datahoracriacao: "02-10-2026 13:02:31",
+      ult_atualizacao: "02-10-2026 13:02:31",
+      codibge: 3106200,
+      evento: "Movimentos de Massa - Moderado",
+      nivel: "Moderado",
+      status: 1,
+      uf: "MG",
+      municipio: "Belo Horizonte",
+    },
+    {
+      cod_alerta: 2105,
+      datahoracriacao: "02-10-2026 13:30:02",
+      ult_atualizacao: "02-10-2026 13:30:02",
+      codibge: 3140001,
+      evento: "Movimentos de Massa - Alto",
+      nivel: "Alto",
+      status: 1,
+      uf: "MG",
+      municipio: "Mariana",
+    },
+    {
+      cod_alerta: 2106,
+      datahoracriacao: "02-10-2026 14:05:51",
+      ult_atualizacao: "02-10-2026 14:05:51",
+      codibge: 3136702,
+      evento: "Risco Hidrológico - Moderado",
+      nivel: "Moderado",
+      status: 1,
+      uf: "MG",
+      municipio: "Juiz de Fora",
+    },
+    // Outras UFs: fora do mapa de MG.
+    {
+      cod_alerta: 2091,
+      datahoracriacao: "02-10-2026 04:12:26",
+      ult_atualizacao: "02-10-2026 09:48:03",
+      codibge: 3303906,
+      evento: "Movimentos de Massa - Alto",
+      nivel: "Alto",
+      status: 1,
+      uf: "RJ",
+      municipio: "Petrópolis",
+    },
+    {
+      cod_alerta: 2093,
+      datahoracriacao: "02-10-2026 07:31:55",
+      ult_atualizacao: "02-10-2026 07:31:55",
+      codibge: 2927408,
+      evento: "Movimentos de Massa - Moderado",
+      nivel: "Moderado",
+      status: 1,
+      uf: "BA",
+      municipio: "Salvador",
+    },
+    // Fechado pelo CEMADEN (status 0): não entra.
+    {
+      cod_alerta: 2072,
+      datahoracriacao: "01-10-2026 18:10:00",
+      ult_atualizacao: "02-10-2026 09:00:00",
+      codibge: 3170206,
+      evento: "Risco Hidrológico - Alto",
+      nivel: "Alto",
+      status: 0,
+      uf: "MG",
+      municipio: "Uberlândia",
+    },
+  ],
+};
