@@ -192,7 +192,7 @@ vai para o log e para `GET /api/status` (`variaveisInvalidas`).
 | `ALERTAS_ARMAZEM` | **sim em produção** | Fila de alertas: `memoria` (padrão; só desenvolvimento e testes), `postgres` ou `arcgis` (só leitura) |
 | `SALA_PSEUDO_SEGREDO` | sim para a fila | Segredo do pseudônimo de autoria (HMAC); sem ele a fila não grava |
 | `GEORESCUE_BASE_URL` | sim para o login | URL de produção do GeoRescue (não é segredo) |
-| `SALA_SESSION_SECRET` | sim para o login | Assina o cookie de sessão da Sala (32+ caracteres; diferente do segredo do GeoRescue) |
+| `SALA_SESSION_SECRET` | sim para o login | Cifra e autentica o cookie de sessão da Sala (32+ caracteres; diferente do segredo do GeoRescue) |
 | `SALA_GRUPO_OPERADOR` | não (padrão `SALA`) | Domínio de grupo do GeoRescue que faz o "Operador da Sala" |
 | `DADOS_EXEMPLO` | não | `1` = modo demonstração |
 | `FONTES_TIMEOUT_MS` | não | Tempo máximo de cada chamada externa (padrão 15000) |
