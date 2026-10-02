@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 
 import { AvisoDadosExemplo } from "@/components/layout/aviso-dados-exemplo";
 import { CabecalhoInstitucional } from "@/components/layout/cabecalho-institucional";
+import { IndicadorFontes } from "@/components/layout/indicador-fontes";
 import { COOKIE_TRILHO, lerPreferenciaTrilho } from "@/components/layout/preferencia-trilho";
 import { ProvedorTema } from "@/components/layout/provedor-tema";
 import { RodapeCreditos } from "@/components/layout/rodape-creditos";
@@ -66,7 +67,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             <TrilhoLateral preferenciaInicial={preferenciaTrilho} />
             <div className="flex min-w-0 flex-col">
               <AvisoDadosExemplo ativo={emModoExemplo()} />
-              <CabecalhoInstitucional />
+              <CabecalhoInstitucional extra={<IndicadorFontes />} />
               <main id="conteudo" tabIndex={-1} className="sala-pagina min-w-0 flex-1 focus:outline-none">
                 {children}
               </main>
