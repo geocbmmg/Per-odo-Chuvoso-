@@ -15,6 +15,7 @@ import { descreverLeitura, estadoPilula, infoDaCamada, rotuloContagem, textoCont
 import { abreviarContagem } from "@/components/mapa/marcadores";
 import { CAMADAS_MAPA, type CamadaMapaId } from "@/lib/dominio/tipos";
 import {
+  AGRUPAMENTOS,
   ANEL_MUNDO,
   BASES_MAPA,
   BBOX_MG,
@@ -35,10 +36,17 @@ import {
   camadaLogicaDoEstilo,
   carregarCamada,
   chamadasComAcaoRrd,
+  combinarCarimboMapa,
+  conteudoAcaoRrd,
   conteudoAlerta,
   conteudoCob,
   conteudoOcorrencia,
   contarPorCob,
+  contarRegistrosNoMapa,
+  COR_ACAO_RRD,
+  COR_ALERTA,
+  COR_CONTORNO_PONTO,
+  descreverFalhas,
   corDoCob,
   criarEstiloBase,
   criarMascaraMg,
@@ -53,11 +61,17 @@ import {
   pontoDeRotulo,
   pontoNoPoligono,
   prepararWorkerMapLibre,
+  registrarMeta,
+  registrosParaLista,
   reiniciarPreparoWorker,
   resolverTemaMapa,
+  rotuloUnidade,
   resolverUrlWorker,
   salvarBase,
   urlWorkerCdn,
+  type ColecaoMapa,
+  type EstadosMetaCamadas,
+  type MetaCamada,
   type OpcoesEstiloMapa,
 } from "@/lib/mapa";
 
@@ -333,6 +347,24 @@ describe("estilo completo do mapa", () => {
     expect(sources[FONTES_CAMADAS.cobs]).toMatchObject({ promoteId: "cob", data: cobs });
   });
 
+  it("agrupamentos de alertas e de ações RRD diferem na forma, não só na cor", () => {
+    const estilo = montarEstiloMapa(opcoes);
+    const paint = (id: string) => (estilo.layers.find((l) => l.id === id) as { paint: Record<string, unknown> }).paint;
+    // Alertas: disco cheio laranja com halo translúcido.
+    expect(paint(ID_CAMADAS.alertasCluster)).toMatchObject({
+      "circle-color": COR_ALERTA,
+      "circle-stroke-color": "rgba(255, 138, 69, 0.35)",
+    });
+    // Ações RRD: anel — miolo escuro e traço verde cheio.
+    expect(paint(ID_CAMADAS.acoesCluster)).toMatchObject({
+      "circle-color": COR_CONTORNO_PONTO,
+      "circle-stroke-color": COR_ACAO_RRD,
+      "circle-stroke-width": AGRUPAMENTOS["acoes-rrd"].larguraContorno,
+    });
+    expect(AGRUPAMENTOS.alertas.forma).not.toBe(AGRUPAMENTOS["acoes-rrd"].forma);
+    expect(AGRUPAMENTOS["acoes-rrd"].rotulo).toBe("Agrupamento de ações RRD");
+  });
+
   it("camada desligada fica com visibility none", () => {
     const estilo = montarEstiloMapa({ ...opcoes, visiveis: ["cobs"] });
     for (const camada of CAMADAS_MAPA) {
@@ -509,6 +541,24 @@ describe("conteúdo dos balões", () => {
     expect(finalizada.selo?.texto).toBe("Finalizada");
   });
 
+  it("fração logo após a UEOp nos três registros; omitida quando não informada", () => {
+    const base = { cob: "1º COB", ueop: "1º BBM", municipio: "Belo Horizonte" };
+    for (const conteudo of [
+      conteudoAlerta({ ...base, fracao: "2ª Cia" }),
+      conteudoAcaoRrd({ ...base, fracao: "2ª Cia" }),
+      conteudoOcorrencia({ ...base, fracao: "2ª Cia" }),
+    ]) {
+      const rotulos = conteudo.campos.map((c) => c.rotulo);
+      expect(rotulos.indexOf("Fração")).toBe(rotulos.indexOf("UEOp") + 1);
+      expect(conteudo.campos).toContainEqual({ rotulo: "Fração", valor: "2ª Cia" });
+    }
+    for (const fracao of [null, undefined, "  "]) {
+      expect(conteudoAlerta({ ...base, fracao }).campos.some((c) => c.rotulo === "Fração")).toBe(false);
+      expect(conteudoAcaoRrd({ ...base, fracao }).campos.some((c) => c.rotulo === "Fração")).toBe(false);
+      expect(conteudoOcorrencia({ ...base, fracao }).campos.some((c) => c.rotulo === "Fração")).toBe(false);
+    }
+  });
+
   it("COB mostra contagens e camada indisponível", () => {
     const conteudo = conteudoCob("3º COB", "escuro", { alertas: 1234, acoesRrd: 0, ocorrencias: null });
     expect(conteudo.cor).toBe("#74A6E0");
@@ -650,5 +700,158 @@ describe("resumo das camadas fora do canvas (painel e legenda)", () => {
     expect(abreviarContagem(999)).toBe("999");
     expect(abreviarContagem(1234)).toBe("1,2 mil");
     expect(abreviarContagem(25_400)).toBe("25 mil");
+  });
+});
+
+describe("carimbo do mapa (Visão Geral)", () => {
+  const meta = (atualizadoEm: string, origem: MetaCamada["origem"] = "ao-vivo", erro?: string): MetaCamada => ({
+    fonte: "arcgis-alertas",
+    atualizadoEm,
+    origem,
+    ...(erro ? { erro } : {}),
+  });
+  const TODAS = CAMADAS_MAPA;
+
+  it("ignora os limites dos COBs (lidos uma vez só) e usa a leitura de pontos mais antiga", () => {
+    const estados: EstadosMetaCamadas = {
+      cobs: { meta: meta("2026-10-02T11:00:00.000Z") },
+      alertas: { meta: meta("2026-10-02T12:05:00.000Z") },
+      "acoes-rrd": { meta: meta("2026-10-02T12:00:00.000Z", "cache") },
+      "ocorrencias-complexas": { meta: meta("2026-10-02T12:03:00.000Z") },
+    };
+    expect(combinarCarimboMapa(estados, TODAS)).toEqual({
+      estado: "ok",
+      atualizadoEm: "2026-10-02T12:00:00.000Z",
+      origem: "cache",
+    });
+  });
+
+  it("pior origem e erros das leituras de reserva", () => {
+    const estados: EstadosMetaCamadas = {
+      alertas: {
+        meta: { ...meta("2026-10-02T12:00:00.000Z", "ultima-valida", "HTTP 503"), camada: "Emissão de Alertas" },
+      },
+      "acoes-rrd": { meta: meta("2026-10-02T12:01:00.000Z", "ultima-valida", "timeout") },
+    };
+    expect(combinarCarimboMapa(estados, TODAS)).toEqual({
+      estado: "ok",
+      atualizadoEm: "2026-10-02T12:00:00.000Z",
+      origem: "ultima-valida",
+      erro: "Emissão de Alertas: HTTP 503 · Ações RRD: timeout",
+    });
+  });
+
+  it("carregando enquanto falta resposta; falha quando todas as camadas de pontos falharam", () => {
+    expect(combinarCarimboMapa({}, TODAS)).toEqual({ estado: "carregando" });
+    // Só os COBs responderam: o carimbo ainda espera os pontos.
+    expect(combinarCarimboMapa({ cobs: { meta: meta("2026-10-02T11:00:00.000Z") } }, TODAS)).toEqual({
+      estado: "carregando",
+    });
+    let estados: EstadosMetaCamadas = {};
+    estados = registrarMeta(estados, "alertas", null, "Fonte indisponível no momento.");
+    estados = registrarMeta(estados, "acoes-rrd", null, "Fonte indisponível no momento.");
+    expect(combinarCarimboMapa(estados, TODAS)).toEqual({ estado: "carregando" });
+    estados = registrarMeta(estados, "ocorrencias-complexas", null, "Fonte indisponível no momento.");
+    expect(combinarCarimboMapa(estados, TODAS)).toEqual({ estado: "falha", motivo: "Fonte indisponível no momento." });
+  });
+
+  it("falha numa atualização mantém o carimbo da leitura anterior", () => {
+    let estados = registrarMeta({}, "alertas", meta("2026-10-02T12:00:00.000Z"));
+    estados = registrarMeta(estados, "alertas", null, "Sem conexão com o servidor.");
+    expect(estados.alertas).toEqual({ meta: meta("2026-10-02T12:00:00.000Z"), erro: "Sem conexão com o servidor." });
+    expect(combinarCarimboMapa(estados, ["alertas"])).toMatchObject({ estado: "ok" });
+    estados = registrarMeta(estados, "alertas", meta("2026-10-02T12:05:00.000Z"));
+    expect(estados.alertas).toEqual({ meta: meta("2026-10-02T12:05:00.000Z"), erro: undefined });
+  });
+
+  it("sem horário quando as rotas respondem sem meta; mapa só de COBs usa os COBs", () => {
+    const semMeta: EstadosMetaCamadas = {
+      alertas: { meta: null },
+      "acoes-rrd": { meta: null },
+      "ocorrencias-complexas": { meta: null },
+    };
+    expect(combinarCarimboMapa(semMeta, TODAS)).toEqual({ estado: "sem-horario" });
+    expect(combinarCarimboMapa({ cobs: { meta: meta("2026-10-02T11:00:00.000Z") } }, ["cobs"])).toMatchObject({
+      estado: "ok",
+      atualizadoEm: "2026-10-02T11:00:00.000Z",
+    });
+  });
+
+  it("motivo da falha: uma frase se igual em todas, por camada se diferente", () => {
+    expect(descreverFalhas([["alertas", "A"], ["acoes-rrd", "A"]])).toBe("A");
+    expect(descreverFalhas([["alertas", "A"], ["acoes-rrd", "B"]])).toBe("Alertas: A; Ações RRD: B");
+    expect(descreverFalhas([["alertas", " "]])).toBe("Falha ao carregar a camada.");
+  });
+});
+
+describe("registros em lista (alternativa ao clique no mapa)", () => {
+  const ponto = (x: number, y: number, properties: Record<string, unknown>) => ({
+    type: "Feature" as const,
+    geometry: { type: "Point" as const, coordinates: [x, y] },
+    properties,
+  });
+  const colecao = (...features: ReturnType<typeof ponto>[]): ColecaoMapa => ({ type: "FeatureCollection", features });
+  const colecoes: Partial<Record<CamadaMapaId, ColecaoMapa>> = {
+    alertas: colecao(
+      ponto(-44, -19, {
+        id: "a1",
+        tipoRisco: "Alagamento",
+        municipio: "Contagem",
+        cob: "1º COB",
+        ueop: "1º BBM",
+        fracao: "2ª Cia",
+        emitidoEm: "2026-10-02T10:00:00.000Z",
+      }),
+      ponto(-44, -19, { id: "a2", municipio: "Betim", emitidoEm: null }),
+    ),
+    "acoes-rrd": colecao(
+      ponto(-43, -18, { id: "r1", municipio: "Sabará", ueop: "3º BBM", executadaEm: "2026-10-02T12:00:00.000Z" }),
+    ),
+    "ocorrencias-complexas": colecao(
+      ponto(-42, -20, {
+        id: "o1",
+        situacao: "finalizada",
+        municipio: "Ipatinga",
+        iniciadaEm: "2026-10-02T10:00:00.000Z",
+      }),
+    ),
+  };
+  const todas = new Set<CamadaMapaId>(CAMADAS_MAPA);
+
+  it("do mais recente ao mais antigo, sem data no fim; empate segue a ordem das camadas", () => {
+    const lista = registrosParaLista(colecoes, todas);
+    expect(lista.map((r) => r.propriedades.id)).toEqual(["r1", "a1", "o1", "a2"]);
+    expect(new Set(lista.map((r) => r.chave)).size).toBe(lista.length);
+  });
+
+  it("traz tipo, detalhe, município, COB, UEOp, fração, data e coordenadas", () => {
+    const [, alerta, ocorrencia] = registrosParaLista(colecoes, todas);
+    expect(alerta).toMatchObject({
+      camada: "alertas",
+      tipo: "Alerta",
+      detalhe: "Alagamento",
+      municipio: "Contagem",
+      cob: "1º COB",
+      ueop: "1º BBM",
+      fracao: "2ª Cia",
+      data: "2026-10-02T10:00:00.000Z",
+      coordenadas: [-44, -19],
+    });
+    expect(ocorrencia).toMatchObject({ tipo: "Ocorrência complexa", detalhe: "Finalizada", situacao: "finalizada" });
+  });
+
+  it("só as camadas ligadas no mapa; contagem igual à do mapa", () => {
+    const soAlertas = new Set<CamadaMapaId>(["cobs", "alertas"]);
+    expect(registrosParaLista(colecoes, soAlertas).every((r) => r.camada === "alertas")).toBe(true);
+    expect(contarRegistrosNoMapa(colecoes, soAlertas)).toBe(2);
+    expect(contarRegistrosNoMapa(colecoes, todas)).toBe(4);
+    expect(registrosParaLista({}, todas)).toEqual([]);
+  });
+
+  it("UEOp e fração juntas, uma só ou nenhuma", () => {
+    expect(rotuloUnidade("1º BBM", "2ª Cia")).toBe("1º BBM · 2ª Cia");
+    expect(rotuloUnidade("1º BBM", null)).toBe("1º BBM");
+    expect(rotuloUnidade(null, "2ª Cia")).toBe("2ª Cia");
+    expect(rotuloUnidade(" ", null)).toBeNull();
   });
 });

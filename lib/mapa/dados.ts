@@ -186,7 +186,8 @@ export async function carregarCamada(
 
 export type IntervaloPeriodo = Pick<Periodo, "inicio" | "fim">;
 
-const DATA_DA_CAMADA: Partial<Record<CamadaMapaId, string>> = {
+/** Campo de data de cada camada pontual (período, lista de registros). */
+export const CAMPO_DATA_DA_CAMADA: Partial<Record<CamadaMapaId, string>> = {
   alertas: "emitidoEm",
   "acoes-rrd": "executadaEm",
   "ocorrencias-complexas": "iniciadaEm",
@@ -206,7 +207,7 @@ export function registroNoPeriodo(
   periodo: IntervaloPeriodo | null | undefined,
 ): boolean {
   if (!periodo || (!periodo.inicio && !periodo.fim)) return true;
-  const campo = DATA_DA_CAMADA[camada];
+  const campo = CAMPO_DATA_DA_CAMADA[camada];
   if (!campo) return true;
   const alvo = { id: "atual" as const, rotulo: "", inicio: periodo.inicio, fim: periodo.fim };
   if (camada === "ocorrencias-complexas" && props.situacao !== "finalizada") return true;
@@ -219,7 +220,7 @@ export function filtrarPorPeriodo(
   dados: DadosCamada,
   periodo: IntervaloPeriodo | null | undefined,
 ): DadosCamada {
-  if (!periodo || (!periodo.inicio && !periodo.fim) || !DATA_DA_CAMADA[camada]) return dados;
+  if (!periodo || (!periodo.inicio && !periodo.fim) || !CAMPO_DATA_DA_CAMADA[camada]) return dados;
   const features = dados.colecao.features.filter((f) => registroNoPeriodo(camada, f.properties ?? {}, periodo));
   const propriedades = dados.propriedades.filter((p) => registroNoPeriodo(camada, p, periodo));
   return {

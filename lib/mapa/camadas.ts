@@ -13,12 +13,13 @@ import { RAIO_CLUSTER_PX, ZOOM_MAXIMO_CLUSTER } from "./constantes";
 import { expressaoCorCob } from "./cores-cob";
 import { criarMascaraMg } from "./mascara";
 import {
+  AGRUPAMENTOS,
   ANEL_OCORRENCIA,
-  COR_ACAO_RRD,
-  COR_ALERTA,
   COR_OCORRENCIA,
   COR_OCORRENCIA_FINALIZADA,
   SIMBOLOS,
+  type CamadaComAgrupamento,
+  type SimboloAgrupamento,
 } from "./simbologia";
 import { PALETAS_MAPA, type TemaMapa } from "./tema";
 
@@ -87,7 +88,7 @@ export function camadaLogicaDoEstilo(idEstilo: string): CamadaMapaId | null {
 }
 
 /** Fontes agrupadas em clusters quando o zoom é baixo. */
-export const FONTES_COM_CLUSTER: readonly CamadaMapaId[] = ["alertas", "acoes-rrd"];
+export const FONTES_COM_CLUSTER: readonly CamadaComAgrupamento[] = ["alertas", "acoes-rrd"];
 
 /** Coleção vazia compartilhada (o MapLibre clona o estilo; nunca é alterada). */
 export const COLECAO_VAZIA: FeatureCollection = { type: "FeatureCollection", features: [] };
@@ -140,9 +141,7 @@ export const DESLOCAMENTO_CLUSTER_ACOES: [number, number] = [-11, 9];
 function camadasCluster(
   id: string,
   fonte: string,
-  cor: string,
-  corHalo: string,
-  raioMinimo: number,
+  simbolo: SimboloAgrupamento,
   visivel: boolean,
   deslocamento: [number, number] = [0, 0],
 ): CircleLayerSpecification {
@@ -153,11 +152,12 @@ function camadasCluster(
     filter: EH_CLUSTER,
     layout: { visibility: visibilidade(visivel) },
     paint: {
-      "circle-color": cor,
-      "circle-radius": expressaoRaioCluster(raioMinimo),
-      // Halo translúcido = segundo sinal de "agrupamento" (além do número).
-      "circle-stroke-color": corHalo,
-      "circle-stroke-width": 5,
+      "circle-color": simbolo.preenchimento,
+      "circle-radius": expressaoRaioCluster(simbolo.raioMinimo),
+      // Alertas: halo translúcido em volta do disco cheio. Ações RRD: anel
+      // (traço cheio sobre miolo escuro) — forma distinta, não só a cor.
+      "circle-stroke-color": simbolo.contorno,
+      "circle-stroke-width": simbolo.larguraContorno,
       "circle-opacity": 0.95,
       "circle-translate": deslocamento,
       "circle-translate-anchor": "viewport",
@@ -260,9 +260,7 @@ export function montarEstiloMapa(opcoes: OpcoesEstiloMapa): StyleSpecification {
     camadasCluster(
       ID_CAMADAS.acoesCluster,
       FONTES_CAMADAS["acoes-rrd"],
-      COR_ACAO_RRD,
-      "rgba(67, 198, 124, 0.35)",
-      11,
+      AGRUPAMENTOS["acoes-rrd"],
       ver("acoes-rrd"),
       DESLOCAMENTO_CLUSTER_ACOES,
     ),
@@ -279,14 +277,7 @@ export function montarEstiloMapa(opcoes: OpcoesEstiloMapa): StyleSpecification {
         "circle-stroke-width": acao.larguraContorno,
       },
     },
-    camadasCluster(
-      ID_CAMADAS.alertasCluster,
-      FONTES_CAMADAS.alertas,
-      COR_ALERTA,
-      "rgba(255, 138, 69, 0.35)",
-      13,
-      ver("alertas"),
-    ),
+    camadasCluster(ID_CAMADAS.alertasCluster, FONTES_CAMADAS.alertas, AGRUPAMENTOS.alertas, ver("alertas")),
     {
       id: ID_CAMADAS.alertasPonto,
       type: "circle",

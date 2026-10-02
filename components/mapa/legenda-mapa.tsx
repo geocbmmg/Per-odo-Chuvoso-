@@ -5,10 +5,10 @@ import { useId, useState } from "react";
 import { cn } from "@/lib/utils";
 import { CAMADAS_MAPA, type CamadaMapaId } from "@/lib/dominio/tipos";
 import {
-  COR_ACAO_RRD,
-  COR_ALERTA,
+  AGRUPAMENTOS,
   CORES_COB,
   ehCamadaPontual,
+  FONTES_COM_CLUSTER,
   ROTULOS_CAMADAS,
   SIMBOLOS,
   type TemaMapa,
@@ -75,6 +75,7 @@ export function LegendaMapa({
   const idRegistros = `${idCorpo}-registros`;
   const ligadas = new Set(visiveis ?? camadas);
   const pontuais = camadas.filter(ehCamadaPontual);
+  const comAgrupamento = FONTES_COM_CLUSTER.filter((c) => camadas.includes(c));
   const semLocalizacao = pontuais.reduce((soma, c) => soma + (info?.[c]?.semLocalizacao ?? 0), 0);
   const textoResumo = resumo(camadas, info);
 
@@ -151,29 +152,30 @@ export function LegendaMapa({
                   Ocorrência finalizada
                 </li>
               ) : null}
-              {pontuais.includes("alertas") || pontuais.includes("acoes-rrd") ? (
-                <li className="mapa-legenda__item">
-                  <Simbolo
-                    forma="agrupamento"
-                    cor={pontuais.includes("alertas") ? COR_ALERTA : COR_ACAO_RRD}
-                    numero="12"
-                  />
-                  Agrupamento (número = quantidade)
+              {/* Cada agrupamento com forma própria (disco x anel), não só cor. */}
+              {comAgrupamento.map((camada) => (
+                <li key={`agrupamento-${camada}`} className="mapa-legenda__item" data-oculta={!ligadas.has(camada)}>
+                  <Simbolo forma={AGRUPAMENTOS[camada].forma} cor={AGRUPAMENTOS[camada].cor} numero="12" />
+                  {AGRUPAMENTOS[camada].rotulo}
                 </li>
-              ) : null}
+              ))}
             </ul>
           </div>
         ) : null}
 
-        {rotuloPeriodo || semLocalizacao > 0 ? (
+        {rotuloPeriodo || semLocalizacao > 0 || comAgrupamento.length > 0 ? (
           <p className="mapa-legenda__nota">
-            {rotuloPeriodo ? `Contagens: ${rotuloPeriodo}.` : null}
-            {rotuloPeriodo && semLocalizacao > 0 ? " " : null}
-            {semLocalizacao > 0
-              ? semLocalizacao === 1
+            {[
+              comAgrupamento.length > 0 ? "No agrupamento, o número é a quantidade de registros." : null,
+              rotuloPeriodo ? `Contagens: ${rotuloPeriodo}.` : null,
+              semLocalizacao === 1
                 ? "1 registro sem localização fica fora do mapa, mas entra nas contagens."
-                : `${semLocalizacao.toLocaleString("pt-BR")} registros sem localização ficam fora do mapa, mas entram nas contagens.`
-              : null}
+                : semLocalizacao > 1
+                  ? `${semLocalizacao.toLocaleString("pt-BR")} registros sem localização ficam fora do mapa, mas entram nas contagens.`
+                  : null,
+            ]
+              .filter(Boolean)
+              .join(" ")}
           </p>
         ) : null}
       </div>

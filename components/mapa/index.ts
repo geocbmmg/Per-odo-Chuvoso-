@@ -25,7 +25,13 @@ const MapaDinamico = dynamic(() => import("./mapa-situacao"), {
 export function MapaSituacao(props: PropsMapaSituacao) {
   return createElement(
     AlturaMapaContexto.Provider,
-    { value: { altura: props.altura ?? ALTURA_PADRAO_MAPA, legenda: props.mostrarLegenda ?? true } },
+    {
+      value: {
+        altura: props.altura ?? ALTURA_PADRAO_MAPA,
+        legenda: props.mostrarLegenda ?? true,
+        lista: props.mostrarLista ?? true,
+      },
+    },
     createElement(MapaDinamico, props),
   );
 }

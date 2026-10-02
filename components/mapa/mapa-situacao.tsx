@@ -47,11 +47,13 @@ import {
   ZOOM_MAXIMO_ROTULOS_COB,
   ZOOM_MINIMO,
   ZOOM_MINIMO_ROTULOS_COB_CELULAR,
+  ZOOM_VER_REGISTRO,
   type BaseMapaId,
   type ColecaoMapa,
   type ConteudoPopup,
   type DadosCamada,
   type MetaCamada,
+  type RegistroLista,
 } from "@/lib/mapa";
 import { ALTURA_PADRAO_MAPA } from "./altura";
 import {
@@ -63,6 +65,7 @@ import {
 } from "./hooks";
 import { infoDaCamada, type InfoCamada } from "./info";
 import { LegendaMapa } from "./legenda-mapa";
+import { ListaRegistros } from "./lista-registros";
 import { ContagensClusters, RotulosCob } from "./marcadores";
 import { PainelCamadas } from "./painel-camadas";
 import { criarConteudoPopup } from "./popup-dom";
@@ -87,6 +90,11 @@ export interface PropsMapaSituacao {
   intervaloAtualizacaoMs?: number;
   /** Mostra a legenda sob o mapa (padrão: true). */
   mostrarLegenda?: boolean;
+  /**
+   * Mostra "Ver registros em lista" sob o mapa (padrão: true): os mesmos
+   * registros, acessíveis por teclado e leitor de tela.
+   */
+  mostrarLista?: boolean;
   /** Rótulo acessível da região do mapa. */
   rotulo?: string;
   /**
@@ -130,6 +138,11 @@ function selecionarCob(mapa: MapaMapLibre, selecaoRef: RefObject<string | null>,
 /** Margens para o balão não nascer sob a barra de ferramentas (à esquerda). */
 const PADDING_BALAO = { top: 10, right: 10, bottom: 10, left: 60 };
 
+/**
+ * Abre o balão. `retornoFoco`: elemento fora do mapa que abriu o balão (ex.:
+ * botão "Ver no mapa" da lista); ao fechar, o foco volta para ele em vez de
+ * ir para o canvas ou se perder no <body>.
+ */
 function abrirPopup(
   lib: MapLibre,
   mapa: MapaMapLibre,
@@ -138,6 +151,7 @@ function abrirPopup(
   conteudo: HTMLElement,
   corBorda: string,
   aoFechar?: () => void,
+  retornoFoco?: HTMLElement | null,
 ): void {
   popupRef.current?.remove();
   const popup = new lib.Popup({
@@ -154,16 +168,29 @@ function abrirPopup(
     .addTo(mapa);
   const elemento = popup.getElement();
   elemento.style.setProperty("--pop-borda", corBorda);
+  // Fechado de dentro (Esc ou X): o foco estava no balão, que some.
+  let fechadoPorDentro = false;
   elemento.addEventListener("keydown", (evento) => {
     if (evento.key === "Escape") {
       evento.stopPropagation();
+      fechadoPorDentro = true;
       popup.remove();
-      mapa.getCanvas().focus();
+      if (!retornoFoco?.isConnected) mapa.getCanvas().focus();
     }
   });
+  elemento.addEventListener(
+    "click",
+    (evento) => {
+      if (evento.target instanceof Element && evento.target.closest(".maplibregl-popup-close-button")) {
+        fechadoPorDentro = true;
+      }
+    },
+    true,
+  );
   popup.on("close", () => {
     if (popupRef.current === popup) popupRef.current = null;
     aoFechar?.();
+    if (fechadoPorDentro && retornoFoco?.isConnected) retornoFoco.focus();
   });
   popupRef.current = popup;
 }
@@ -222,6 +249,7 @@ export default function MapaSituacao({
   periodo = null,
   intervaloAtualizacaoMs = INTERVALO_ATUALIZACAO_PADRAO_MS,
   mostrarLegenda = true,
+  mostrarLista = true,
   rotulo = ROTULO_REGIAO_MAPA,
   onMeta,
 }: PropsMapaSituacao) {
@@ -612,9 +640,37 @@ export default function MapaSituacao({
     salvarBase(armazenamentoLocal(), nova);
   };
 
+  /**
+   * "Ver no mapa" (lista de registros): aproxima até os agrupamentos se
+   * desfazerem, centraliza o ponto e abre o mesmo balão do clique. Sem
+   * animação: o balão nasce já dentro da área visível e o foco vai para ele.
+   */
+  const verNoMapa = (registro: RegistroLista, origem: HTMLElement) => {
+    const mapa = mapaRef.current;
+    const lib = libRef.current;
+    if (!mapa || !lib) return;
+    if (celular) setPainel(null);
+    const onde = registro.coordenadas;
+    const { clientWidth, clientHeight } = mapa.getContainer();
+    mapa.easeTo({
+      center: onde,
+      zoom: Math.max(mapa.getZoom(), ZOOM_VER_REGISTRO),
+      // Em mapas estreitos o ponto fica abaixo do meio para o balão caber.
+      offset: clientWidth < 560 ? [0, Math.round(clientHeight * 0.14)] : [0, 0],
+      animate: false,
+    });
+    selecionarCob(mapa, cobSelecionadoRef, null);
+    const conteudo = conteudoDoPonto(registro.camada, registro.propriedades, { chamadasComAcao });
+    abrirPopup(lib, mapa, popupRef, onde, criarConteudoPopup([conteudo]), conteudo.cor, undefined, origem);
+  };
+
   // ── Derivados para a interface ───────────────────────────────────────────
 
   const camadasComFalha = disponiveis.filter((c) => info[c]?.estado === "erro");
+  const semLocalizacaoVisiveis = disponiveis.reduce(
+    (soma, c) => soma + (c !== "cobs" && visiveis.has(c) ? (info[c]?.semLocalizacao ?? 0) : 0),
+    0,
+  );
   const emTelaCheia = telaCheia || expandido;
   const rotulosCobVisiveis =
     visiveis.has("cobs") &&
@@ -775,6 +831,17 @@ export default function MapaSituacao({
           info={info}
           rotuloPeriodo={periodo?.rotulo}
           tema={tema}
+        />
+      ) : null}
+
+      {mostrarLista ? (
+        <ListaRegistros
+          colecoes={colecoes}
+          visiveis={visiveis}
+          camadas={disponiveis}
+          rotuloPeriodo={periodo?.rotulo}
+          semLocalizacao={semLocalizacaoVisiveis}
+          onVerNoMapa={pronto && !falha ? verNoMapa : null}
         />
       ) : null}
     </div>

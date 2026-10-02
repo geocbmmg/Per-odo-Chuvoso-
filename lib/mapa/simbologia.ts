@@ -30,7 +30,13 @@ export const ROTULOS_SINGULAR: Record<CamadaMapaId, string> = {
 };
 
 /** Forma usada na legenda (o mapa desenha o equivalente com círculos). */
-export type FormaSimbolo = "circulo" | "circulo-pequeno" | "alvo" | "alvo-apagado" | "agrupamento";
+export type FormaSimbolo =
+  | "circulo"
+  | "circulo-pequeno"
+  | "alvo"
+  | "alvo-apagado"
+  | "agrupamento"
+  | "agrupamento-anel";
 
 export interface SimboloPonto {
   rotulo: string;
@@ -74,6 +80,49 @@ export const SIMBOLOS: Record<CamadaPontual, SimboloPonto> = {
     raio: 6.5,
     contorno: COR_CONTORNO_PONTO,
     larguraContorno: 1.5,
+  },
+};
+
+/** Camadas cujos pontos se agrupam (clusters) em zoom baixo. */
+export type CamadaComAgrupamento = "alertas" | "acoes-rrd";
+
+/** Agrupamento (cluster) no mapa e na legenda. */
+export interface SimboloAgrupamento {
+  rotulo: string;
+  forma: Extract<FormaSimbolo, "agrupamento" | "agrupamento-anel">;
+  /** Cor da camada (amostra da legenda). */
+  cor: string;
+  /** Miolo do círculo. */
+  preenchimento: string;
+  /** Traço em volta do miolo. */
+  contorno: string;
+  larguraContorno: number;
+  /** Raio (px) com menos de 10 pontos; cresce com a quantidade. */
+  raioMinimo: number;
+}
+
+/**
+ * Agrupamentos com FORMA distinta, não só cor: alertas = disco cheio com halo
+ * translúcido; ações RRD = anel (miolo escuro, traço cheio, número claro).
+ */
+export const AGRUPAMENTOS: Record<CamadaComAgrupamento, SimboloAgrupamento> = {
+  alertas: {
+    rotulo: "Agrupamento de alertas",
+    forma: "agrupamento",
+    cor: COR_ALERTA,
+    preenchimento: COR_ALERTA,
+    contorno: "rgba(255, 138, 69, 0.35)",
+    larguraContorno: 5,
+    raioMinimo: 13,
+  },
+  "acoes-rrd": {
+    rotulo: "Agrupamento de ações RRD",
+    forma: "agrupamento-anel",
+    cor: COR_ACAO_RRD,
+    preenchimento: COR_CONTORNO_PONTO,
+    contorno: COR_ACAO_RRD,
+    larguraContorno: 3,
+    raioMinimo: 11,
   },
 };
 

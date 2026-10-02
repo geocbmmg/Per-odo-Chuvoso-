@@ -21,6 +21,8 @@ export const ZOOM_MAXIMO = 19;
 /** Clusters de alertas e ações RRD se desfazem acima deste zoom. */
 export const ZOOM_MAXIMO_CLUSTER = 10;
 export const RAIO_CLUSTER_PX = 42;
+/** Zoom mínimo ao localizar um registro pela lista: os agrupamentos já se desfizeram. */
+export const ZOOM_VER_REGISTRO = ZOOM_MAXIMO_CLUSTER + 1;
 
 /** Rótulos dos COBs (marcadores HTML) somem acima deste zoom. */
 export const ZOOM_MAXIMO_ROTULOS_COB = 9;

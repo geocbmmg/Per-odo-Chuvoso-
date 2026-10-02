@@ -669,6 +669,12 @@
   border-top: 1px solid rgba(var(--m-linha-rgb), 0.09);
 }
 
+/* Lugar do resumo "Ver registros em lista" (fechado). */
+.mapa-esqueleto__lista {
+  height: 45px;
+  border-top: 1px solid rgba(var(--m-linha-rgb), 0.09);
+}
+
 @media (max-width: 767.98px) {
   .mapa-esqueleto__legenda {
     height: 45px;
@@ -947,6 +953,19 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--sim-cor) 35%, transparent);
 }
 
+/* Agrupamento de ações RRD: anel (miolo escuro + traço cheio), não disco. */
+:is(.mapa-simbolo, .mapa-pop__marca)[data-forma="agrupamento-anel"]::before {
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid var(--sim-cor);
+  background: #0a0e14;
+}
+
+.mapa-simbolo[data-forma="agrupamento-anel"] .mapa-simbolo__n {
+  color: #ffffff;
+  font-size: 8.5px;
+}
+
 :is(.mapa-simbolo, .mapa-pop__marca)[data-forma="area"]::before {
   width: 18px;
   height: 13px;
@@ -1010,6 +1029,11 @@
   font-variant-numeric: tabular-nums;
   pointer-events: none;
   user-select: none;
+}
+
+/* Número sobre o anel escuro das ações RRD. */
+.mapa-cluster-n[data-camada="acoes-rrd"] {
+  color: #ffffff;
 }
 
 /* ── Créditos do MapLibre (visíveis e compactos) ────────────────────────── */
@@ -1165,6 +1189,202 @@
   color: var(--m-mut);
 }
 
+/* ── Registros em lista (alternativa ao canvas para teclado) ────────────── */
+
+.mapa-lista {
+  flex: 0 0 auto;
+  min-width: 0;
+  border-top: 1px solid rgba(var(--m-linha-rgb), 0.09);
+  background: var(--m-sup1);
+  color: var(--m-ink2);
+  font-size: 12.5px;
+}
+
+/* Em tela cheia o mapa fica com o espaço todo. */
+.mapa-sit:fullscreen .mapa-lista,
+.mapa-sit[data-expandido="true"] .mapa-lista {
+  display: none;
+}
+
+.mapa-lista__alternar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 14px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.mapa-lista__alternar::-webkit-details-marker {
+  display: none;
+}
+
+.mapa-lista__alternar:hover .mapa-lista__titulo {
+  color: var(--m-ink-forte);
+}
+
+.mapa-lista__alternar:focus-visible {
+  outline-offset: -3px;
+}
+
+.mapa-lista__alternar > svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-left: auto;
+  transition: transform 0.15s;
+}
+
+.mapa-lista[open] .mapa-lista__alternar > svg {
+  transform: rotate(180deg);
+}
+
+.mapa-lista__titulo {
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--m-mut);
+}
+
+.mapa-lista__corpo {
+  display: grid;
+  gap: 8px;
+  padding: 0 14px 12px;
+}
+
+.mapa-lista__nota,
+.mapa-lista__vazio {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--m-mut);
+}
+
+.mapa-lista__vazio {
+  padding: 10px 0;
+  font-size: 12.5px;
+}
+
+/* Rola dentro do próprio contêiner (a página nunca rola de lado). */
+.mapa-lista__rolagem {
+  max-height: 420px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border-radius: 10px;
+  border: 1px solid rgba(var(--m-linha-rgb), 0.09);
+  scrollbar-width: thin;
+  scrollbar-color: var(--polegar, rgba(var(--m-linha-rgb), 0.25)) transparent;
+}
+
+.mapa-lista__rolagem:focus-visible {
+  outline: 2px solid var(--m-acc-forte);
+  outline-offset: 2px;
+}
+
+.mapa-lista__tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+
+.mapa-lista__tabela thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(var(--m-acc-rgb), 0.34);
+  background: var(--m-sup1);
+  color: var(--m-faint);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.mapa-lista__tabela tbody :is(th, td) {
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(var(--m-linha-rgb), 0.06);
+  font-weight: 400;
+  text-align: left;
+  vertical-align: middle;
+  color: var(--m-ink);
+}
+
+.mapa-lista__tabela tbody tr:nth-child(even) {
+  background: rgba(var(--m-linha-rgb), 0.02);
+}
+
+.mapa-lista__tabela tbody tr:hover {
+  background: rgba(var(--m-acc-rgb), 0.08);
+}
+
+.mapa-lista__tabela tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.mapa-lista__tipo {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 150px;
+  font-weight: 600;
+}
+
+.mapa-lista__detalhe {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--m-mut);
+}
+
+.mapa-lista__nowrap {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.mapa-lista__ver,
+.mapa-lista__mais {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(var(--m-acc-rgb), 0.45);
+  background: transparent;
+  color: var(--m-acc-txt);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.mapa-lista__ver:hover,
+.mapa-lista__mais:hover {
+  background: rgba(var(--m-acc-rgb), 0.12);
+}
+
+.mapa-lista__ver svg {
+  width: 14px;
+  height: 14px;
+}
+
+.mapa-lista__mais {
+  justify-self: start;
+}
+
+.mapa-lista__contagem {
+  font-weight: 500;
+  color: var(--m-mut);
+  font-variant-numeric: tabular-nums;
+}
+
 /* ── Celular ────────────────────────────────────────────────────────────── */
 
 @media (max-width: 767.98px) {
@@ -1236,6 +1456,11 @@
     background-repeat: no-repeat;
   }
 
+  .mapa-lista__ver,
+  .mapa-lista__mais {
+    height: 44px;
+  }
+
   .mapa-legenda[data-recolhivel="true"] .mapa-legenda__alternar {
     display: flex;
   }
@@ -1256,6 +1481,7 @@
   .mapa-sit *::before,
   .mapa-sit *::after,
   .mapa-legenda *,
+  .mapa-lista *,
   .mapa-esqueleto * {
     animation: none !important;
     transition: none !important;

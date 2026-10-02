@@ -53,6 +53,16 @@ function campo(rotulo: string, valor: unknown): CampoPopup {
   return { rotulo, valor: texto(valor) ?? VAZIO };
 }
 
+/** Campo que só aparece quando há valor (ex.: a fração, ausente em formulários antigos). */
+function campoOpcional(rotulo: string, valor: unknown): CampoPopup | null {
+  const t = texto(valor);
+  return t ? { rotulo, valor: t } : null;
+}
+
+function presentes(campos: Array<CampoPopup | null>): CampoPopup[] {
+  return campos.filter((c): c is CampoPopup => c !== null);
+}
+
 function campoData(rotulo: string, valor: unknown): CampoPopup {
   const t = texto(valor);
   return { rotulo, valor: t ? formatarDataHora(t) : VAZIO };
@@ -107,16 +117,17 @@ export function conteudoAlerta(props: Record<string, unknown>, contexto: Context
     titulo: juntar(texto(props.tipoRisco), texto(props.municipio)) ?? "Alerta",
     cor: COR_ALERTA,
     forma: "circulo",
-    campos: [
+    campos: presentes([
       campo("Nº chamada CAD", props.numeroChamada),
       campo("COB", props.cob),
       campo("UEOp", props.ueop),
+      campoOpcional("Fração", props.fracao),
       campo("Município", props.municipio),
       campo("Tipo de risco", props.tipoRisco),
       campo("Nível", props.nivel),
       campoCota(props.cota),
       campoData("Emitido em", props.emitidoEm),
-    ],
+    ]),
   };
   if (contexto.chamadasComAcao) {
     const numero = normalizarNumeroChamada(props.numeroChamada);
@@ -137,14 +148,15 @@ export function conteudoAcaoRrd(props: Record<string, unknown>): ConteudoPopup {
     titulo: juntar(texto(props.municipio), texto(props.ueop)) ?? "Ação RRD",
     cor: COR_ACAO_RRD,
     forma: "circulo-pequeno",
-    campos: [
+    campos: presentes([
       campo("Nº chamada CAD", props.numeroChamada),
       campo("COB", props.cob),
       campo("UEOp", props.ueop),
+      campoOpcional("Fração", props.fracao),
       campo("Município", props.municipio),
       campo("Ação executada", props.descricao),
       campoData("Executada em", props.executadaEm),
-    ],
+    ]),
   };
 }
 
@@ -160,13 +172,14 @@ export function conteudoOcorrencia(props: Record<string, unknown>): ConteudoPopu
     titulo: texto(props.titulo) ?? juntar("Ocorrência complexa", texto(props.municipio)) ?? "Ocorrência complexa",
     cor: finalizada ? COR_OCORRENCIA_FINALIZADA : COR_OCORRENCIA,
     forma: finalizada ? "alvo-apagado" : "alvo",
-    campos: [
+    campos: presentes([
       campo("Nº chamada CAD", props.numeroChamada),
       campo("COB", props.cob),
       campo("UEOp", props.ueop),
+      campoOpcional("Fração", props.fracao),
       campo("Município", props.municipio),
       campoData("Iniciada em", props.iniciadaEm),
-    ],
+    ]),
     selo: { texto: ROTULOS_SITUACAO[situacao], tom: TOM_SITUACAO[situacao] },
   };
 }
