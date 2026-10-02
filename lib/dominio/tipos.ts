@@ -1,4 +1,5 @@
 import type { FeatureCollection, MultiPolygon, Point, Polygon } from "geojson";
+import type { NivelRisco } from "./matrizes";
 
 /**
  * Tipos de domínio da Sala de Situação, já normalizados a partir das fontes.
@@ -28,6 +29,8 @@ export interface Alerta {
   tipoRisco: string | null;
   /** Nível do alerta conforme o tipo (campo nivel, inundacao ou deslizamento do formulário). */
   nivel: string | null;
+  /** Nível na escala única das matrizes do CBMMG (verde … roxo); null se não reconhecido. */
+  nivelRisco: NivelRisco | null;
   /** Meteorológico: chuva em mm/h e acumulado em 24 h informados na emissão. */
   chuvaMmHora: number | null;
   chuva24hMm: number | null;

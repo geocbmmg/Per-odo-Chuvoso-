@@ -240,15 +240,19 @@
   --cob-5: #9aa0ac;
   --cob-6: #c05f58;
 
-  /* Escala de risco (recomendação de visual-tokens.md §3; NÃO reaproveita --alerta) */
-  --risco-normal: #2e8b57;
-  --risco-normal-tinta: #ffffff;
-  --risco-atencao: #eab308;
-  --risco-atencao-tinta: #1a1a1a;
-  --risco-alerta: #cc6e1f;
-  --risco-alerta-tinta: #1a1a1a;
-  --risco-perigo: #e11d48;
-  --risco-perigo-tinta: #ffffff;
+  /* Escala de risco das matrizes do CBMMG (lib/dominio/matrizes.ts → CORES_NIVEL;
+     tests/matrizes.test.ts confere que são iguais). Cor é dado: igual nos dois temas.
+     NÃO reaproveita --alerta. */
+  --risco-verde: #88c485;
+  --risco-verde-tinta: #0a0e14;
+  --risco-amarelo: #efe921;
+  --risco-amarelo-tinta: #0a0e14;
+  --risco-laranja: #f8982b;
+  --risco-laranja-tinta: #0a0e14;
+  --risco-vermelho: #ee312d;
+  --risco-vermelho-tinta: #0a0e14;
+  --risco-roxo: #5f4d9f;
+  --risco-roxo-tinta: #ffffff;
 }
 
 /* ------------------------------------------------------------------ */
@@ -341,10 +345,11 @@
   --color-cob-4-contorno: var(--cob-4-contorno);
   --color-cob-5-contorno: var(--cob-5-contorno);
   --color-cob-6-contorno: var(--cob-6-contorno);
-  --color-risco-normal: var(--risco-normal);
-  --color-risco-atencao: var(--risco-atencao);
-  --color-risco-alerta: var(--risco-alerta);
-  --color-risco-perigo: var(--risco-perigo);
+  --color-risco-verde: var(--risco-verde);
+  --color-risco-amarelo: var(--risco-amarelo);
+  --color-risco-laranja: var(--risco-laranja);
+  --color-risco-vermelho: var(--risco-vermelho);
+  --color-risco-roxo: var(--risco-roxo);
 
   /* raios: sm 8 · md 10 · lg 12 · xl 16 (controles usam 9px e painéis 14px como valor arbitrário) */
   --radius-sm: calc(var(--radius) - 4px);

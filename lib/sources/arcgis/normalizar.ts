@@ -10,6 +10,7 @@ import type {
   OcorrenciaComplexa,
   SituacaoOcorrencia,
 } from "@/lib/dominio/tipos";
+import { NIVEIS_RISCO, nivelDoCodigoSurvey, type NivelRisco } from "@/lib/dominio/matrizes";
 import { normalizarRotuloCob } from "@/lib/territorio";
 import { buscarFracao, nomeMunicipio } from "@/lib/territorio/fracoes";
 import {
@@ -132,23 +133,40 @@ function territorio<K extends string>(
   };
 }
 
+/**
+ * Nível na escala única das matrizes: pelo código/rótulo do formulário
+ * ("Laranja (Alto)", "Vermelho_Inundacao") ou pela cor no início do texto.
+ */
+export function nivelRiscoDoTexto(valor: string | null): NivelRisco | null {
+  if (!valor) return null;
+  const pelaMatriz = nivelDoCodigoSurvey(valor);
+  if (pelaMatriz) return pelaMatriz;
+  const cor = valor.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().match(/^[a-z]+/)?.[0];
+  return NIVEIS_RISCO.find((n) => n === cor) ?? null;
+}
+
 export function normalizarAlertas(campos: CampoEsri[], feicoes: FeicaoEsri[]): Normalizado<FeicoesAlertas> {
-  return normalizarPontos(campos, feicoes, CANDIDATOS_ALERTA, (attrs, mapa, id): Alerta => ({
-    id,
-    numeroChamada: texto(attrs, mapa, "numeroChamada"),
-    ...territorio(attrs, mapa),
-    tipoRisco: classificarTipoRisco(texto(attrs, mapa, "tipoRisco")),
+  return normalizarPontos(campos, feicoes, CANDIDATOS_ALERTA, (attrs, mapa, id): Alerta => {
     // Um campo de nível por tipo de risco no formulário: vale o primeiro preenchido.
-    nivel: texto(attrs, mapa, "nivel") ?? texto(attrs, mapa, "nivelHidrologico") ?? texto(attrs, mapa, "nivelGeologico"),
-    chuvaMmHora: comoNumero(lerAtributo(attrs, mapa.chuvaMmHora)),
-    chuva24hMm: comoNumero(lerAtributo(attrs, mapa.chuva24hMm)),
-    bacia: texto(attrs, mapa, "bacia"),
-    rio: texto(attrs, mapa, "rio"),
-    cota: comoNumero(lerAtributo(attrs, mapa.cota)),
-    indiceRisco: comoNumero(lerAtributo(attrs, mapa.indiceRisco)),
-    emitidoEm: data(attrs, mapa, "emitidoEm"),
-    validoAte: data(attrs, mapa, "validoAte"),
-  }));
+    const nivel =
+      texto(attrs, mapa, "nivel") ?? texto(attrs, mapa, "nivelHidrologico") ?? texto(attrs, mapa, "nivelGeologico");
+    return {
+      id,
+      numeroChamada: texto(attrs, mapa, "numeroChamada"),
+      ...territorio(attrs, mapa),
+      tipoRisco: classificarTipoRisco(texto(attrs, mapa, "tipoRisco")),
+      nivel,
+      nivelRisco: nivelRiscoDoTexto(nivel),
+      chuvaMmHora: comoNumero(lerAtributo(attrs, mapa.chuvaMmHora)),
+      chuva24hMm: comoNumero(lerAtributo(attrs, mapa.chuva24hMm)),
+      bacia: texto(attrs, mapa, "bacia"),
+      rio: texto(attrs, mapa, "rio"),
+      cota: comoNumero(lerAtributo(attrs, mapa.cota)),
+      indiceRisco: comoNumero(lerAtributo(attrs, mapa.indiceRisco)),
+      emitidoEm: data(attrs, mapa, "emitidoEm"),
+      validoAte: data(attrs, mapa, "validoAte"),
+    };
+  });
 }
 
 /** Ações e nº REDS da repetição, agrupados pelo GlobalID do registro principal. */

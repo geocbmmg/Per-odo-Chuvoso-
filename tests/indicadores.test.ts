@@ -18,6 +18,7 @@ function alerta(p: Partial<Alerta>): Alerta {
     nivel: null,
     chuvaMmHora: null,
     chuva24hMm: null,
+    nivelRisco: null,
     bacia: null,
     rio: null,
     cota: null,

@@ -4,7 +4,7 @@ import { periodoChuvoso } from "@/lib/dominio/periodo";
 import type { CamadaArcgisId } from "@/lib/sources/arcgis/camadas";
 import type { CampoEsri, CamadasServicoEsri, MetadadosCamadaEsri } from "@/lib/sources/arcgis/cliente";
 import { encontrarRepeticao, escolherCamada, normalizarGuid } from "@/lib/sources/arcgis/deteccao";
-import { classificarSituacao, classificarTipoRisco } from "@/lib/sources/arcgis/normalizar";
+import { classificarSituacao, classificarTipoRisco, nivelRiscoDoTexto } from "@/lib/sources/arcgis/normalizar";
 import { normalizarCamada, planejarLeitura } from "@/lib/sources/arcgis/plano";
 import { CANDIDATOS_ACAO_RRD_REPETICAO, CANDIDATOS_ALERTA } from "@/lib/sources/arcgis/camadas";
 import { REFERENCIA_ARCGIS_EXEMPLO, exemploServicoArcgis } from "@/lib/sources/exemplos/arcgis";
@@ -58,6 +58,7 @@ describe("leitura das camadas ArcGIS no esquema real dos formulários (dados de 
       fracao: "2ª Cia/1º Pel (Ouro Preto)",
       tipoRisco: "Geológico",
       nivel: "Laranja (Alto)",
+      nivelRisco: "laranja",
       indiceRisco: 1.9,
     });
     const pocos = alertas.feicoes.features.find((f) => f.properties.municipio === "Poços de Caldas");
@@ -71,7 +72,7 @@ describe("leitura das camadas ArcGIS no esquema real dos formulários (dados de 
     expect(hidro.length).toBeGreaterThan(0);
     expect(hidro.every((f) => f.properties.nivel && f.properties.rio && f.properties.cota !== null)).toBe(true);
     const muriae = hidro.find((f) => f.properties.municipio === "Muriaé");
-    expect(muriae?.properties).toMatchObject({ bacia: "Rio Muriaé", nivel: "Vermelho (Inundação)", cota: 640 });
+    expect(muriae?.properties).toMatchObject({ bacia: "Rio Muriaé", nivel: "Vermelho (Inundação)", nivelRisco: "vermelho", cota: 640 });
     expect(alertas.feicoes.features.every((f) => f.properties.validoAte === null || f.properties.validoAte > (f.properties.emitidoEm ?? ""))).toBe(true);
   });
 
@@ -90,6 +91,7 @@ describe("leitura das camadas ArcGIS no esquema real dos formulários (dados de 
         "indiceRisco",
         "municipio",
         "nivel",
+        "nivelRisco",
         "numeroChamada",
         "rio",
         "tipoRisco",
@@ -104,6 +106,15 @@ describe("leitura das camadas ArcGIS no esquema real dos formulários (dados de 
     for (const f of exemplo.feicoes(0)) {
       if (typeof f.attributes.numero === "string") expect(texto).not.toContain(f.attributes.numero);
     }
+  });
+
+  it("todo alerta do formulário tem nível na escala das matrizes", () => {
+    expect(alertas.feicoes.features.every((f) => f.properties.nivelRisco !== null)).toBe(true);
+    expect(nivelRiscoDoTexto("Vermelho (Perigo Servero)")).toBe("vermelho");
+    expect(nivelRiscoDoTexto("Roxo_Extremamente_Alto")).toBe("roxo");
+    expect(nivelRiscoDoTexto("Laranja - risco alto")).toBe("laranja");
+    expect(nivelRiscoDoTexto("Alerta")).toBeNull(); // sem cor é ambíguo (amarelo na chuva, laranja na inundação)
+    expect(nivelRiscoDoTexto(null)).toBeNull();
   });
 
   it("agrupa o tipo de risco nas três categorias, apesar dos rótulos do formulário", () => {

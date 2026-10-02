@@ -233,18 +233,24 @@ claro). Utilitários: `bg-cob-3`, `border-cob-3-contorno`.
 > | Pendente | `#D9692A` | `#B4561F` |
 > | Série única | acento ouro | acento ouro |
 
-**Escala de risco** (recomendação do levantamento; não existe como token no GeoRescue):
+**Escala de risco.** São as cinco cores das matrizes de risco do CBMMG (chuva, geológica e
+hidrológica), amostradas da matriz de chuva. A fonte única é `CORES_NIVEL`, em
+`lib/dominio/matrizes.ts`, e os tokens abaixo repetem esses valores. Um teste confere que
+os dois continuam iguais. Detalhes das matrizes em `docs/metricas-risco.md`.
 
-| Nível | Cor | Tinta sobre a cor |
-|---|---|---|
-| Normal | `--risco-normal` `#2E8B57` | `--risco-normal-tinta` `#FFF` |
-| Atenção | `--risco-atencao` `#EAB308` | `--risco-atencao-tinta` `#1A1A1A` |
-| Alerta | `--risco-alerta` `#CC6E1F` | `--risco-alerta-tinta` `#1A1A1A` |
-| Perigo | `--risco-perigo` `#E11D48` | `--risco-perigo-tinta` `#FFF` |
+| Nível | Cor | Tinta sobre a cor | Contraste |
+|---|---|---|---|
+| Verde | `--risco-verde` `#88C485` | `#0A0E14` | 9,47:1 |
+| Amarelo | `--risco-amarelo` `#EFE921` | `#0A0E14` | 15,06:1 |
+| Laranja | `--risco-laranja` `#F8982B` | `#0A0E14` | 8,77:1 |
+| Vermelho | `--risco-vermelho` `#EE312D` | `#0A0E14` | 4,71:1 |
+| Roxo | `--risco-roxo` `#5F4D9F` | `#FFFFFF` | 6,89:1 |
 
-O risco **não** reaproveita `--alerta` (que, com acento ouro, já é o laranja da interface).
-Preenchimentos sólidos de risco servem para mapa, legenda e números grandes; para texto
-pequeno, use amostra de cor + palavra em `text-ink` (o branco sobre `#2E8B57` fica em 4,25:1).
+- O "Baixo (amarelo claro)" da matriz geológica usa `#FFF2CC`, mas pertence ao nível amarelo.
+- O risco **não** reaproveita `--alerta`, que, com o acento ouro, já é o laranja da interface.
+- Use os preenchimentos sólidos em mapa, legenda e números grandes. Em texto pequeno, use
+  amostra de cor + palavra em `text-ink`.
+- O vermelho leva tinta escura: branco sobre `#EE312D` daria só 4,11:1.
 
 Contorno de MG: `public/geo/mg-outline.json` (GeoJSON `Feature`/`MultiPolygon`, WGS84) —
 camada `line` branca, 1.4px, opacidade .85, como no GeoRescue.
@@ -263,7 +269,7 @@ camada `line` branca, 1.4px, opacidade .85, como no GeoRescue.
 | `lucide-react` no lugar de Bootstrap Icons | Equivalente direto do traço usado no app de celular do GeoRescue. |
 | Corpo de 14px (o Index usa 12,8px) | Valor do app de celular do GeoRescue; melhor leitura em telas pequenas. |
 | Rodapé com créditos das fontes | O GeoRescue não tem rodapé global; aqui os termos de uso das fontes (Open-Meteo CC BY 4.0, INMET) exigem atribuição. |
-| Tinta escura no risco "alerta" | `#1A1A1A` sobre `#CC6E1F` dá 4,8:1; branco daria 3,6:1. |
+| Tinta escura no risco vermelho | `#0A0E14` sobre `#EE312D` dá 4,71:1; branco daria 4,11:1. |
 
 ## 9. Checklist de tela nova
 
