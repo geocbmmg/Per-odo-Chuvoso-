@@ -95,6 +95,7 @@ export function normalizarAlertas(campos: CampoEsri[], feicoes: FeicaoEsri[]): N
     numeroChamada: texto(attrs, mapa, "numeroChamada"),
     cob: normalizarRotuloCob(lerAtributo(attrs, mapa.cob)),
     ueop: texto(attrs, mapa, "ueop"),
+    fracao: texto(attrs, mapa, "fracao"),
     municipio: texto(attrs, mapa, "municipio"),
     tipoRisco: texto(attrs, mapa, "tipoRisco"),
     nivel: texto(attrs, mapa, "nivel"),
@@ -109,6 +110,7 @@ export function normalizarAcoesRrd(campos: CampoEsri[], feicoes: FeicaoEsri[]): 
     numeroChamada: texto(attrs, mapa, "numeroChamada"),
     cob: normalizarRotuloCob(lerAtributo(attrs, mapa.cob)),
     ueop: texto(attrs, mapa, "ueop"),
+    fracao: texto(attrs, mapa, "fracao"),
     municipio: texto(attrs, mapa, "municipio"),
     descricao: texto(attrs, mapa, "descricao"),
     executadaEm: data(attrs, mapa, "executadaEm"),
@@ -136,6 +138,7 @@ export function normalizarOcorrencias(
     situacao: classificarSituacao(texto(attrs, mapa, "situacao")),
     cob: normalizarRotuloCob(lerAtributo(attrs, mapa.cob)),
     ueop: texto(attrs, mapa, "ueop"),
+    fracao: texto(attrs, mapa, "fracao"),
     municipio: texto(attrs, mapa, "municipio"),
     iniciadaEm: data(attrs, mapa, "iniciadaEm"),
   }));

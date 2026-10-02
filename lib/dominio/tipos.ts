@@ -21,6 +21,8 @@ export interface Alerta {
   numeroChamada: string | null;
   cob: RotuloCob | null;
   ueop: string | null;
+  /** Fração (Cia/Pel/posto) — nível entre a UEOp e o município. */
+  fracao: string | null;
   municipio: string | null;
   tipoRisco: string | null;
   nivel: string | null;
@@ -33,6 +35,8 @@ export interface AcaoRrd {
   numeroChamada: string | null;
   cob: RotuloCob | null;
   ueop: string | null;
+  /** Fração (Cia/Pel/posto) — nível entre a UEOp e o município. */
+  fracao: string | null;
   municipio: string | null;
   /** Descrição da ação executada (texto livre no formulário atual). */
   descricao: string | null;
@@ -48,6 +52,8 @@ export interface OcorrenciaComplexa {
   situacao: SituacaoOcorrencia;
   cob: RotuloCob | null;
   ueop: string | null;
+  /** Fração (Cia/Pel/posto) — nível entre a UEOp e o município. */
+  fracao: string | null;
   municipio: string | null;
   iniciadaEm: string | null;
 }

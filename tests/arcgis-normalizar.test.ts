@@ -21,6 +21,7 @@ describe("normalização das camadas ArcGIS (dados de exemplo no formato do serv
       numeroChamada: "numero_chamada",
       cob: "cob",
       ueop: "ueop",
+      fracao: null, // o formulário de exemplo não tem fração: aparece como "não encontrado" em /status
       municipio: "municipio",
       tipoRisco: "tipo_risco",
       nivel: "nivel_alerta",
@@ -38,7 +39,7 @@ describe("normalização das camadas ArcGIS (dados de exemplo no formato do serv
   it("descarta dados pessoais (LGPD): só os atributos de domínio saem", () => {
     const chaves = new Set(alertas.feicoes.features.flatMap((f) => Object.keys(f.properties)));
     expect([...chaves].sort()).toEqual(
-      ["cob", "cota", "emitidoEm", "id", "municipio", "nivel", "numeroChamada", "tipoRisco", "ueop"].sort(),
+      ["cob", "cota", "emitidoEm", "fracao", "id", "municipio", "nivel", "numeroChamada", "tipoRisco", "ueop"].sort(),
     );
     const texto = JSON.stringify(alertas.feicoes);
     expect(texto).not.toMatch(/militar|numero_bm|telefone|Sgt |Cb |Ten |\(31\)/);

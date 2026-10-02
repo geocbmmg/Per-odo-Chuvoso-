@@ -43,12 +43,26 @@ const UEOP = [
   "Unidade",
 ] as const;
 
+const FRACAO = [
+  "fracao",
+  "fracao_*",
+  "fracao_bm",
+  "subunidade",
+  "companhia",
+  "cia",
+  "pelotao",
+  "pel",
+  "posto",
+  "Fração",
+] as const;
+
 const MUNICIPIO = ["municipio", "municipio_*", "nome_municipio", "cidade", "Município"] as const;
 
 export const CANDIDATOS_ALERTA = {
   numeroChamada: NUMERO_CHAMADA,
   cob: COB,
   ueop: UEOP,
+  fracao: FRACAO,
   municipio: MUNICIPIO,
   tipoRisco: [
     "tipo_risco",
@@ -81,6 +95,7 @@ export const CANDIDATOS_ACAO_RRD = {
   numeroChamada: NUMERO_CHAMADA,
   cob: COB,
   ueop: UEOP,
+  fracao: FRACAO,
   municipio: MUNICIPIO,
   descricao: [
     "acao_executada",
@@ -124,6 +139,7 @@ export const CANDIDATOS_OCORRENCIA = {
   situacao: ["situacao", "situacao_*", "status", "status_*", "estado", "fase", "Situação"],
   cob: COB,
   ueop: UEOP,
+  fracao: FRACAO,
   municipio: MUNICIPIO,
   iniciadaEm: [
     "data_inicio",

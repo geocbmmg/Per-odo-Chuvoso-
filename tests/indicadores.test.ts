@@ -12,6 +12,7 @@ function alerta(p: Partial<Alerta>): Alerta {
     numeroChamada: null,
     cob: null,
     ueop: null,
+    fracao: null,
     municipio: null,
     tipoRisco: null,
     nivel: null,
@@ -27,6 +28,7 @@ function acao(p: Partial<AcaoRrd>): AcaoRrd {
     numeroChamada: null,
     cob: null,
     ueop: null,
+    fracao: null,
     municipio: null,
     descricao: null,
     executadaEm: "2026-10-11T12:00:00Z",
@@ -81,9 +83,9 @@ describe("calcularIndicadores", () => {
 
   it("conta ocorrências complexas por situação", () => {
     const ocorrencias: OcorrenciaComplexa[] = [
-      { id: "1", numeroChamada: null, titulo: "A", situacao: "em-andamento", cob: null, ueop: null, municipio: null, iniciadaEm: "2025-01-01T00:00:00Z" },
-      { id: "2", numeroChamada: null, titulo: "B", situacao: "finalizada", cob: null, ueop: null, municipio: null, iniciadaEm: "2026-10-05T00:00:00Z" },
-      { id: "3", numeroChamada: null, titulo: "C", situacao: "finalizada", cob: null, ueop: null, municipio: null, iniciadaEm: "2025-12-05T00:00:00Z" },
+      { id: "1", numeroChamada: null, titulo: "A", situacao: "em-andamento", cob: null, ueop: null, fracao: null, municipio: null, iniciadaEm: "2025-01-01T00:00:00Z" },
+      { id: "2", numeroChamada: null, titulo: "B", situacao: "finalizada", cob: null, ueop: null, fracao: null, municipio: null, iniciadaEm: "2026-10-05T00:00:00Z" },
+      { id: "3", numeroChamada: null, titulo: "C", situacao: "finalizada", cob: null, ueop: null, fracao: null, municipio: null, iniciadaEm: "2025-12-05T00:00:00Z" },
     ];
     const r = calcularIndicadores(atual, [], [], ocorrencias);
     expect(r.ocorrenciasComplexas).toEqual({ "em-andamento": 1, monitoramento: 0, finalizada: 1, desconhecida: 0 });
