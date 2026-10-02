@@ -1,0 +1,854 @@
+codigo_ibge,nome,latitude,longitude,capital,codigo_uf,siafi_id,ddd,fuso_horario
+3100104,Abadia dos Dourados,-18.4831,-47.3916,0,31,4001,34,America/Sao_Paulo
+3100203,Abaeté,-19.1551,-45.4444,0,31,4003,37,America/Sao_Paulo
+3100302,Abre Campo,-20.2996,-42.4743,0,31,4005,31,America/Sao_Paulo
+3100401,Acaiaca,-20.359,-43.1439,0,31,4007,31,America/Sao_Paulo
+3100500,Açucena,-19.0671,-42.5419,0,31,4009,33,America/Sao_Paulo
+3100609,Água Boa,-17.9914,-42.3806,0,31,4011,33,America/Sao_Paulo
+3100708,Água Comprida,-20.0576,-48.1069,0,31,4013,34,America/Sao_Paulo
+3100807,Aguanil,-20.9439,-45.3915,0,31,4015,35,America/Sao_Paulo
+3100906,Águas Formosas,-17.0802,-40.9384,0,31,4017,33,America/Sao_Paulo
+3101003,Águas Vermelhas,-15.7431,-41.4571,0,31,4019,33,America/Sao_Paulo
+3101102,Aimorés,-19.5007,-41.0746,0,31,4021,33,America/Sao_Paulo
+3101201,Aiuruoca,-21.9736,-44.6042,0,31,4023,35,America/Sao_Paulo
+3101300,Alagoa,-22.171,-44.6413,0,31,4025,35,America/Sao_Paulo
+3101409,Albertina,-22.2018,-46.6139,0,31,4027,35,America/Sao_Paulo
+3101508,Além Paraíba,-21.8797,-42.7176,0,31,4029,32,America/Sao_Paulo
+3101607,Alfenas,-21.4256,-45.9477,0,31,4031,35,America/Sao_Paulo
+3101631,Alfredo Vasconcelos,-21.1535,-43.7718,0,31,2681,32,America/Sao_Paulo
+3101706,Almenara,-16.1785,-40.6942,0,31,4033,33,America/Sao_Paulo
+3101805,Alpercata,-18.974,-41.97,0,31,4035,33,America/Sao_Paulo
+3101904,Alpinópolis,-20.8631,-46.3878,0,31,4037,35,America/Sao_Paulo
+3102001,Alterosa,-21.2488,-46.1387,0,31,4039,35,America/Sao_Paulo
+3102050,Alto Caparaó,-20.431,-41.8738,0,31,0564,32,America/Sao_Paulo
+3153509,Alto Jequitibá,-20.4208,-41.967,0,31,5069,33,America/Sao_Paulo
+3102100,Alto Rio Doce,-21.0281,-43.4067,0,31,4041,32,America/Sao_Paulo
+3102209,Alvarenga,-19.4174,-41.7317,0,31,4043,33,America/Sao_Paulo
+3102308,Alvinópolis,-20.1098,-43.0535,0,31,4045,31,America/Sao_Paulo
+3102407,Alvorada de Minas,-18.7334,-43.3638,0,31,4047,31,America/Sao_Paulo
+3102506,Amparo do Serra,-20.5051,-42.8009,0,31,4049,31,America/Sao_Paulo
+3102605,Andradas,-22.0695,-46.5724,0,31,4051,35,America/Sao_Paulo
+3102803,Andrelândia,-21.7411,-44.3117,0,31,4055,35,America/Sao_Paulo
+3102852,Angelândia,-17.7279,-42.2641,0,31,0566,33,America/Sao_Paulo
+3102902,Antônio Carlos,-21.321,-43.7451,0,31,4057,32,America/Sao_Paulo
+3103009,Antônio Dias,-19.6491,-42.8732,0,31,4059,31,America/Sao_Paulo
+3103108,Antônio Prado de Minas,-21.0192,-42.1109,0,31,4061,32,America/Sao_Paulo
+3103207,Araçaí,-19.1955,-44.2493,0,31,4063,31,America/Sao_Paulo
+3103306,Aracitaba,-21.3446,-43.3736,0,31,4065,32,America/Sao_Paulo
+3103405,Araçuaí,-16.8523,-42.0637,0,31,4067,33,America/Sao_Paulo
+3103504,Araguari,-18.6456,-48.1934,0,31,4069,34,America/Sao_Paulo
+3103603,Arantina,-21.9102,-44.2555,0,31,4071,32,America/Sao_Paulo
+3103702,Araponga,-20.6686,-42.5178,0,31,4073,31,America/Sao_Paulo
+3103751,Araporã,-18.4357,-49.1847,0,31,2903,34,America/Sao_Paulo
+3103801,Arapuá,-19.0268,-46.1484,0,31,4075,34,America/Sao_Paulo
+3103900,Araújos,-19.9405,-45.1671,0,31,4077,37,America/Sao_Paulo
+3104007,Araxá,-19.5902,-46.9438,0,31,4079,34,America/Sao_Paulo
+3104106,Arceburgo,-21.359,-46.9401,0,31,4081,35,America/Sao_Paulo
+3104205,Arcos,-20.2863,-45.5373,0,31,4083,37,America/Sao_Paulo
+3104304,Areado,-21.3572,-46.1421,0,31,4085,35,America/Sao_Paulo
+3104403,Argirita,-21.6083,-42.8292,0,31,4087,32,America/Sao_Paulo
+3104452,Aricanduva,-17.8666,-42.5533,0,31,0568,33,America/Sao_Paulo
+3104502,Arinos,-15.9187,-46.1043,0,31,4089,38,America/Sao_Paulo
+3104601,Astolfo Dutra,-21.3184,-42.8572,0,31,4091,32,America/Sao_Paulo
+3104700,Ataléia,-18.0438,-41.1149,0,31,4093,33,America/Sao_Paulo
+3104809,Augusto de Lima,-18.0997,-44.2655,0,31,4095,38,America/Sao_Paulo
+3104908,Baependi,-21.957,-44.8874,0,31,4097,35,America/Sao_Paulo
+3105004,Baldim,-19.2832,-43.9613,0,31,4099,31,America/Sao_Paulo
+3105103,Bambuí,-20.0166,-45.9754,0,31,4101,37,America/Sao_Paulo
+3105202,Bandeira,-15.8783,-40.5622,0,31,4103,33,America/Sao_Paulo
+3105301,Bandeira do Sul,-21.7308,-46.3833,0,31,4105,35,America/Sao_Paulo
+3105400,Barão de Cocais,-19.9389,-43.4755,0,31,4107,31,America/Sao_Paulo
+3105509,Barão de Monte Alto,-21.2444,-42.2372,0,31,4109,32,America/Sao_Paulo
+3105608,Barbacena,-21.2214,-43.7703,0,31,4111,32,America/Sao_Paulo
+3105707,Barra Longa,-20.2869,-43.0402,0,31,4113,31,America/Sao_Paulo
+3105905,Barroso,-21.1907,-43.972,0,31,4117,32,America/Sao_Paulo
+3106002,Bela Vista de Minas,-19.8302,-43.0922,0,31,4119,31,America/Sao_Paulo
+3106101,Belmiro Braga,-21.944,-43.4084,0,31,4121,32,America/Sao_Paulo
+3106200,Belo Horizonte,-19.9102,-43.9266,1,31,4123,31,America/Sao_Paulo
+3106309,Belo Oriente,-19.2199,-42.4828,0,31,4125,31,America/Sao_Paulo
+3106408,Belo Vale,-20.4077,-44.0275,0,31,4127,31,America/Sao_Paulo
+3106507,Berilo,-16.9567,-42.4606,0,31,4129,33,America/Sao_Paulo
+3106655,Berizal,-15.61,-41.7432,0,31,0570,38,America/Sao_Paulo
+3106606,Bertópolis,-17.059,-40.58,0,31,4131,33,America/Sao_Paulo
+3106705,Betim,-19.9668,-44.2008,0,31,4133,31,America/Sao_Paulo
+3106804,Bias Fortes,-21.602,-43.7574,0,31,4135,32,America/Sao_Paulo
+3106903,Bicas,-21.7232,-43.056,0,31,4137,32,America/Sao_Paulo
+3107000,Biquinhas,-18.7754,-45.4974,0,31,4139,37,America/Sao_Paulo
+3107109,Boa Esperança,-21.0927,-45.5612,0,31,4141,35,America/Sao_Paulo
+3107208,Bocaina de Minas,-22.1697,-44.3972,0,31,4143,32,America/Sao_Paulo
+3107307,Bocaiúva,-17.1135,-43.8104,0,31,4145,38,America/Sao_Paulo
+3107406,Bom Despacho,-19.7386,-45.2622,0,31,4147,37,America/Sao_Paulo
+3107505,Bom Jardim de Minas,-21.9479,-44.1885,0,31,4149,32,America/Sao_Paulo
+3107604,Bom Jesus da Penha,-21.0148,-46.5174,0,31,4151,35,America/Sao_Paulo
+3107703,Bom Jesus do Amparo,-19.7054,-43.4782,0,31,4153,31,America/Sao_Paulo
+3107802,Bom Jesus do Galho,-19.836,-42.3165,0,31,4155,33,America/Sao_Paulo
+3107901,Bom Repouso,-22.4675,-46.144,0,31,4157,35,America/Sao_Paulo
+3108008,Bom Sucesso,-21.0329,-44.7537,0,31,4159,35,America/Sao_Paulo
+3108107,Bonfim,-20.3302,-44.2366,0,31,4161,31,America/Sao_Paulo
+3108206,Bonfinópolis de Minas,-16.568,-45.9839,0,31,4163,38,America/Sao_Paulo
+3108255,Bonito de Minas,-15.3231,-44.7543,0,31,0572,38,America/Sao_Paulo
+3108305,Borda da Mata,-22.2707,-46.1653,0,31,4165,35,America/Sao_Paulo
+3108404,Botelhos,-21.6412,-46.391,0,31,4167,35,America/Sao_Paulo
+3108503,Botumirim,-16.8657,-43.0086,0,31,4169,38,America/Sao_Paulo
+3108701,Brás Pires,-20.8419,-43.2406,0,31,4173,32,America/Sao_Paulo
+3108552,Brasilândia de Minas,-16.9999,-46.0081,0,31,0574,38,America/Sao_Paulo
+3108602,Brasília de Minas,-16.2104,-44.4299,0,31,4171,38,America/Sao_Paulo
+3108800,Braúnas,-19.0562,-42.7099,0,31,4175,35,America/Sao_Paulo
+3108909,Brazópolis,-22.4743,-45.6166,0,31,4177,33,America/Sao_Paulo
+3109006,Brumadinho,-20.151,-44.2007,0,31,4179,31,America/Sao_Paulo
+3109105,Bueno Brandão,-22.4383,-46.3491,0,31,4181,35,America/Sao_Paulo
+3109204,Buenópolis,-17.8744,-44.1775,0,31,4183,38,America/Sao_Paulo
+3109253,Bugre,-19.4231,-42.2552,0,31,0576,33,America/Sao_Paulo
+3109303,Buritis,-15.6218,-46.4221,0,31,4185,38,America/Sao_Paulo
+3109402,Buritizeiro,-17.3656,-44.9606,0,31,4187,38,America/Sao_Paulo
+3109451,Cabeceira Grande,-16.0335,-47.0862,0,31,0578,38,America/Sao_Paulo
+3109501,Cabo Verde,-21.4699,-46.3919,0,31,4189,35,America/Sao_Paulo
+3109600,Cachoeira da Prata,-19.521,-44.4544,0,31,4191,31,America/Sao_Paulo
+3109709,Cachoeira de Minas,-22.3511,-45.7809,0,31,4193,35,America/Sao_Paulo
+3102704,Cachoeira de Pajeú,-15.9688,-41.4948,0,31,4053,33,America/Sao_Paulo
+3109808,Cachoeira Dourada,-18.5161,-49.5039,0,31,4195,34,America/Sao_Paulo
+3109907,Caetanópolis,-19.2971,-44.4189,0,31,4197,31,America/Sao_Paulo
+3110004,Caeté,-19.8826,-43.6704,0,31,4199,31,America/Sao_Paulo
+3110103,Caiana,-20.6956,-41.9292,0,31,4201,32,America/Sao_Paulo
+3110202,Cajuri,-20.7903,-42.7925,0,31,4203,31,America/Sao_Paulo
+3110301,Caldas,-21.9183,-46.3843,0,31,4205,35,America/Sao_Paulo
+3110400,Camacho,-20.6294,-45.1593,0,31,4207,37,America/Sao_Paulo
+3110509,Camanducaia,-22.7515,-46.1494,0,31,4209,35,America/Sao_Paulo
+3110608,Cambuí,-22.6115,-46.0572,0,31,4211,35,America/Sao_Paulo
+3110707,Cambuquira,-21.854,-45.2896,0,31,4213,35,America/Sao_Paulo
+3110806,Campanário,-18.2427,-41.7355,0,31,4215,33,America/Sao_Paulo
+3110905,Campanha,-21.836,-45.4004,0,31,4217,35,America/Sao_Paulo
+3111002,Campestre,-21.7079,-46.2381,0,31,4219,35,America/Sao_Paulo
+3111101,Campina Verde,-19.5382,-49.4862,0,31,4221,34,America/Sao_Paulo
+3111150,Campo Azul,-16.5028,-44.8096,0,31,0580,38,America/Sao_Paulo
+3111200,Campo Belo,-20.8932,-45.2699,0,31,4223,35,America/Sao_Paulo
+3111309,Campo do Meio,-21.1127,-45.8273,0,31,4225,35,America/Sao_Paulo
+3111408,Campo Florido,-19.7631,-48.5716,0,31,4227,34,America/Sao_Paulo
+3111507,Campos Altos,-19.6914,-46.1725,0,31,4229,37,America/Sao_Paulo
+3111606,Campos Gerais,-21.237,-45.7569,0,31,4231,35,America/Sao_Paulo
+3111903,Cana Verde,-21.0232,-45.1801,0,31,4237,35,America/Sao_Paulo
+3111705,Canaã,-20.6869,-42.6167,0,31,4233,31,America/Sao_Paulo
+3111804,Canápolis,-18.7212,-49.2035,0,31,4235,34,America/Sao_Paulo
+3112000,Candeias,-20.7692,-45.2765,0,31,4239,35,America/Sao_Paulo
+3112059,Cantagalo,-18.5248,-42.6223,0,31,0582,33,America/Sao_Paulo
+3112109,Caparaó,-20.5289,-41.9061,0,31,4241,32,America/Sao_Paulo
+3112208,Capela Nova,-20.9179,-43.622,0,31,4243,31,America/Sao_Paulo
+3112307,Capelinha,-17.6888,-42.5147,0,31,4245,33,America/Sao_Paulo
+3112406,Capetinga,-20.6163,-47.0571,0,31,4247,35,America/Sao_Paulo
+3112505,Capim Branco,-19.5471,-44.1304,0,31,4249,31,America/Sao_Paulo
+3112604,Capinópolis,-18.6862,-49.5706,0,31,4251,34,America/Sao_Paulo
+3112653,Capitão Andrade,-19.0748,-41.8614,0,31,2651,33,America/Sao_Paulo
+3112703,Capitão Enéas,-16.3265,-43.7084,0,31,4253,38,America/Sao_Paulo
+3112802,Capitólio,-20.6164,-46.0493,0,31,4255,37,America/Sao_Paulo
+3112901,Caputira,-20.1703,-42.2683,0,31,4257,31,America/Sao_Paulo
+3113008,Caraí,-17.1862,-41.7004,0,31,4259,33,America/Sao_Paulo
+3113107,Caranaíba,-20.8707,-43.7417,0,31,4261,31,America/Sao_Paulo
+3113206,Carandaí,-20.9566,-43.811,0,31,4263,32,America/Sao_Paulo
+3113305,Carangola,-20.7343,-42.0313,0,31,4265,32,America/Sao_Paulo
+3113404,Caratinga,-19.7868,-42.1292,0,31,4267,33,America/Sao_Paulo
+3113503,Carbonita,-17.5255,-43.0137,0,31,4269,38,America/Sao_Paulo
+3113602,Careaçu,-22.0424,-45.696,0,31,4271,35,America/Sao_Paulo
+3113701,Carlos Chagas,-17.6973,-40.7723,0,31,4273,33,America/Sao_Paulo
+3113800,Carmésia,-19.0877,-43.1382,0,31,4275,31,America/Sao_Paulo
+3113909,Carmo da Cachoeira,-21.4633,-45.2201,0,31,4277,35,America/Sao_Paulo
+3114006,Carmo da Mata,-20.5575,-44.8735,0,31,4279,37,America/Sao_Paulo
+3114105,Carmo de Minas,-22.1204,-45.1307,0,31,4281,35,America/Sao_Paulo
+3114204,Carmo do Cajuru,-20.1912,-44.7664,0,31,4283,37,America/Sao_Paulo
+3114303,Carmo do Paranaíba,-18.991,-46.3167,0,31,4285,34,America/Sao_Paulo
+3114402,Carmo do Rio Claro,-20.9736,-46.1149,0,31,4287,35,America/Sao_Paulo
+3114501,Carmópolis de Minas,-20.5396,-44.6336,0,31,4289,37,America/Sao_Paulo
+3114550,Carneirinho,-19.6987,-50.6894,0,31,2685,34,America/Sao_Paulo
+3114600,Carrancas,-21.4898,-44.6446,0,31,4291,35,America/Sao_Paulo
+3114709,Carvalhópolis,-21.7735,-45.8421,0,31,4293,35,America/Sao_Paulo
+3114808,Carvalhos,-22.0,-44.4632,0,31,4295,35,America/Sao_Paulo
+3114907,Casa Grande,-20.7925,-43.9343,0,31,4297,31,America/Sao_Paulo
+3115003,Cascalho Rico,-18.5772,-47.8716,0,31,4299,34,America/Sao_Paulo
+3115102,Cássia,-20.5831,-46.9201,0,31,4301,35,America/Sao_Paulo
+3115300,Cataguases,-21.3924,-42.6896,0,31,4305,32,America/Sao_Paulo
+3115359,Catas Altas,-20.0734,-43.4061,0,31,0584,31,America/Sao_Paulo
+3115409,Catas Altas da Noruega,-20.6901,-43.4939,0,31,4307,31,America/Sao_Paulo
+3115458,Catuji,-17.3018,-41.5276,0,31,2653,33,America/Sao_Paulo
+3115474,Catuti,-15.3616,-42.9627,0,31,0586,38,America/Sao_Paulo
+3115508,Caxambu,-21.9753,-44.9319,0,31,4309,35,America/Sao_Paulo
+3115607,Cedro do Abaeté,-19.1458,-45.712,0,31,4311,37,America/Sao_Paulo
+3115706,Central de Minas,-18.7612,-41.3143,0,31,4313,33,America/Sao_Paulo
+3115805,Centralina,-18.5852,-49.2014,0,31,4315,34,America/Sao_Paulo
+3115904,Chácara,-21.6733,-43.215,0,31,4317,32,America/Sao_Paulo
+3116001,Chalé,-20.0453,-41.6897,0,31,4319,33,America/Sao_Paulo
+3116100,Chapada do Norte,-17.0881,-42.5392,0,31,4321,33,America/Sao_Paulo
+3116159,Chapada Gaúcha,-15.3014,-45.6116,0,31,0588,38,America/Sao_Paulo
+3116209,Chiador,-21.9996,-43.0617,0,31,4323,32,America/Sao_Paulo
+3116308,Cipotânea,-20.9026,-43.3629,0,31,4325,32,America/Sao_Paulo
+3116407,Claraval,-20.397,-47.2768,0,31,4327,34,America/Sao_Paulo
+3116506,Claro dos Poções,-17.082,-44.2061,0,31,4329,38,America/Sao_Paulo
+3116605,Cláudio,-20.4437,-44.7673,0,31,4331,37,America/Sao_Paulo
+3116704,Coimbra,-20.8535,-42.8008,0,31,4333,32,America/Sao_Paulo
+3116803,Coluna,-18.2311,-42.8352,0,31,4335,33,America/Sao_Paulo
+3116902,Comendador Gomes,-19.6973,-49.0789,0,31,4337,34,America/Sao_Paulo
+3117009,Comercinho,-16.2963,-41.7945,0,31,4339,33,America/Sao_Paulo
+3117108,Conceição da Aparecida,-21.096,-46.2049,0,31,4341,35,America/Sao_Paulo
+3115201,Conceição da Barra de Minas,-21.1316,-44.4729,0,31,4303,32,America/Sao_Paulo
+3117306,Conceição das Alagoas,-19.9172,-48.3839,0,31,4345,34,America/Sao_Paulo
+3117207,Conceição das Pedras,-22.1576,-45.4562,0,31,4343,35,America/Sao_Paulo
+3117405,Conceição de Ipanema,-19.9326,-41.6908,0,31,4347,33,America/Sao_Paulo
+3117504,Conceição do Mato Dentro,-19.0344,-43.4221,0,31,4349,31,America/Sao_Paulo
+3117603,Conceição do Pará,-19.7456,-44.8945,0,31,4351,37,America/Sao_Paulo
+3117702,Conceição do Rio Verde,-21.8778,-45.087,0,31,4353,35,America/Sao_Paulo
+3117801,Conceição dos Ouros,-22.4078,-45.7996,0,31,4355,35,America/Sao_Paulo
+3117836,Cônego Marinho,-15.2892,-44.4181,0,31,0590,38,America/Sao_Paulo
+3117876,Confins,-19.6282,-43.9931,0,31,0592,31,America/Sao_Paulo
+3117900,Congonhal,-22.1488,-46.043,0,31,4357,35,America/Sao_Paulo
+3118007,Congonhas,-20.4958,-43.851,0,31,4359,31,America/Sao_Paulo
+3118106,Congonhas do Norte,-18.8021,-43.6767,0,31,4361,31,America/Sao_Paulo
+3118205,Conquista,-19.9312,-47.5492,0,31,4363,34,America/Sao_Paulo
+3118304,Conselheiro Lafaiete,-20.6634,-43.7846,0,31,4365,31,America/Sao_Paulo
+3118403,Conselheiro Pena,-19.1789,-41.4736,0,31,4367,33,America/Sao_Paulo
+3118502,Consolação,-22.5493,-45.9255,0,31,4369,35,America/Sao_Paulo
+3118601,Contagem,-19.9321,-44.0539,0,31,4371,31,America/Sao_Paulo
+3118700,Coqueiral,-21.1858,-45.4366,0,31,4373,35,America/Sao_Paulo
+3118809,Coração de Jesus,-16.6841,-44.3635,0,31,4375,38,America/Sao_Paulo
+3118908,Cordisburgo,-19.1224,-44.3224,0,31,4377,31,America/Sao_Paulo
+3119005,Cordislândia,-21.7891,-45.6999,0,31,4379,35,America/Sao_Paulo
+3119104,Corinto,-18.369,-44.4542,0,31,4381,38,America/Sao_Paulo
+3119203,Coroaci,-18.6156,-42.2791,0,31,4383,33,America/Sao_Paulo
+3119302,Coromandel,-18.4734,-47.1933,0,31,4385,34,America/Sao_Paulo
+3119401,Coronel Fabriciano,-19.5179,-42.6276,0,31,4387,31,America/Sao_Paulo
+3119500,Coronel Murta,-16.6148,-42.184,0,31,4389,33,America/Sao_Paulo
+3119609,Coronel Pacheco,-21.5898,-43.256,0,31,4391,32,America/Sao_Paulo
+3119708,Coronel Xavier Chaves,-21.0277,-44.2206,0,31,4393,32,America/Sao_Paulo
+3119807,Córrego Danta,-19.8198,-45.9032,0,31,4395,37,America/Sao_Paulo
+3119906,Córrego do Bom Jesus,-22.6269,-46.0241,0,31,4397,35,America/Sao_Paulo
+3119955,Córrego Fundo,-20.4474,-45.5617,0,31,0594,37,America/Sao_Paulo
+3120003,Córrego Novo,-19.8361,-42.3988,0,31,4399,33,America/Sao_Paulo
+3120102,Couto de Magalhães de Minas,-18.0727,-43.4648,0,31,4401,38,America/Sao_Paulo
+3120151,Crisólita,-17.2381,-40.9184,0,31,0596,33,America/Sao_Paulo
+3120201,Cristais,-20.8733,-45.5167,0,31,4403,35,America/Sao_Paulo
+3120300,Cristália,-16.716,-42.8571,0,31,4405,38,America/Sao_Paulo
+3120409,Cristiano Otoni,-20.8324,-43.8166,0,31,4407,31,America/Sao_Paulo
+3120508,Cristina,-22.208,-45.2673,0,31,4409,35,America/Sao_Paulo
+3120607,Crucilândia,-20.3923,-44.3334,0,31,4411,31,America/Sao_Paulo
+3120706,Cruzeiro da Fortaleza,-18.944,-46.6669,0,31,4413,34,America/Sao_Paulo
+3120805,Cruzília,-21.84,-44.8067,0,31,4415,35,America/Sao_Paulo
+3120839,Cuparaque,-18.9648,-41.0986,0,31,0598,33,America/Sao_Paulo
+3120870,Curral de Dentro,-15.9327,-41.8557,0,31,0600,33,America/Sao_Paulo
+3120904,Curvelo,-18.7527,-44.4303,0,31,4417,38,America/Sao_Paulo
+3121001,Datas,-18.4478,-43.6591,0,31,4419,38,America/Sao_Paulo
+3121100,Delfim Moreira,-22.5036,-45.2792,0,31,4421,35,America/Sao_Paulo
+3121209,Delfinópolis,-20.3468,-46.8456,0,31,4423,35,America/Sao_Paulo
+3121258,Delta,-19.9721,-47.7841,0,31,0602,34,America/Sao_Paulo
+3121308,Descoberto,-21.46,-42.9618,0,31,4425,32,America/Sao_Paulo
+3121407,Desterro de Entre Rios,-20.665,-44.3334,0,31,4427,31,America/Sao_Paulo
+3121506,Desterro do Melo,-21.143,-43.5178,0,31,4429,32,America/Sao_Paulo
+3121605,Diamantina,-18.2413,-43.6031,0,31,4431,38,America/Sao_Paulo
+3121704,Diogo de Vasconcelos,-20.4879,-43.1953,0,31,4433,31,America/Sao_Paulo
+3121803,Dionísio,-19.8433,-42.7701,0,31,4435,31,America/Sao_Paulo
+3121902,Divinésia,-20.9917,-43.0003,0,31,4437,32,America/Sao_Paulo
+3122009,Divino,-20.6134,-42.1438,0,31,4439,32,America/Sao_Paulo
+3122108,Divino das Laranjeiras,-18.7755,-41.4781,0,31,4441,33,America/Sao_Paulo
+3122207,Divinolândia de Minas,-18.8004,-42.6103,0,31,4443,33,America/Sao_Paulo
+3122306,Divinópolis,-20.1446,-44.8912,0,31,4445,37,America/Sao_Paulo
+3122355,Divisa Alegre,-15.7221,-41.3463,0,31,0604,33,America/Sao_Paulo
+3122405,Divisa Nova,-21.5092,-46.1904,0,31,4447,35,America/Sao_Paulo
+3122454,Divisópolis,-15.7254,-40.9997,0,31,2657,33,America/Sao_Paulo
+3122470,Dom Bosco,-16.652,-46.2597,0,31,0606,38,America/Sao_Paulo
+3122504,Dom Cavati,-19.3735,-42.1121,0,31,4449,33,America/Sao_Paulo
+3122603,Dom Joaquim,-18.961,-43.2544,0,31,4451,31,America/Sao_Paulo
+3122702,Dom Silvério,-20.1627,-42.9627,0,31,4453,31,America/Sao_Paulo
+3122801,Dom Viçoso,-22.2511,-45.1643,0,31,4455,35,America/Sao_Paulo
+3122900,Dona Eusébia,-21.319,-42.807,0,31,4457,32,America/Sao_Paulo
+3123007,Dores de Campos,-21.1139,-44.0207,0,31,4459,32,America/Sao_Paulo
+3123106,Dores de Guanhães,-19.0516,-42.9254,0,31,4461,33,America/Sao_Paulo
+3123205,Dores do Indaiá,-19.4628,-45.5927,0,31,4463,37,America/Sao_Paulo
+3123304,Dores do Turvo,-20.9785,-43.1834,0,31,4465,32,America/Sao_Paulo
+3123403,Doresópolis,-20.2868,-45.9007,0,31,4467,37,America/Sao_Paulo
+3123502,Douradoquara,-18.4338,-47.5993,0,31,4469,34,America/Sao_Paulo
+3123528,Durandé,-20.2058,-41.7977,0,31,2675,33,America/Sao_Paulo
+3123601,Elói Mendes,-21.6088,-45.5691,0,31,4471,35,America/Sao_Paulo
+3123700,Engenheiro Caldas,-19.2065,-42.0503,0,31,4473,33,America/Sao_Paulo
+3123809,Engenheiro Navarro,-17.2831,-43.947,0,31,4475,38,America/Sao_Paulo
+3123858,Entre Folhas,-19.6218,-42.2306,0,31,2663,33,America/Sao_Paulo
+3123908,Entre Rios de Minas,-20.6706,-44.0654,0,31,4477,31,America/Sao_Paulo
+3124005,Ervália,-20.8403,-42.6544,0,31,4479,32,America/Sao_Paulo
+3124104,Esmeraldas,-19.764,-44.3065,0,31,4481,31,America/Sao_Paulo
+3124203,Espera Feliz,-20.6508,-41.9119,0,31,4483,32,America/Sao_Paulo
+3124302,Espinosa,-14.9249,-42.809,0,31,4485,38,America/Sao_Paulo
+3124401,Espírito Santo do Dourado,-22.0454,-45.9548,0,31,4487,35,America/Sao_Paulo
+3124500,Estiva,-22.4577,-46.0191,0,31,4489,35,America/Sao_Paulo
+3124609,Estrela Dalva,-21.7412,-42.4574,0,31,4491,32,America/Sao_Paulo
+3124708,Estrela do Indaiá,-19.5169,-45.7859,0,31,4493,37,America/Sao_Paulo
+3124807,Estrela do Sul,-18.7399,-47.6956,0,31,4495,34,America/Sao_Paulo
+3124906,Eugenópolis,-21.1002,-42.1878,0,31,4497,32,America/Sao_Paulo
+3125002,Ewbank da Câmara,-21.5498,-43.5068,0,31,4499,32,America/Sao_Paulo
+3125101,Extrema,-22.854,-46.3178,0,31,4501,35,America/Sao_Paulo
+3125200,Fama,-21.4089,-45.8286,0,31,4503,35,America/Sao_Paulo
+3125309,Faria Lemos,-20.8097,-42.0213,0,31,4505,32,America/Sao_Paulo
+3125408,Felício dos Santos,-18.0755,-43.2422,0,31,4507,38,America/Sao_Paulo
+3125606,Felisburgo,-16.6348,-40.7605,0,31,4511,33,America/Sao_Paulo
+3125705,Felixlândia,-18.7507,-44.9004,0,31,4513,38,America/Sao_Paulo
+3125804,Fernandes Tourinho,-19.1541,-42.0803,0,31,4515,33,America/Sao_Paulo
+3125903,Ferros,-19.2343,-43.0192,0,31,4517,31,America/Sao_Paulo
+3125952,Fervedouro,-20.726,-42.279,0,31,2683,32,America/Sao_Paulo
+3126000,Florestal,-19.888,-44.4318,0,31,4519,31,America/Sao_Paulo
+3126109,Formiga,-20.4618,-45.4268,0,31,4521,37,America/Sao_Paulo
+3126208,Formoso,-14.9446,-46.2371,0,31,4523,38,America/Sao_Paulo
+3126307,Fortaleza de Minas,-20.8508,-46.712,0,31,4525,35,America/Sao_Paulo
+3126406,Fortuna de Minas,-19.5578,-44.4472,0,31,4527,31,America/Sao_Paulo
+3126505,Francisco Badaró,-16.9883,-42.3568,0,31,4529,33,America/Sao_Paulo
+3126604,Francisco Dumont,-17.3107,-44.2317,0,31,4531,38,America/Sao_Paulo
+3126703,Francisco Sá,-16.4827,-43.4896,0,31,4533,38,America/Sao_Paulo
+3126752,Franciscópolis,-17.9578,-42.0094,0,31,0608,33,America/Sao_Paulo
+3126802,Frei Gaspar,-18.0709,-41.4325,0,31,4535,33,America/Sao_Paulo
+3126901,Frei Inocêncio,-18.5556,-41.9121,0,31,4537,33,America/Sao_Paulo
+3126950,Frei Lagonegro,-18.1751,-42.7617,0,31,0610,33,America/Sao_Paulo
+3127008,Fronteira,-20.2748,-49.1984,0,31,4539,34,America/Sao_Paulo
+3127057,Fronteira dos Vales,-16.8898,-40.923,0,31,4935,33,America/Sao_Paulo
+3127073,Fruta de Leite,-16.1225,-42.5288,0,31,0612,38,America/Sao_Paulo
+3127107,Frutal,-20.0259,-48.9355,0,31,4541,34,America/Sao_Paulo
+3127206,Funilândia,-19.3661,-44.061,0,31,4543,31,America/Sao_Paulo
+3127305,Galiléia,-19.0005,-41.5387,0,31,4545,33,America/Sao_Paulo
+3127339,Gameleiras,-15.0829,-43.125,0,31,0614,38,America/Sao_Paulo
+3127354,Glaucilândia,-16.8481,-43.692,0,31,0616,38,America/Sao_Paulo
+3127370,Goiabeira,-18.9807,-41.2235,0,31,0618,33,America/Sao_Paulo
+3127388,Goianá,-21.536,-43.1957,0,31,0620,32,America/Sao_Paulo
+3127404,Gonçalves,-22.6545,-45.8556,0,31,4547,35,America/Sao_Paulo
+3127503,Gonzaga,-18.8196,-42.4769,0,31,4549,33,America/Sao_Paulo
+3127602,Gouveia,-18.4519,-43.7423,0,31,4551,38,America/Sao_Paulo
+3127701,Governador Valadares,-18.8545,-41.9555,0,31,4553,33,America/Sao_Paulo
+3127800,Grão Mogol,-16.5662,-42.8923,0,31,4555,38,America/Sao_Paulo
+3127909,Grupiara,-18.5003,-47.7318,0,31,4557,34,America/Sao_Paulo
+3128006,Guanhães,-18.7713,-42.9312,0,31,4559,33,America/Sao_Paulo
+3128105,Guapé,-20.7631,-45.9152,0,31,4561,35,America/Sao_Paulo
+3128204,Guaraciaba,-20.5716,-43.0094,0,31,4563,31,America/Sao_Paulo
+3128253,Guaraciama,-17.0142,-43.6675,0,31,0622,38,America/Sao_Paulo
+3128303,Guaranésia,-21.3009,-46.7964,0,31,4565,35,America/Sao_Paulo
+3128402,Guarani,-21.3563,-43.0328,0,31,4567,32,America/Sao_Paulo
+3128501,Guarará,-21.7304,-43.0334,0,31,4569,32,America/Sao_Paulo
+3128600,Guarda-Mor,-17.7673,-47.0998,0,31,4571,38,America/Sao_Paulo
+3128709,Guaxupé,-21.305,-46.7081,0,31,4573,35,America/Sao_Paulo
+3128808,Guidoval,-21.155,-42.7887,0,31,4575,32,America/Sao_Paulo
+3128907,Guimarânia,-18.8425,-46.7901,0,31,4577,34,America/Sao_Paulo
+3129004,Guiricema,-21.0098,-42.7207,0,31,4579,32,America/Sao_Paulo
+3129103,Gurinhatã,-19.2143,-49.7876,0,31,4581,34,America/Sao_Paulo
+3129202,Heliodora,-22.0644,-45.5453,0,31,4583,35,America/Sao_Paulo
+3129301,Iapu,-19.4387,-42.2147,0,31,4585,33,America/Sao_Paulo
+3129400,Ibertioga,-21.433,-43.9639,0,31,4587,32,America/Sao_Paulo
+3129509,Ibiá,-19.4749,-46.5474,0,31,4589,34,America/Sao_Paulo
+3129608,Ibiaí,-16.8591,-44.9046,0,31,4591,38,America/Sao_Paulo
+3129657,Ibiracatu,-15.6605,-44.1667,0,31,0624,38,America/Sao_Paulo
+3129707,Ibiraci,-20.4611,-47.1222,0,31,4593,35,America/Sao_Paulo
+3129806,Ibirité,-20.0252,-44.0569,0,31,4595,31,America/Sao_Paulo
+3129905,Ibitiúra de Minas,-22.0604,-46.4368,0,31,4597,35,America/Sao_Paulo
+3130002,Ibituruna,-21.1541,-44.7479,0,31,4599,35,America/Sao_Paulo
+3130051,Icaraí de Minas,-16.214,-44.9034,0,31,2693,38,America/Sao_Paulo
+3130101,Igarapé,-20.0707,-44.2994,0,31,4601,31,America/Sao_Paulo
+3130200,Igaratinga,-19.9476,-44.7063,0,31,4603,37,America/Sao_Paulo
+3130309,Iguatama,-20.1776,-45.7111,0,31,4605,37,America/Sao_Paulo
+3130408,Ijaci,-21.1738,-44.9233,0,31,4607,35,America/Sao_Paulo
+3130507,Ilicínea,-20.9402,-45.8308,0,31,4609,35,America/Sao_Paulo
+3130556,Imbé de Minas,-19.6017,-41.9695,0,31,0626,33,America/Sao_Paulo
+3130606,Inconfidentes,-22.3136,-46.3264,0,31,4611,35,America/Sao_Paulo
+3130655,Indaiabira,-15.4911,-42.2005,0,31,0628,38,America/Sao_Paulo
+3130705,Indianópolis,-19.0341,-47.9155,0,31,4613,34,America/Sao_Paulo
+3130804,Ingaí,-21.4024,-44.9152,0,31,4615,35,America/Sao_Paulo
+3130903,Inhapim,-19.5476,-42.1147,0,31,4617,33,America/Sao_Paulo
+3131000,Inhaúma,-19.4898,-44.3934,0,31,4619,31,America/Sao_Paulo
+3131109,Inimutaba,-18.7271,-44.3584,0,31,4621,38,America/Sao_Paulo
+3131158,Ipaba,-19.4158,-42.4139,0,31,2665,31,America/Sao_Paulo
+3131208,Ipanema,-19.7992,-41.7164,0,31,4623,33,America/Sao_Paulo
+3131307,Ipatinga,-19.4703,-42.5476,0,31,4625,31,America/Sao_Paulo
+3131406,Ipiaçu,-18.6927,-49.9436,0,31,4627,34,America/Sao_Paulo
+3131505,Ipuiúna,-22.1013,-46.1915,0,31,4629,35,America/Sao_Paulo
+3131604,Iraí de Minas,-18.9819,-47.461,0,31,4631,34,America/Sao_Paulo
+3131703,Itabira,-19.6239,-43.2312,0,31,4633,31,America/Sao_Paulo
+3131802,Itabirinha,-18.5712,-41.234,0,31,4635,33,America/Sao_Paulo
+3131901,Itabirito,-20.2501,-43.8038,0,31,4637,31,America/Sao_Paulo
+3132008,Itacambira,-17.0625,-43.3069,0,31,4639,38,America/Sao_Paulo
+3132107,Itacarambi,-15.089,-44.095,0,31,4641,38,America/Sao_Paulo
+3132206,Itaguara,-20.3947,-44.4875,0,31,4643,31,America/Sao_Paulo
+3132305,Itaipé,-17.4014,-41.6697,0,31,4645,33,America/Sao_Paulo
+3132404,Itajubá,-22.4225,-45.4598,0,31,4647,35,America/Sao_Paulo
+3132503,Itamarandiba,-17.8552,-42.8561,0,31,4649,38,America/Sao_Paulo
+3132602,Itamarati de Minas,-21.4179,-42.813,0,31,4651,32,America/Sao_Paulo
+3132701,Itambacuri,-18.035,-41.683,0,31,4653,33,America/Sao_Paulo
+3132800,Itambé do Mato Dentro,-19.4158,-43.3182,0,31,4655,31,America/Sao_Paulo
+3132909,Itamogi,-21.0758,-47.046,0,31,4657,35,America/Sao_Paulo
+3133006,Itamonte,-22.2859,-44.868,0,31,4659,35,America/Sao_Paulo
+3133105,Itanhandu,-22.2942,-44.9382,0,31,4661,35,America/Sao_Paulo
+3133204,Itanhomi,-19.1736,-41.863,0,31,4663,33,America/Sao_Paulo
+3133303,Itaobim,-16.5571,-41.5017,0,31,4665,33,America/Sao_Paulo
+3133402,Itapagipe,-19.9062,-49.3781,0,31,4667,34,America/Sao_Paulo
+3133501,Itapecerica,-20.4704,-45.127,0,31,4669,37,America/Sao_Paulo
+3133600,Itapeva,-22.7665,-46.2241,0,31,4671,35,America/Sao_Paulo
+3133709,Itatiaiuçu,-20.1983,-44.4211,0,31,4673,31,America/Sao_Paulo
+3133758,Itaú de Minas,-20.7375,-46.7525,0,31,5731,35,America/Sao_Paulo
+3133808,Itaúna,-20.0818,-44.5801,0,31,4675,37,America/Sao_Paulo
+3133907,Itaverava,-20.6769,-43.6141,0,31,4677,31,America/Sao_Paulo
+3134004,Itinga,-16.61,-41.7672,0,31,4679,33,America/Sao_Paulo
+3134103,Itueta,-19.3999,-41.1746,0,31,4681,33,America/Sao_Paulo
+3134202,Ituiutaba,-18.9772,-49.4639,0,31,4683,34,America/Sao_Paulo
+3134301,Itumirim,-21.3171,-44.8724,0,31,4685,35,America/Sao_Paulo
+3134400,Iturama,-19.7276,-50.1966,0,31,4687,34,America/Sao_Paulo
+3134509,Itutinga,-21.3,-44.6567,0,31,4689,35,America/Sao_Paulo
+3134608,Jaboticatubas,-19.5119,-43.7373,0,31,4691,31,America/Sao_Paulo
+3134707,Jacinto,-16.1428,-40.295,0,31,4693,33,America/Sao_Paulo
+3134806,Jacuí,-21.0137,-46.7359,0,31,4695,35,America/Sao_Paulo
+3134905,Jacutinga,-22.286,-46.6166,0,31,4697,35,America/Sao_Paulo
+3135001,Jaguaraçu,-19.647,-42.7498,0,31,4699,31,America/Sao_Paulo
+3135050,Jaíba,-15.3432,-43.6688,0,31,2893,38,America/Sao_Paulo
+3135076,Jampruca,-18.461,-41.809,0,31,2655,33,America/Sao_Paulo
+3135100,Janaúba,-15.8022,-43.3132,0,31,4701,38,America/Sao_Paulo
+3135209,Januária,-15.4802,-44.3639,0,31,4703,38,America/Sao_Paulo
+3135308,Japaraíba,-20.1442,-45.5015,0,31,4705,37,America/Sao_Paulo
+3135357,Japonvar,-15.9891,-44.2758,0,31,0630,38,America/Sao_Paulo
+3135407,Jeceaba,-20.5339,-43.9894,0,31,4707,31,America/Sao_Paulo
+3135456,Jenipapo de Minas,-17.0831,-42.2589,0,31,0632,33,America/Sao_Paulo
+3135506,Jequeri,-20.4542,-42.6651,0,31,4709,31,America/Sao_Paulo
+3135605,Jequitaí,-17.229,-44.4376,0,31,4711,38,America/Sao_Paulo
+3135704,Jequitibá,-19.2345,-44.0304,0,31,4713,31,America/Sao_Paulo
+3135803,Jequitinhonha,-16.4375,-41.0117,0,31,4715,33,America/Sao_Paulo
+3135902,Jesuânia,-21.9887,-45.2911,0,31,4717,35,America/Sao_Paulo
+3136009,Joaíma,-16.6522,-41.0229,0,31,4719,33,America/Sao_Paulo
+3136108,Joanésia,-19.1729,-42.6775,0,31,4721,33,America/Sao_Paulo
+3136207,João Monlevade,-19.8126,-43.1735,0,31,4723,31,America/Sao_Paulo
+3136306,João Pinheiro,-17.7398,-46.1715,0,31,4725,38,America/Sao_Paulo
+3136405,Joaquim Felício,-17.758,-44.1643,0,31,4727,38,America/Sao_Paulo
+3136504,Jordânia,-15.9009,-40.1841,0,31,4729,33,America/Sao_Paulo
+3136520,José Gonçalves de Minas,-16.9053,-42.6014,0,31,0634,33,America/Sao_Paulo
+3136553,José Raydan,-18.2195,-42.4946,0,31,0636,33,America/Sao_Paulo
+3136579,Josenópolis,-16.5417,-42.5151,0,31,0638,38,America/Sao_Paulo
+3136652,Juatuba,-19.9448,-44.3451,0,31,2691,31,America/Sao_Paulo
+3136702,Juiz de Fora,-21.7595,-43.3398,0,31,4733,32,America/Sao_Paulo
+3136801,Juramento,-16.8473,-43.5865,0,31,4735,38,America/Sao_Paulo
+3136900,Juruaia,-21.2493,-46.5735,0,31,4737,35,America/Sao_Paulo
+3136959,Juvenília,-14.2662,-44.1597,0,31,0640,38,America/Sao_Paulo
+3137007,Ladainha,-17.6279,-41.7488,0,31,4739,33,America/Sao_Paulo
+3137106,Lagamar,-18.1759,-46.8063,0,31,4741,34,America/Sao_Paulo
+3137205,Lagoa da Prata,-20.0237,-45.5401,0,31,4743,37,America/Sao_Paulo
+3137304,Lagoa dos Patos,-16.978,-44.5754,0,31,4745,38,America/Sao_Paulo
+3137403,Lagoa Dourada,-20.9139,-44.0797,0,31,4747,32,America/Sao_Paulo
+3137502,Lagoa Formosa,-18.7715,-46.4012,0,31,4749,34,America/Sao_Paulo
+3137536,Lagoa Grande,-17.8323,-46.5165,0,31,2905,34,America/Sao_Paulo
+3137601,Lagoa Santa,-19.6397,-43.8932,0,31,4751,31,America/Sao_Paulo
+3137700,Lajinha,-20.1539,-41.6228,0,31,4753,33,America/Sao_Paulo
+3137809,Lambari,-21.9671,-45.3498,0,31,4755,35,America/Sao_Paulo
+3137908,Lamim,-20.79,-43.4706,0,31,4757,31,America/Sao_Paulo
+3138005,Laranjal,-21.3715,-42.4732,0,31,4759,32,America/Sao_Paulo
+3138104,Lassance,-17.887,-44.5735,0,31,4761,38,America/Sao_Paulo
+3138203,Lavras,-21.248,-45.0009,0,31,4763,35,America/Sao_Paulo
+3138302,Leandro Ferreira,-19.7193,-45.0279,0,31,4765,37,America/Sao_Paulo
+3138351,Leme do Prado,-17.0793,-42.6936,0,31,0642,33,America/Sao_Paulo
+3138401,Leopoldina,-21.5296,-42.6421,0,31,4767,32,America/Sao_Paulo
+3138500,Liberdade,-22.0275,-44.3208,0,31,4769,32,America/Sao_Paulo
+3138609,Lima Duarte,-21.8386,-43.7934,0,31,4771,32,America/Sao_Paulo
+3138625,Limeira do Oeste,-19.5512,-50.5815,0,31,2687,34,America/Sao_Paulo
+3138658,Lontra,-15.9013,-44.306,0,31,2695,38,America/Sao_Paulo
+3138674,Luisburgo,-20.4468,-42.0976,0,31,0644,33,America/Sao_Paulo
+3138682,Luislândia,-16.1095,-44.5886,0,31,0646,38,America/Sao_Paulo
+3138708,Luminárias,-21.5145,-44.9034,0,31,4773,35,America/Sao_Paulo
+3138807,Luz,-19.7911,-45.6794,0,31,4775,37,America/Sao_Paulo
+3138906,Machacalis,-17.0723,-40.7245,0,31,4777,33,America/Sao_Paulo
+3139003,Machado,-21.6778,-45.9219,0,31,4779,35,America/Sao_Paulo
+3139102,Madre de Deus de Minas,-21.483,-44.3287,0,31,4781,32,America/Sao_Paulo
+3139201,Malacacheta,-17.8456,-42.0769,0,31,4783,33,America/Sao_Paulo
+3139250,Mamonas,-15.0479,-42.9469,0,31,2895,38,America/Sao_Paulo
+3139300,Manga,-14.7529,-43.9391,0,31,4785,38,America/Sao_Paulo
+3139409,Manhuaçu,-20.2572,-42.028,0,31,4787,33,America/Sao_Paulo
+3139508,Manhumirim,-20.3591,-41.9589,0,31,4789,33,America/Sao_Paulo
+3139607,Mantena,-18.7761,-40.9874,0,31,4791,33,America/Sao_Paulo
+3139805,Mar de Espanha,-21.8707,-43.0062,0,31,4795,32,America/Sao_Paulo
+3139706,Maravilhas,-19.5076,-44.6779,0,31,4793,37,America/Sao_Paulo
+3139904,Maria da Fé,-22.3044,-45.3773,0,31,4797,35,America/Sao_Paulo
+3140001,Mariana,-20.3765,-43.414,0,31,4799,31,America/Sao_Paulo
+3140100,Marilac,-18.5079,-42.0822,0,31,4801,33,America/Sao_Paulo
+3140159,Mário Campos,-20.0582,-44.1883,0,31,0648,31,America/Sao_Paulo
+3140209,Maripá de Minas,-21.6979,-42.9546,0,31,4803,32,America/Sao_Paulo
+3140308,Marliéria,-19.7096,-42.7327,0,31,4805,31,America/Sao_Paulo
+3140407,Marmelópolis,-22.447,-45.1645,0,31,4807,35,America/Sao_Paulo
+3140506,Martinho Campos,-19.3306,-45.2434,0,31,4809,37,America/Sao_Paulo
+3140530,Martins Soares,-20.2546,-41.8786,0,31,0650,33,America/Sao_Paulo
+3140555,Mata Verde,-15.6869,-40.7366,0,31,2659,33,America/Sao_Paulo
+3140605,Materlândia,-18.4699,-43.0579,0,31,4811,33,America/Sao_Paulo
+3140704,Mateus Leme,-19.9794,-44.4318,0,31,4813,31,America/Sao_Paulo
+3171501,Mathias Lobato,-18.59,-41.9166,0,31,5431,33,America/Sao_Paulo
+3140803,Matias Barbosa,-21.869,-43.3135,0,31,4815,32,America/Sao_Paulo
+3140852,Matias Cardoso,-14.8563,-43.9146,0,31,2897,38,America/Sao_Paulo
+3140902,Matipó,-20.2873,-42.3401,0,31,4817,31,America/Sao_Paulo
+3141009,Mato Verde,-15.3944,-42.86,0,31,4819,38,America/Sao_Paulo
+3141108,Matozinhos,-19.5543,-44.0868,0,31,4821,31,America/Sao_Paulo
+3141207,Matutina,-19.2179,-45.9664,0,31,4823,34,America/Sao_Paulo
+3141306,Medeiros,-19.9865,-46.2181,0,31,4825,37,America/Sao_Paulo
+3141405,Medina,-16.2245,-41.4728,0,31,4827,33,America/Sao_Paulo
+3141504,Mendes Pimentel,-18.6631,-41.4052,0,31,4829,33,America/Sao_Paulo
+3141603,Mercês,-21.1976,-43.3337,0,31,4831,32,America/Sao_Paulo
+3141702,Mesquita,-19.224,-42.6079,0,31,4833,33,America/Sao_Paulo
+3141801,Minas Novas,-17.2156,-42.5884,0,31,4835,33,America/Sao_Paulo
+3141900,Minduri,-21.6797,-44.6051,0,31,4837,35,America/Sao_Paulo
+3142007,Mirabela,-16.256,-44.1602,0,31,4839,38,America/Sao_Paulo
+3142106,Miradouro,-20.8899,-42.3458,0,31,4841,32,America/Sao_Paulo
+3142205,Miraí,-21.2021,-42.6122,0,31,4843,32,America/Sao_Paulo
+3142254,Miravânia,-14.7348,-44.4092,0,31,0652,38,America/Sao_Paulo
+3142304,Moeda,-20.3399,-44.0509,0,31,4845,31,America/Sao_Paulo
+3142403,Moema,-19.8387,-45.4127,0,31,4847,37,America/Sao_Paulo
+3142502,Monjolos,-18.3245,-44.118,0,31,4849,38,America/Sao_Paulo
+3142601,Monsenhor Paulo,-21.7579,-45.5391,0,31,4851,35,America/Sao_Paulo
+3142700,Montalvânia,-14.4197,-44.3719,0,31,4853,38,America/Sao_Paulo
+3142809,Monte Alegre de Minas,-18.869,-48.881,0,31,4855,34,America/Sao_Paulo
+3142908,Monte Azul,-15.1514,-42.8718,0,31,4857,38,America/Sao_Paulo
+3143005,Monte Belo,-21.3271,-46.3635,0,31,4859,35,America/Sao_Paulo
+3143104,Monte Carmelo,-18.7302,-47.4912,0,31,4861,34,America/Sao_Paulo
+3143153,Monte Formoso,-16.8691,-41.2473,0,31,0654,33,America/Sao_Paulo
+3143203,Monte Santo de Minas,-21.1873,-46.9753,0,31,4863,35,America/Sao_Paulo
+3143401,Monte Sião,-22.4335,-46.573,0,31,4867,35,America/Sao_Paulo
+3143302,Montes Claros,-16.7282,-43.8578,0,31,4865,38,America/Sao_Paulo
+3143450,Montezuma,-15.1702,-42.4941,0,31,2697,38,America/Sao_Paulo
+3143500,Morada Nova de Minas,-18.5998,-45.3584,0,31,4869,37,America/Sao_Paulo
+3143609,Morro da Garça,-18.5356,-44.601,0,31,4871,38,America/Sao_Paulo
+3143708,Morro do Pilar,-19.2236,-43.3795,0,31,4873,31,America/Sao_Paulo
+3143807,Munhoz,-22.6092,-46.362,0,31,4875,35,America/Sao_Paulo
+3143906,Muriaé,-21.13,-42.3693,0,31,4877,32,America/Sao_Paulo
+3144003,Mutum,-19.8121,-41.4407,0,31,4879,33,America/Sao_Paulo
+3144102,Muzambinho,-21.3692,-46.5213,0,31,4881,35,America/Sao_Paulo
+3144201,Nacip Raydan,-18.4544,-42.2481,0,31,4883,33,America/Sao_Paulo
+3144300,Nanuque,-17.8481,-40.3533,0,31,4885,33,America/Sao_Paulo
+3144359,Naque,-19.2291,-42.3312,0,31,0656,33,America/Sao_Paulo
+3144375,Natalândia,-16.5021,-46.4874,0,31,0658,38,America/Sao_Paulo
+3144409,Natércia,-22.1158,-45.5123,0,31,4887,35,America/Sao_Paulo
+3144508,Nazareno,-21.2168,-44.6138,0,31,4889,35,America/Sao_Paulo
+3144607,Nepomuceno,-21.2324,-45.235,0,31,4891,35,America/Sao_Paulo
+3144656,Ninheira,-15.3148,-41.7564,0,31,0660,38,America/Sao_Paulo
+3144672,Nova Belém,-18.4925,-41.1107,0,31,0662,33,America/Sao_Paulo
+3144706,Nova Era,-19.7577,-43.0333,0,31,4893,31,America/Sao_Paulo
+3144805,Nova Lima,-19.9758,-43.8509,0,31,4895,31,America/Sao_Paulo
+3144904,Nova Módica,-18.4417,-41.4984,0,31,4897,33,America/Sao_Paulo
+3145000,Nova Ponte,-19.1461,-47.6779,0,31,4899,34,America/Sao_Paulo
+3145059,Nova Porteirinha,-15.7993,-43.2941,0,31,0664,38,America/Sao_Paulo
+3145109,Nova Resende,-21.1286,-46.4157,0,31,4901,35,America/Sao_Paulo
+3145208,Nova Serrana,-19.8713,-44.9847,0,31,4903,37,America/Sao_Paulo
+3136603,Nova União,-19.6876,-43.583,0,31,4731,31,America/Sao_Paulo
+3145307,Novo Cruzeiro,-17.4654,-41.8826,0,31,4905,33,America/Sao_Paulo
+3145356,Novo Oriente de Minas,-17.4089,-41.2194,0,31,0666,33,America/Sao_Paulo
+3145372,Novorizonte,-16.0162,-42.4044,0,31,0668,38,America/Sao_Paulo
+3145406,Olaria,-21.8598,-43.9356,0,31,4907,32,America/Sao_Paulo
+3145455,Olhos d'Água,-17.3982,-43.5719,0,31,0670,38,America/Sao_Paulo
+3145505,Olímpio Noronha,-22.0685,-45.2657,0,31,4909,35,America/Sao_Paulo
+3145604,Oliveira,-20.6982,-44.829,0,31,4911,37,America/Sao_Paulo
+3145703,Oliveira Fortes,-21.3401,-43.4499,0,31,4913,32,America/Sao_Paulo
+3145802,Onça de Pitangui,-19.7276,-44.8058,0,31,4915,37,America/Sao_Paulo
+3145851,Oratórios,-20.4298,-42.7977,0,31,0672,31,America/Sao_Paulo
+3145877,Orizânia,-20.5142,-42.1991,0,31,0674,32,America/Sao_Paulo
+3145901,Ouro Branco,-20.5263,-43.6962,0,31,4917,31,America/Sao_Paulo
+3146008,Ouro Fino,-22.2779,-46.3716,0,31,4919,35,America/Sao_Paulo
+3146107,Ouro Preto,-20.3796,-43.512,0,31,4921,31,America/Sao_Paulo
+3146206,Ouro Verde de Minas,-18.0719,-41.2734,0,31,4923,33,America/Sao_Paulo
+3146255,Padre Carvalho,-16.3646,-42.5088,0,31,0676,38,America/Sao_Paulo
+3146305,Padre Paraíso,-17.0758,-41.4821,0,31,4925,33,America/Sao_Paulo
+3146552,Pai Pedro,-15.5271,-43.07,0,31,0678,38,America/Sao_Paulo
+3146404,Paineiras,-18.8993,-45.5321,0,31,4927,37,America/Sao_Paulo
+3146503,Pains,-20.3705,-45.6627,0,31,4929,37,America/Sao_Paulo
+3146602,Paiva,-21.2913,-43.4088,0,31,4931,32,America/Sao_Paulo
+3146701,Palma,-21.3748,-42.3123,0,31,4933,32,America/Sao_Paulo
+3146750,Palmópolis,-16.7364,-40.4296,0,31,2661,33,America/Sao_Paulo
+3146909,Papagaios,-19.4419,-44.7468,0,31,4937,37,America/Sao_Paulo
+3147105,Pará de Minas,-19.8534,-44.6114,0,31,4941,37,America/Sao_Paulo
+3147006,Paracatu,-17.2252,-46.8711,0,31,4939,38,America/Sao_Paulo
+3147204,Paraguaçu,-21.5465,-45.7374,0,31,4943,35,America/Sao_Paulo
+3147303,Paraisópolis,-22.5539,-45.7803,0,31,4945,35,America/Sao_Paulo
+3147402,Paraopeba,-19.2732,-44.4044,0,31,4947,31,America/Sao_Paulo
+3147600,Passa Quatro,-22.3871,-44.9709,0,31,4951,35,America/Sao_Paulo
+3147709,Passa Tempo,-20.6539,-44.4926,0,31,4953,37,America/Sao_Paulo
+3147808,Passa-Vinte,-22.2097,-44.2344,0,31,4955,32,America/Sao_Paulo
+3147501,Passabém,-19.3509,-43.1383,0,31,4949,31,America/Sao_Paulo
+3147907,Passos,-20.7193,-46.609,0,31,4957,35,America/Sao_Paulo
+3147956,Patis,-16.0773,-44.0787,0,31,0680,38,America/Sao_Paulo
+3148004,Patos de Minas,-18.5699,-46.5013,0,31,4959,34,America/Sao_Paulo
+3148103,Patrocínio,-18.9379,-46.9934,0,31,4961,34,America/Sao_Paulo
+3148202,Patrocínio do Muriaé,-21.1544,-42.2125,0,31,4963,32,America/Sao_Paulo
+3148301,Paula Cândido,-20.8754,-42.9752,0,31,4965,32,America/Sao_Paulo
+3148400,Paulistas,-18.4276,-42.8628,0,31,4967,33,America/Sao_Paulo
+3148509,Pavão,-17.4267,-41.0035,0,31,4969,33,America/Sao_Paulo
+3148608,Peçanha,-18.5441,-42.5583,0,31,4971,33,America/Sao_Paulo
+3148707,Pedra Azul,-16.0086,-41.2909,0,31,4973,33,America/Sao_Paulo
+3148756,Pedra Bonita,-20.5219,-42.3304,0,31,0682,31,America/Sao_Paulo
+3148806,Pedra do Anta,-20.5968,-42.7123,0,31,4975,31,America/Sao_Paulo
+3148905,Pedra do Indaiá,-20.2563,-45.2107,0,31,4977,37,America/Sao_Paulo
+3149002,Pedra Dourada,-20.8266,-42.1515,0,31,4979,32,America/Sao_Paulo
+3149101,Pedralva,-22.2386,-45.4654,0,31,4981,35,America/Sao_Paulo
+3149150,Pedras de Maria da Cruz,-15.6032,-44.391,0,31,2899,38,America/Sao_Paulo
+3149200,Pedrinópolis,-19.2241,-47.4579,0,31,4983,34,America/Sao_Paulo
+3149309,Pedro Leopoldo,-19.6308,-44.0383,0,31,4985,31,America/Sao_Paulo
+3149408,Pedro Teixeira,-21.7076,-43.743,0,31,4987,32,America/Sao_Paulo
+3149507,Pequeri,-21.8341,-43.1145,0,31,4989,32,America/Sao_Paulo
+3149606,Pequi,-19.6284,-44.6604,0,31,4991,37,America/Sao_Paulo
+3149705,Perdigão,-19.9411,-45.078,0,31,4993,37,America/Sao_Paulo
+3149804,Perdizes,-19.3434,-47.2963,0,31,4995,34,America/Sao_Paulo
+3149903,Perdões,-21.0932,-45.0896,0,31,4997,35,America/Sao_Paulo
+3149952,Periquito,-19.1573,-42.2333,0,31,0684,33,America/Sao_Paulo
+3150000,Pescador,-18.357,-41.6006,0,31,4999,33,America/Sao_Paulo
+3150109,Piau,-21.5096,-43.313,0,31,5001,32,America/Sao_Paulo
+3150158,Piedade de Caratinga,-19.7593,-42.0756,0,31,0686,33,America/Sao_Paulo
+3150208,Piedade de Ponte Nova,-20.2438,-42.7379,0,31,5003,31,America/Sao_Paulo
+3150307,Piedade do Rio Grande,-21.469,-44.1938,0,31,5005,32,America/Sao_Paulo
+3150406,Piedade dos Gerais,-20.4715,-44.2243,0,31,5007,31,America/Sao_Paulo
+3150505,Pimenta,-20.4827,-45.8049,0,31,5009,37,America/Sao_Paulo
+3150539,Pingo-d'Água,-19.7287,-42.4095,0,31,0688,33,America/Sao_Paulo
+3150570,Pintópolis,-16.0572,-45.1402,0,31,0690,38,America/Sao_Paulo
+3150604,Piracema,-20.5089,-44.4783,0,31,5011,37,America/Sao_Paulo
+3150703,Pirajuba,-19.9092,-48.7027,0,31,5013,34,America/Sao_Paulo
+3150802,Piranga,-20.6834,-43.2967,0,31,5015,31,America/Sao_Paulo
+3150901,Piranguçu,-22.5249,-45.4945,0,31,5017,35,America/Sao_Paulo
+3151008,Piranguinho,-22.395,-45.5324,0,31,5019,35,America/Sao_Paulo
+3151107,Pirapetinga,-21.6554,-42.3434,0,31,5021,32,America/Sao_Paulo
+3151206,Pirapora,-17.3392,-44.934,0,31,5023,38,America/Sao_Paulo
+3151305,Piraúba,-21.2825,-43.0172,0,31,5025,32,America/Sao_Paulo
+3151404,Pitangui,-19.6741,-44.8964,0,31,5027,37,America/Sao_Paulo
+3151503,Piumhi,-20.4762,-45.9589,0,31,5029,37,America/Sao_Paulo
+3151602,Planura,-20.1376,-48.7,0,31,5031,34,America/Sao_Paulo
+3151701,Poço Fundo,-21.78,-45.9658,0,31,5033,35,America/Sao_Paulo
+3151800,Poços de Caldas,-21.78,-46.5692,0,31,5035,35,America/Sao_Paulo
+3151909,Pocrane,-19.6208,-41.6334,0,31,5037,33,America/Sao_Paulo
+3152006,Pompéu,-19.2257,-45.0141,0,31,5039,37,America/Sao_Paulo
+3152105,Ponte Nova,-20.4111,-42.8978,0,31,5041,31,America/Sao_Paulo
+3152131,Ponto Chique,-16.6282,-45.0588,0,31,0692,38,America/Sao_Paulo
+3152170,Ponto dos Volantes,-16.7473,-41.5025,0,31,0694,33,America/Sao_Paulo
+3152204,Porteirinha,-15.7404,-43.0281,0,31,5043,38,America/Sao_Paulo
+3152303,Porto Firme,-20.6642,-43.0834,0,31,5045,31,America/Sao_Paulo
+3152402,Poté,-17.8077,-41.786,0,31,5047,33,America/Sao_Paulo
+3152501,Pouso Alegre,-22.2266,-45.9389,0,31,5049,35,America/Sao_Paulo
+3152600,Pouso Alto,-22.1964,-44.9748,0,31,5051,35,America/Sao_Paulo
+3152709,Prados,-21.0597,-44.0778,0,31,5053,32,America/Sao_Paulo
+3152808,Prata,-19.3086,-48.9276,0,31,5055,34,America/Sao_Paulo
+3152907,Pratápolis,-20.7411,-46.8624,0,31,5057,35,America/Sao_Paulo
+3153004,Pratinha,-19.739,-46.3755,0,31,5059,34,America/Sao_Paulo
+3153103,Presidente Bernardes,-20.7656,-43.1895,0,31,5061,32,America/Sao_Paulo
+3153202,Presidente Juscelino,-18.6401,-44.06,0,31,5063,38,America/Sao_Paulo
+3153301,Presidente Kubitschek,-18.6193,-43.5628,0,31,5065,38,America/Sao_Paulo
+3153400,Presidente Olegário,-18.4096,-46.4165,0,31,5067,34,America/Sao_Paulo
+3153608,Prudente de Morais,-19.4742,-44.1591,0,31,5071,31,America/Sao_Paulo
+3153707,Quartel Geral,-19.2703,-45.5569,0,31,5073,37,America/Sao_Paulo
+3153806,Queluzito,-20.7416,-43.8851,0,31,5075,31,America/Sao_Paulo
+3153905,Raposos,-19.9636,-43.8079,0,31,5077,31,America/Sao_Paulo
+3154002,Raul Soares,-20.1061,-42.4502,0,31,5079,33,America/Sao_Paulo
+3154101,Recreio,-21.5289,-42.4676,0,31,5081,32,America/Sao_Paulo
+3154150,Reduto,-20.2401,-41.9848,0,31,0696,33,America/Sao_Paulo
+3154200,Resende Costa,-20.9171,-44.2407,0,31,5083,32,America/Sao_Paulo
+3154309,Resplendor,-19.3194,-41.2462,0,31,5085,33,America/Sao_Paulo
+3154408,Ressaquinha,-21.0642,-43.7598,0,31,5087,32,America/Sao_Paulo
+3154457,Riachinho,-16.2258,-45.9888,0,31,2901,38,America/Sao_Paulo
+3154507,Riacho dos Machados,-16.0091,-43.0488,0,31,5089,38,America/Sao_Paulo
+3154606,Ribeirão das Neves,-19.7621,-44.0844,0,31,5091,31,America/Sao_Paulo
+3154705,Ribeirão Vermelho,-21.1879,-45.0637,0,31,5093,35,America/Sao_Paulo
+3154804,Rio Acima,-20.0876,-43.7878,0,31,5095,31,America/Sao_Paulo
+3154903,Rio Casca,-20.2285,-42.6462,0,31,5097,31,America/Sao_Paulo
+3155108,Rio do Prado,-16.6056,-40.5714,0,31,5101,33,America/Sao_Paulo
+3155009,Rio Doce,-20.2412,-42.8995,0,31,5099,31,America/Sao_Paulo
+3155207,Rio Espera,-20.855,-43.4721,0,31,5103,31,America/Sao_Paulo
+3155306,Rio Manso,-20.2666,-44.3069,0,31,5105,31,America/Sao_Paulo
+3155405,Rio Novo,-21.4649,-43.1168,0,31,5107,32,America/Sao_Paulo
+3155504,Rio Paranaíba,-19.1861,-46.2455,0,31,5109,34,America/Sao_Paulo
+3155603,Rio Pardo de Minas,-15.616,-42.5405,0,31,5111,38,America/Sao_Paulo
+3155702,Rio Piracicaba,-19.9284,-43.1829,0,31,5113,31,America/Sao_Paulo
+3155801,Rio Pomba,-21.2712,-43.1696,0,31,5115,32,America/Sao_Paulo
+3155900,Rio Preto,-22.0861,-43.8293,0,31,5117,32,America/Sao_Paulo
+3156007,Rio Vermelho,-18.2922,-43.0018,0,31,5119,33,America/Sao_Paulo
+3156106,Ritápolis,-21.0276,-44.3204,0,31,5121,32,America/Sao_Paulo
+3156205,Rochedo de Minas,-21.6284,-43.0165,0,31,5123,32,America/Sao_Paulo
+3156304,Rodeiro,-21.2035,-42.8586,0,31,5125,32,America/Sao_Paulo
+3156403,Romaria,-18.8838,-47.5782,0,31,5127,34,America/Sao_Paulo
+3156452,Rosário da Limeira,-20.9812,-42.5112,0,31,0698,32,America/Sao_Paulo
+3156502,Rubelita,-16.4053,-42.261,0,31,5129,38,America/Sao_Paulo
+3156601,Rubim,-16.3775,-40.5397,0,31,5131,33,America/Sao_Paulo
+3156700,Sabará,-19.884,-43.8263,0,31,5133,31,America/Sao_Paulo
+3156809,Sabinópolis,-18.6653,-43.0752,0,31,5135,33,America/Sao_Paulo
+3156908,Sacramento,-19.8622,-47.4508,0,31,5137,34,America/Sao_Paulo
+3157005,Salinas,-16.1753,-42.2964,0,31,5139,38,America/Sao_Paulo
+3157104,Salto da Divisa,-16.0063,-39.9391,0,31,5141,33,America/Sao_Paulo
+3157203,Santa Bárbara,-19.9604,-43.4101,0,31,5143,31,America/Sao_Paulo
+3157252,Santa Bárbara do Leste,-19.9753,-42.1457,0,31,2667,33,America/Sao_Paulo
+3157278,Santa Bárbara do Monte Verde,-21.9592,-43.7027,0,31,0700,32,America/Sao_Paulo
+3157302,Santa Bárbara do Tugúrio,-21.2431,-43.5607,0,31,5145,32,America/Sao_Paulo
+3157336,Santa Cruz de Minas,-21.1241,-44.2202,0,31,0702,32,America/Sao_Paulo
+3157377,Santa Cruz de Salinas,-16.0967,-41.7418,0,31,0704,38,America/Sao_Paulo
+3157401,Santa Cruz do Escalvado,-20.2372,-42.8169,0,31,5147,31,America/Sao_Paulo
+3157500,Santa Efigênia de Minas,-18.8235,-42.4388,0,31,5149,33,America/Sao_Paulo
+3157609,Santa Fé de Minas,-16.6859,-45.4102,0,31,5151,38,America/Sao_Paulo
+3157658,Santa Helena de Minas,-16.9707,-40.6727,0,31,0706,33,America/Sao_Paulo
+3157708,Santa Juliana,-19.3108,-47.5322,0,31,5153,34,America/Sao_Paulo
+3157807,Santa Luzia,-19.7548,-43.8497,0,31,5155,31,America/Sao_Paulo
+3157906,Santa Margarida,-20.3839,-42.2519,0,31,5157,31,America/Sao_Paulo
+3158003,Santa Maria de Itabira,-19.4431,-43.1064,0,31,5159,31,America/Sao_Paulo
+3158102,Santa Maria do Salto,-16.2479,-40.1512,0,31,5161,33,America/Sao_Paulo
+3158201,Santa Maria do Suaçuí,-18.1896,-42.4139,0,31,5163,33,America/Sao_Paulo
+3159209,Santa Rita de Caldas,-22.0292,-46.3385,0,31,5183,35,America/Sao_Paulo
+3159407,Santa Rita de Ibitipoca,-21.5658,-43.9163,0,31,5187,32,America/Sao_Paulo
+3159308,Santa Rita de Jacutinga,-22.1474,-44.0977,0,31,5185,32,America/Sao_Paulo
+3159357,Santa Rita de Minas,-19.876,-42.1363,0,31,2669,33,America/Sao_Paulo
+3159506,Santa Rita do Itueto,-19.3576,-41.3821,0,31,5189,33,America/Sao_Paulo
+3159605,Santa Rita do Sapucaí,-22.2461,-45.7034,0,31,5191,35,America/Sao_Paulo
+3159704,Santa Rosa da Serra,-19.5186,-45.9611,0,31,5193,34,America/Sao_Paulo
+3159803,Santa Vitória,-18.8414,-50.1208,0,31,5195,34,America/Sao_Paulo
+3158300,Santana da Vargem,-21.2449,-45.5005,0,31,5165,35,America/Sao_Paulo
+3158409,Santana de Cataguases,-21.2893,-42.5524,0,31,5167,32,America/Sao_Paulo
+3158508,Santana de Pirapama,-18.9962,-44.0409,0,31,5169,31,America/Sao_Paulo
+3158607,Santana do Deserto,-21.9512,-43.1583,0,31,5171,32,America/Sao_Paulo
+3158706,Santana do Garambéu,-21.5983,-44.105,0,31,5173,32,America/Sao_Paulo
+3158805,Santana do Jacaré,-20.9007,-45.1285,0,31,5175,35,America/Sao_Paulo
+3158904,Santana do Manhuaçu,-20.1031,-41.9278,0,31,5177,33,America/Sao_Paulo
+3158953,Santana do Paraíso,-19.3661,-42.5446,0,31,2673,31,America/Sao_Paulo
+3159001,Santana do Riacho,-19.1662,-43.722,0,31,5179,31,America/Sao_Paulo
+3159100,Santana dos Montes,-20.7868,-43.6949,0,31,5181,31,America/Sao_Paulo
+3159902,Santo Antônio do Amparo,-20.943,-44.9176,0,31,5197,35,America/Sao_Paulo
+3160009,Santo Antônio do Aventureiro,-21.7606,-42.8115,0,31,5199,32,America/Sao_Paulo
+3160108,Santo Antônio do Grama,-20.3185,-42.6047,0,31,5201,31,America/Sao_Paulo
+3160207,Santo Antônio do Itambé,-18.4609,-43.3006,0,31,5203,33,America/Sao_Paulo
+3160306,Santo Antônio do Jacinto,-16.5332,-40.1817,0,31,5205,33,America/Sao_Paulo
+3160405,Santo Antônio do Monte,-20.085,-45.2947,0,31,5207,37,America/Sao_Paulo
+3160454,Santo Antônio do Retiro,-15.3393,-42.6171,0,31,0708,38,America/Sao_Paulo
+3160504,Santo Antônio do Rio Abaixo,-19.2374,-43.2604,0,31,5209,31,America/Sao_Paulo
+3160603,Santo Hipólito,-18.2968,-44.2229,0,31,5211,38,America/Sao_Paulo
+3160702,Santos Dumont,-21.4634,-43.5499,0,31,5213,32,America/Sao_Paulo
+3160801,São Bento Abade,-21.5839,-45.0699,0,31,5215,35,America/Sao_Paulo
+3160900,São Brás do Suaçuí,-20.6242,-43.9515,0,31,5217,31,America/Sao_Paulo
+3160959,São Domingos das Dores,-19.5246,-42.0106,0,31,0710,33,America/Sao_Paulo
+3161007,São Domingos do Prata,-19.8678,-42.971,0,31,5219,31,America/Sao_Paulo
+3161056,São Félix de Minas,-18.5959,-41.4889,0,31,0712,33,America/Sao_Paulo
+3161106,São Francisco,-15.9514,-44.8593,0,31,5221,38,America/Sao_Paulo
+3161205,São Francisco de Paula,-20.7036,-44.9838,0,31,5223,37,America/Sao_Paulo
+3161304,São Francisco de Sales,-19.8611,-49.7727,0,31,5225,34,America/Sao_Paulo
+3161403,São Francisco do Glória,-20.7923,-42.2673,0,31,5227,32,America/Sao_Paulo
+3161502,São Geraldo,-20.9252,-42.8364,0,31,5229,32,America/Sao_Paulo
+3161601,São Geraldo da Piedade,-18.8411,-42.2867,0,31,5231,33,America/Sao_Paulo
+3161650,São Geraldo do Baixio,-18.9097,-41.363,0,31,0714,33,America/Sao_Paulo
+3161700,São Gonçalo do Abaeté,-18.3315,-45.8265,0,31,5233,38,America/Sao_Paulo
+3161809,São Gonçalo do Pará,-19.9822,-44.8593,0,31,5235,37,America/Sao_Paulo
+3161908,São Gonçalo do Rio Abaixo,-19.8221,-43.366,0,31,5237,31,America/Sao_Paulo
+3125507,São Gonçalo do Rio Preto,-18.0025,-43.3854,0,31,4509,38,America/Sao_Paulo
+3162005,São Gonçalo do Sapucaí,-21.8932,-45.5893,0,31,5239,35,America/Sao_Paulo
+3162104,São Gotardo,-19.3087,-46.0465,0,31,5241,34,America/Sao_Paulo
+3162203,São João Batista do Glória,-20.635,-46.508,0,31,5243,35,America/Sao_Paulo
+3162252,São João da Lagoa,-16.8455,-44.3507,0,31,0716,38,America/Sao_Paulo
+3162302,São João da Mata,-21.928,-45.9297,0,31,5245,35,America/Sao_Paulo
+3162401,São João da Ponte,-15.9271,-44.0096,0,31,5247,38,America/Sao_Paulo
+3162450,São João das Missões,-14.8859,-44.0922,0,31,0718,38,America/Sao_Paulo
+3162500,São João del Rei,-21.1311,-44.2526,0,31,5249,32,America/Sao_Paulo
+3162559,São João do Manhuaçu,-20.3933,-42.1533,0,31,2677,33,America/Sao_Paulo
+3162575,São João do Manteninha,-18.723,-41.1628,0,31,2679,33,America/Sao_Paulo
+3162609,São João do Oriente,-19.3384,-42.1575,0,31,5251,33,America/Sao_Paulo
+3162658,São João do Pacuí,-16.5373,-44.5134,0,31,0720,38,America/Sao_Paulo
+3162708,São João do Paraíso,-15.3168,-42.0213,0,31,5253,38,America/Sao_Paulo
+3162807,São João Evangelista,-18.548,-42.7655,0,31,5255,33,America/Sao_Paulo
+3162906,São João Nepomuceno,-21.5381,-43.0069,0,31,5257,32,America/Sao_Paulo
+3162922,São Joaquim de Bicas,-20.048,-44.2749,0,31,0722,31,America/Sao_Paulo
+3162948,São José da Barra,-20.7178,-46.313,0,31,0724,35,America/Sao_Paulo
+3162955,São José da Lapa,-19.6971,-43.9586,0,31,2649,31,America/Sao_Paulo
+3163003,São José da Safira,-18.3243,-42.1431,0,31,5259,33,America/Sao_Paulo
+3163102,São José da Varginha,-19.7006,-44.556,0,31,5261,37,America/Sao_Paulo
+3163201,São José do Alegre,-22.3243,-45.5258,0,31,5263,35,America/Sao_Paulo
+3163300,São José do Divino,-18.4793,-41.3907,0,31,5265,33,America/Sao_Paulo
+3163409,São José do Goiabal,-19.9214,-42.7035,0,31,5267,31,America/Sao_Paulo
+3163508,São José do Jacuri,-18.281,-42.6729,0,31,5269,33,America/Sao_Paulo
+3163607,São José do Mantimento,-20.0058,-41.7486,0,31,5271,33,America/Sao_Paulo
+3163706,São Lourenço,-22.1166,-45.0506,0,31,5273,35,America/Sao_Paulo
+3163805,São Miguel do Anta,-20.7067,-42.7174,0,31,5275,31,America/Sao_Paulo
+3163904,São Pedro da União,-21.131,-46.6123,0,31,5277,35,America/Sao_Paulo
+3164100,São Pedro do Suaçuí,-18.3609,-42.5981,0,31,5281,33,America/Sao_Paulo
+3164001,São Pedro dos Ferros,-20.1732,-42.5251,0,31,5279,33,America/Sao_Paulo
+3164209,São Romão,-16.3641,-45.0749,0,31,5283,38,America/Sao_Paulo
+3164308,São Roque de Minas,-20.249,-46.3639,0,31,5285,37,America/Sao_Paulo
+3164407,São Sebastião da Bela Vista,-22.1583,-45.7546,0,31,5287,35,America/Sao_Paulo
+3164431,São Sebastião da Vargem Alegre,-19.7477,-43.3679,0,31,0726,32,America/Sao_Paulo
+3164472,São Sebastião do Anta,-19.5064,-41.985,0,31,0728,33,America/Sao_Paulo
+3164506,São Sebastião do Maranhão,-18.0873,-42.5659,0,31,5289,33,America/Sao_Paulo
+3164605,São Sebastião do Oeste,-20.2758,-45.0063,0,31,5291,37,America/Sao_Paulo
+3164704,São Sebastião do Paraíso,-20.9167,-46.9837,0,31,5293,35,America/Sao_Paulo
+3164803,São Sebastião do Rio Preto,-19.2959,-43.1757,0,31,5295,31,America/Sao_Paulo
+3164902,São Sebastião do Rio Verde,-22.2183,-44.9761,0,31,5297,35,America/Sao_Paulo
+3165206,São Thomé das Letras,-21.7218,-44.9849,0,31,5303,35,America/Sao_Paulo
+3165008,São Tiago,-20.9075,-44.5098,0,31,5299,32,America/Sao_Paulo
+3165107,São Tomás de Aquino,-20.7791,-47.0962,0,31,5301,35,America/Sao_Paulo
+3165305,São Vicente de Minas,-21.7042,-44.4431,0,31,5305,35,America/Sao_Paulo
+3165404,Sapucaí-Mirim,-22.7409,-45.738,0,31,5307,35,America/Sao_Paulo
+3165503,Sardoá,-18.7828,-42.3629,0,31,5309,33,America/Sao_Paulo
+3165537,Sarzedo,-20.0367,-44.1446,0,31,0730,31,America/Sao_Paulo
+3165560,Sem-Peixe,-20.1008,-42.8483,0,31,0734,31,America/Sao_Paulo
+3165578,Senador Amaral,-22.5869,-46.1763,0,31,2689,35,America/Sao_Paulo
+3165602,Senador Cortes,-21.7986,-42.9424,0,31,5311,32,America/Sao_Paulo
+3165701,Senador Firmino,-20.9158,-43.0904,0,31,5313,32,America/Sao_Paulo
+3165800,Senador José Bento,-22.1633,-46.1792,0,31,5315,35,America/Sao_Paulo
+3165909,Senador Modestino Gonçalves,-17.9465,-43.2172,0,31,5317,38,America/Sao_Paulo
+3166006,Senhora de Oliveira,-20.7972,-43.3394,0,31,5319,31,America/Sao_Paulo
+3166105,Senhora do Porto,-18.8909,-43.0799,0,31,5321,33,America/Sao_Paulo
+3166204,Senhora dos Remédios,-21.0351,-43.5812,0,31,5323,32,America/Sao_Paulo
+3166303,Sericita,-20.4748,-42.4828,0,31,5325,31,America/Sao_Paulo
+3166402,Seritinga,-21.9134,-44.518,0,31,5327,35,America/Sao_Paulo
+3166501,Serra Azul de Minas,-18.3602,-43.1675,0,31,5329,38,America/Sao_Paulo
+3166600,Serra da Saudade,-19.4447,-45.795,0,31,5331,37,America/Sao_Paulo
+3166808,Serra do Salitre,-19.1083,-46.6961,0,31,5335,34,America/Sao_Paulo
+3166709,Serra dos Aimorés,-17.7872,-40.2453,0,31,5333,33,America/Sao_Paulo
+3166907,Serrania,-21.5441,-46.0417,0,31,5337,35,America/Sao_Paulo
+3166956,Serranópolis de Minas,-15.8176,-42.8732,0,31,0736,38,America/Sao_Paulo
+3167004,Serranos,-21.8857,-44.5125,0,31,5339,35,America/Sao_Paulo
+3167103,Serro,-18.5991,-43.3744,0,31,5341,38,America/Sao_Paulo
+3167202,Sete Lagoas,-19.4569,-44.2413,0,31,5343,31,America/Sao_Paulo
+3165552,Setubinha,-17.6002,-42.1587,0,31,0732,33,America/Sao_Paulo
+3167301,Silveirânia,-21.1615,-43.2128,0,31,5345,32,America/Sao_Paulo
+3167400,Silvianópolis,-22.0274,-45.8385,0,31,5347,35,America/Sao_Paulo
+3167509,Simão Pereira,-21.964,-43.3088,0,31,5349,32,America/Sao_Paulo
+3167608,Simonésia,-20.1341,-42.0091,0,31,5351,33,America/Sao_Paulo
+3167707,Sobrália,-19.2345,-42.0998,0,31,5353,33,America/Sao_Paulo
+3167806,Soledade de Minas,-22.0554,-45.0464,0,31,5355,35,America/Sao_Paulo
+3167905,Tabuleiro,-21.3632,-43.2381,0,31,5357,32,America/Sao_Paulo
+3168002,Taiobeiras,-15.8106,-42.2259,0,31,5359,38,America/Sao_Paulo
+3168051,Taparuba,-19.7621,-41.608,0,31,0738,33,America/Sao_Paulo
+3168101,Tapira,-19.9166,-46.8264,0,31,5361,34,America/Sao_Paulo
+3168200,Tapiraí,-19.8936,-46.0221,0,31,5363,37,America/Sao_Paulo
+3168309,Taquaraçu de Minas,-19.6652,-43.6922,0,31,5365,31,America/Sao_Paulo
+3168408,Tarumirim,-19.2835,-42.0097,0,31,5367,33,America/Sao_Paulo
+3168507,Teixeiras,-20.6561,-42.8564,0,31,5369,31,America/Sao_Paulo
+3168606,Teófilo Otoni,-17.8595,-41.5087,0,31,5371,33,America/Sao_Paulo
+3168705,Timóteo,-19.5811,-42.6471,0,31,5373,31,America/Sao_Paulo
+3168804,Tiradentes,-21.1102,-44.1744,0,31,5375,32,America/Sao_Paulo
+3168903,Tiros,-19.0037,-45.9626,0,31,5377,34,America/Sao_Paulo
+3169000,Tocantins,-21.1774,-43.0127,0,31,5379,32,America/Sao_Paulo
+3169059,Tocos do Moji,-22.3698,-46.0971,0,31,0740,35,America/Sao_Paulo
+3169109,Toledo,-22.7421,-46.3728,0,31,5381,35,America/Sao_Paulo
+3169208,Tombos,-20.9086,-42.0228,0,31,5383,32,America/Sao_Paulo
+3169307,Três Corações,-21.6921,-45.2511,0,31,5385,35,America/Sao_Paulo
+3169356,Três Marias,-18.2048,-45.2473,0,31,4115,38,America/Sao_Paulo
+3169406,Três Pontas,-21.3694,-45.5109,0,31,5387,35,America/Sao_Paulo
+3169505,Tumiritinga,-18.9844,-41.6527,0,31,5389,33,America/Sao_Paulo
+3169604,Tupaciguara,-18.5866,-48.6985,0,31,5391,34,America/Sao_Paulo
+3169703,Turmalina,-17.2828,-42.7285,0,31,5393,38,America/Sao_Paulo
+3169802,Turvolândia,-21.8733,-45.7859,0,31,5395,35,America/Sao_Paulo
+3169901,Ubá,-21.1204,-42.9359,0,31,5397,32,America/Sao_Paulo
+3170008,Ubaí,-16.2885,-44.7783,0,31,5399,38,America/Sao_Paulo
+3170057,Ubaporanga,-19.6351,-42.1059,0,31,2671,33,America/Sao_Paulo
+3170107,Uberaba,-19.7472,-47.9381,0,31,5401,34,America/Sao_Paulo
+3170206,Uberlândia,-18.9141,-48.2749,0,31,5403,34,America/Sao_Paulo
+3170305,Umburatiba,-17.2548,-40.5779,0,31,5405,33,America/Sao_Paulo
+3170404,Unaí,-16.3592,-46.9022,0,31,5407,38,America/Sao_Paulo
+3170438,União de Minas,-19.5299,-50.338,0,31,0742,34,America/Sao_Paulo
+3170479,Uruana de Minas,-16.0634,-46.2443,0,31,0744,38,America/Sao_Paulo
+3170503,Urucânia,-20.3521,-42.737,0,31,5409,31,America/Sao_Paulo
+3170529,Urucuia,-16.1244,-45.7352,0,31,2699,38,America/Sao_Paulo
+3170578,Vargem Alegre,-19.5988,-42.2949,0,31,0746,33,America/Sao_Paulo
+3170602,Vargem Bonita,-20.3333,-46.3688,0,31,5411,37,America/Sao_Paulo
+3170651,Vargem Grande do Rio Pardo,-15.3987,-42.3085,0,31,0748,38,America/Sao_Paulo
+3170701,Varginha,-21.5556,-45.4364,0,31,5413,35,America/Sao_Paulo
+3170750,Varjão de Minas,-18.3741,-46.0313,0,31,0750,38,America/Sao_Paulo
+3170800,Várzea da Palma,-17.5944,-44.7226,0,31,5415,38,America/Sao_Paulo
+3170909,Varzelândia,-15.6992,-44.0278,0,31,5417,38,America/Sao_Paulo
+3171006,Vazante,-17.9827,-46.9088,0,31,5419,34,America/Sao_Paulo
+3171030,Verdelândia,-15.5845,-43.6121,0,31,0752,38,America/Sao_Paulo
+3171071,Veredinha,-17.3974,-42.7307,0,31,0754,38,America/Sao_Paulo
+3171105,Veríssimo,-19.6657,-48.3118,0,31,5423,34,America/Sao_Paulo
+3171154,Vermelho Novo,-20.0406,-42.2688,0,31,0756,33,America/Sao_Paulo
+3171204,Vespasiano,-19.6883,-43.9239,0,31,5425,31,America/Sao_Paulo
+3171303,Viçosa,-20.7559,-42.8742,0,31,5427,31,America/Sao_Paulo
+3171402,Vieiras,-20.867,-42.2401,0,31,5429,32,America/Sao_Paulo
+3171600,Virgem da Lapa,-16.807,-42.3431,0,31,5433,33,America/Sao_Paulo
+3171709,Virgínia,-22.3264,-45.0965,0,31,5435,35,America/Sao_Paulo
+3171808,Virginópolis,-18.8154,-42.7015,0,31,5437,33,America/Sao_Paulo
+3171907,Virgolândia,-18.4738,-42.3067,0,31,5439,33,America/Sao_Paulo
+3172004,Visconde do Rio Branco,-21.0127,-42.8361,0,31,5441,32,America/Sao_Paulo
+3172103,Volta Grande,-21.7671,-42.5375,0,31,5443,32,America/Sao_Paulo
+3172202,Wenceslau Braz,-22.5368,-45.3626,0,31,5421,35,America/Sao_Paulo
