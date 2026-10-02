@@ -1,0 +1,866 @@
+[
+ {
+  "codigo": "1_COB_BH_1_COB",
+  "rotulo": "1 COB/BH",
+  "cob": "1º COB",
+  "ueop": "1º COB",
+  "fracao": null,
+  "cidade": "Belo Horizonte",
+  "sede": true
+ },
+ {
+  "codigo": "1_BBM_Belo_Horizonte_Sede_1_COB",
+  "rotulo": "1 BBM - Belo Horizonte (Sede)",
+  "cob": "1º COB",
+  "ueop": "1º BBM",
+  "fracao": null,
+  "cidade": "Belo Horizonte",
+  "sede": true
+ },
+ {
+  "codigo": "1_BBM_2CIA_1PEL_Ouro_Preto_1_COB",
+  "rotulo": "1 BBM/2CIA/1PEL (Ouro Preto)",
+  "cob": "1º COB",
+  "ueop": "1º BBM",
+  "fracao": "2ª Cia/1º Pel (Ouro Preto)",
+  "cidade": "Ouro Preto",
+  "sede": false
+ },
+ {
+  "codigo": "1_BBM_2CIA_1PEL_PA_Mariana_1_COB",
+  "rotulo": "1 BBM/2CIA/1PEL/PA (Mariana)",
+  "cob": "1º COB",
+  "ueop": "1º BBM",
+  "fracao": "2ª Cia/1º Pel/PA (Mariana)",
+  "cidade": "Mariana",
+  "sede": false
+ },
+ {
+  "codigo": "1CIA_IND_Pocos_de_Caldas_Sede_6_COB",
+  "rotulo": "1CIA IND - Pocos de Caldas (Sede)",
+  "cob": "6º COB",
+  "ueop": "1ª Cia Ind",
+  "fracao": null,
+  "cidade": "Pocos de Caldas",
+  "sede": true
+ },
+ {
+  "codigo": "1CIA_IND_1CIA_1PEL_PA_Andradas_6_COB",
+  "rotulo": "1CIA IND/1CIA/1PEL/PA (Andradas)",
+  "cob": "6º COB",
+  "ueop": "1ª Cia Ind",
+  "fracao": "1ª Cia/1º Pel/PA (Andradas)",
+  "cidade": "Andradas",
+  "sede": false
+ },
+ {
+  "codigo": "1CIA_IND_2CIA_1PEL_Passos_6_COB",
+  "rotulo": "1CIA IND/2CIA/1PEL (Passos)",
+  "cob": "6º COB",
+  "ueop": "1ª Cia Ind",
+  "fracao": "2ª Cia/1º Pel (Passos)",
+  "cidade": "Passos",
+  "sede": false
+ },
+ {
+  "codigo": "1CIA_IND_2CIA_2PEL_Sao_Sebastiao_do_Paraiso_6_COB",
+  "rotulo": "1CIA IND/2CIA/2PEL (Sao Sebastiao do Paraiso)",
+  "cob": "6º COB",
+  "ueop": "1ª Cia Ind",
+  "fracao": "2ª Cia/2º Pel (Sao Sebastiao do Paraiso)",
+  "cidade": "Sao Sebastiao do Paraiso",
+  "sede": false
+ },
+ {
+  "codigo": "1CIA_IND_2CIA_3PEL_Piumhi_6_COB",
+  "rotulo": "1CIA IND/2CIA/3PEL (Piumhi)",
+  "cob": "6º COB",
+  "ueop": "1ª Cia Ind",
+  "fracao": "2ª Cia/3º Pel (Piumhi)",
+  "cidade": "Piumhi",
+  "sede": false
+ },
+ {
+  "codigo": "1CIA_IND_3CIA_1PEL_Alfenas_6_COB",
+  "rotulo": "1CIA IND/3CIA/1PEL (Alfenas)",
+  "cob": "6º COB",
+  "ueop": "1ª Cia Ind",
+  "fracao": "3ª Cia/1º Pel (Alfenas)",
+  "cidade": "Alfenas",
+  "sede": false
+ },
+ {
+  "codigo": "1CIA_IND_3CIA_1PEL_PA_Machado_6_COB",
+  "rotulo": "1CIA IND/3CIA/1PEL/PA (Machado)",
+  "cob": "6º COB",
+  "ueop": "1ª Cia Ind",
+  "fracao": "3ª Cia/1º Pel/PA (Machado)",
+  "cidade": "Machado",
+  "sede": false
+ },
+ {
+  "codigo": "2_BBM_Contagem_Sede_1_COB",
+  "rotulo": "2 BBM - Contagem (Sede)",
+  "cob": "1º COB",
+  "ueop": "2º BBM",
+  "fracao": null,
+  "cidade": "Contagem",
+  "sede": true
+ },
+ {
+  "codigo": "2_BBM_1CIA_5PEL_PA_Brumadinho_1_COB",
+  "rotulo": "2 BBM/1CIA/5PEL/PA (Brumadinho)",
+  "cob": "1º COB",
+  "ueop": "2º BBM",
+  "fracao": "1ª Cia/5º Pel/PA (Brumadinho)",
+  "cidade": "Brumadinho",
+  "sede": false
+ },
+ {
+  "codigo": "2_BBM_1CIA_6PEL_Juatuba_1_COB",
+  "rotulo": "2 BBM/1CIA/6PEL (Juatuba)",
+  "cob": "1º COB",
+  "ueop": "2º BBM",
+  "fracao": "1ª Cia/6º Pel (Juatuba)",
+  "cidade": "Juatuba",
+  "sede": false
+ },
+ {
+  "codigo": "2_BBM_1CIA_6PEL_PA_Betim_1_COB",
+  "rotulo": "2 BBM/1CIA/6PEL/PA (Betim)",
+  "cob": "1º COB",
+  "ueop": "2º BBM",
+  "fracao": "1ª Cia/6º Pel/PA (Betim)",
+  "cidade": "Betim",
+  "sede": false
+ },
+ {
+  "codigo": "2_BBM_1CIA_7PEL_Barreiro/BH_1_COB",
+  "rotulo": "2 BBM/1CIA/7PEL (Barreiro/BH)",
+  "cob": "1º COB",
+  "ueop": "2º BBM",
+  "fracao": "1ª Cia/7º Pel (Barreiro/BH)",
+  "cidade": "Barreiro/BH",
+  "sede": false
+ },
+ {
+  "codigo": "2_BBM_1CIA_7PEL_PA_Brumadinho_1_COB",
+  "rotulo": "2 BBM/1CIA/7PEL/PA (Brumadinho)",
+  "cob": "1º COB",
+  "ueop": "2º BBM",
+  "fracao": "1ª Cia/7º Pel/PA (Brumadinho)",
+  "cidade": "Brumadinho",
+  "sede": false
+ },
+ {
+  "codigo": "2_BBM_1CIA_8PEL_Rib._das_Neves_1_COB",
+  "rotulo": "2 BBM/1CIA/8PEL (Rib. das Neves)",
+  "cob": "1º COB",
+  "ueop": "2º BBM",
+  "fracao": "1ª Cia/8º Pel (Rib. das Neves)",
+  "cidade": "Rib. das Neves",
+  "sede": false
+ },
+ {
+  "codigo": "2CIA_IND_Barbacena_Sede_3_COB",
+  "rotulo": "2CIA IND - Barbacena (Sede)",
+  "cob": "3º COB",
+  "ueop": "2ª Cia Ind",
+  "fracao": null,
+  "cidade": "Barbacena",
+  "sede": true
+ },
+ {
+  "codigo": "2CIA_IND_1CIA_2PEL_Sao_Joao_Del_Rei_3_COB",
+  "rotulo": "2CIA IND/1CIA/2PEL (Sao Joao Del Rei)",
+  "cob": "3º COB",
+  "ueop": "2ª Cia Ind",
+  "fracao": "1ª Cia/2º Pel (Sao Joao Del Rei)",
+  "cidade": "Sao Joao Del Rei",
+  "sede": false
+ },
+ {
+  "codigo": "2CIA_IND_2CIA_1PEL_Conselheiro_Lafaiete_3_COB",
+  "rotulo": "2CIA IND/2CIA/1PEL (Conselheiro Lafaiete)",
+  "cob": "3º COB",
+  "ueop": "2ª Cia Ind",
+  "fracao": "2ª Cia/1º Pel (Conselheiro Lafaiete)",
+  "cidade": "Conselheiro Lafaiete",
+  "sede": false
+ },
+ {
+  "codigo": "2CIA_IND_2CIA_1PEL_PA_Congonhas_3_COB",
+  "rotulo": "2CIA IND/2CIA/1PEL/PA (Congonhas)",
+  "cob": "3º COB",
+  "ueop": "2ª Cia Ind",
+  "fracao": "2ª Cia/1º Pel/PA (Congonhas)",
+  "cidade": "Congonhas",
+  "sede": false
+ },
+ {
+  "codigo": "3_BBM_2CIA_1PEL_Lagoa_Santa_1_COB",
+  "rotulo": "3 BBM/2CIA/1PEL (Lagoa Santa)",
+  "cob": "1º COB",
+  "ueop": "3º BBM",
+  "fracao": "2ª Cia/1º Pel (Lagoa Santa)",
+  "cidade": "Lagoa Santa",
+  "sede": false
+ },
+ {
+  "codigo": "3_BBM_2CIA_2PEL_Sabara_1_COB",
+  "rotulo": "3 BBM/2CIA/2PEL (Sabara)",
+  "cob": "1º COB",
+  "ueop": "3º BBM",
+  "fracao": "2ª Cia/2º Pel (Sabara)",
+  "cidade": "Sabara",
+  "sede": false
+ },
+ {
+  "codigo": "3_BBM_2CIA_2PEL_PA_Nova_Uniao_1_COB",
+  "rotulo": "3 BBM/2CIA/2PEL/PA (Nova Uniao)",
+  "cob": "1º COB",
+  "ueop": "3º BBM",
+  "fracao": "2ª Cia/2º Pel/PA (Nova Uniao)",
+  "cidade": "Nova Uniao",
+  "sede": false
+ },
+ {
+  "codigo": "3_BBM_2CIA_3PEL_Vespasiano_1_COB",
+  "rotulo": "3 BBM/2CIA/3PEL (Vespasiano)",
+  "cob": "1º COB",
+  "ueop": "3º BBM",
+  "fracao": "2ª Cia/3º Pel (Vespasiano)",
+  "cidade": "Vespasiano",
+  "sede": false
+ },
+ {
+  "codigo": "3_BBM_2CIA_4PEL_Santa_Luzia_1_COB",
+  "rotulo": "3 BBM/2CIA/4PEL (Santa Luzia)",
+  "cob": "1º COB",
+  "ueop": "3º BBM",
+  "fracao": "2ª Cia/4º Pel (Santa Luzia)",
+  "cidade": "Santa Luzia",
+  "sede": false
+ },
+ {
+  "codigo": "4_BBM_Juiz_de_Fora_Sede_3_COB",
+  "rotulo": "4 BBM - Juiz de Fora (Sede)",
+  "cob": "3º COB",
+  "ueop": "4º BBM",
+  "fracao": null,
+  "cidade": "Juiz de Fora",
+  "sede": true
+ },
+ {
+  "codigo": "4_BBM_1CIA_7PEL_Leopoldina_3_COB",
+  "rotulo": "4 BBM/1CIA/7PEL (Leopoldina)",
+  "cob": "3º COB",
+  "ueop": "4º BBM",
+  "fracao": "1ª Cia/7º Pel (Leopoldina)",
+  "cidade": "Leopoldina",
+  "sede": false
+ },
+ {
+  "codigo": "4_BBM_1CIA_7PEL_PA_Alem_Paraiba_3_COB",
+  "rotulo": "4 BBM/1CIA/7PEL/PA (Alem Paraiba)",
+  "cob": "3º COB",
+  "ueop": "4º BBM",
+  "fracao": "1ª Cia/7º Pel/PA (Alem Paraiba)",
+  "cidade": "Alem Paraiba",
+  "sede": false
+ },
+ {
+  "codigo": "4_BBM_1CIA_7PEL_PA_Cataguases_3_COB",
+  "rotulo": "4 BBM/1CIA/7PEL/PA (Cataguases)",
+  "cob": "3º COB",
+  "ueop": "4º BBM",
+  "fracao": "1ª Cia/7º Pel/PA (Cataguases)",
+  "cidade": "Cataguases",
+  "sede": false
+ },
+ {
+  "codigo": "4_BBM_2CIA_1PEL_Uba_3_COB",
+  "rotulo": "4 BBM/2CIA/1PEL (Uba)",
+  "cob": "3º COB",
+  "ueop": "4º BBM",
+  "fracao": "2ª Cia/1º Pel (Uba)",
+  "cidade": "Uba",
+  "sede": false
+ },
+ {
+  "codigo": "4_BBM_2CIA_2PEL_Muriae_3_COB",
+  "rotulo": "4 BBM/2CIA/2PEL (Muriae)",
+  "cob": "3º COB",
+  "ueop": "4º BBM",
+  "fracao": "2ª Cia/2º Pel (Muriae)",
+  "cidade": "Muriae",
+  "sede": false
+ },
+ {
+  "codigo": "4_BBM_2CIA_3PEL_Vicosa_3_COB",
+  "rotulo": "4 BBM/2CIA/3PEL (Vicosa)",
+  "cob": "3º COB",
+  "ueop": "4º BBM",
+  "fracao": "2ª Cia/3º Pel (Vicosa)",
+  "cidade": "Vicosa",
+  "sede": false
+ },
+ {
+  "codigo": "5_BBM_Uberlandia_Sede_2_COB",
+  "rotulo": "5 BBM - Uberlandia (Sede)",
+  "cob": "2º COB",
+  "ueop": "5º BBM",
+  "fracao": null,
+  "cidade": "Uberlandia",
+  "sede": true
+ },
+ {
+  "codigo": "5_BBM_2CIA_1PEL_Araguari_2_COB",
+  "rotulo": "5 BBM/2CIA/1PEL (Araguari)",
+  "cob": "2º COB",
+  "ueop": "5º BBM",
+  "fracao": "2ª Cia/1º Pel (Araguari)",
+  "cidade": "Araguari",
+  "sede": false
+ },
+ {
+  "codigo": "5_BBM_2CIA_1PEL_PA_Tupaciguara_2_COB",
+  "rotulo": "5 BBM/2CIA/1PEL/PA (Tupaciguara)",
+  "cob": "2º COB",
+  "ueop": "5º BBM",
+  "fracao": "2ª Cia/1º Pel/PA (Tupaciguara)",
+  "cidade": "Tupaciguara",
+  "sede": false
+ },
+ {
+  "codigo": "5CIA_IND_Sete_Lagoas_Sede_1_COB",
+  "rotulo": "5CIA IND - Sete Lagoas (Sede)",
+  "cob": "1º COB",
+  "ueop": "5ª Cia Ind",
+  "fracao": null,
+  "cidade": "Sete Lagoas",
+  "sede": true
+ },
+ {
+  "codigo": "5CIA_IND_1CIA_2PEL_Curvelo_1_COB",
+  "rotulo": "5CIA IND/1CIA/2PEL (Curvelo)",
+  "cob": "1º COB",
+  "ueop": "5ª Cia Ind",
+  "fracao": "1ª Cia/2º Pel (Curvelo)",
+  "cidade": "Curvelo",
+  "sede": false
+ },
+ {
+  "codigo": "6_BBM_Governador_Valadares_Sede_5_COB",
+  "rotulo": "6 BBM - Governador Valadares (Sede)",
+  "cob": "5º COB",
+  "ueop": "6º BBM",
+  "fracao": null,
+  "cidade": "Governador Valadares",
+  "sede": true
+ },
+ {
+  "codigo": "6_BBM_1CIA_6PEL_Resplendor_5_COB",
+  "rotulo": "6 BBM/1CIA/6PEL (Resplendor)",
+  "cob": "5º COB",
+  "ueop": "6º BBM",
+  "fracao": "1ª Cia/6º Pel (Resplendor)",
+  "cidade": "Resplendor",
+  "sede": false
+ },
+ {
+  "codigo": "6_BBM_1CIA_7PEL_Sao_J._Evangelista_5_COB",
+  "rotulo": "6 BBM/1CIA/7PEL (Sao J. Evangelista)",
+  "cob": "5º COB",
+  "ueop": "6º BBM",
+  "fracao": "1ª Cia/7º Pel (Sao J. Evangelista)",
+  "cidade": "Sao J. Evangelista",
+  "sede": false
+ },
+ {
+  "codigo": "6_BBM_1CIA_7PEL_PA_Guanhaes_5_COB",
+  "rotulo": "6 BBM/1CIA/7PEL/PA (Guanhaes)",
+  "cob": "5º COB",
+  "ueop": "6º BBM",
+  "fracao": "1ª Cia/7º Pel/PA (Guanhaes)",
+  "cidade": "Guanhaes",
+  "sede": false
+ },
+ {
+  "codigo": "6_BBM_2CIA_2PEL_Almenara_5_COB",
+  "rotulo": "6 BBM/2CIA/2PEL (Almenara)",
+  "cob": "5º COB",
+  "ueop": "6º BBM",
+  "fracao": "2ª Cia/2º Pel (Almenara)",
+  "cidade": "Almenara",
+  "sede": false
+ },
+ {
+  "codigo": "6_BBM_2CIA_3PEL_Aracuai_5_COB",
+  "rotulo": "6 BBM/2CIA/3PEL (Aracuai)",
+  "cob": "5º COB",
+  "ueop": "6º BBM",
+  "fracao": "2ª Cia/3º Pel (Aracuai)",
+  "cidade": "Aracuai",
+  "sede": false
+ },
+ {
+  "codigo": "6_BBM_2CIA_4PEL_Itaobim_5_COB",
+  "rotulo": "6 BBM/2CIA/4PEL (Itaobim)",
+  "cob": "5º COB",
+  "ueop": "6º BBM",
+  "fracao": "2ª Cia/4º Pel (Itaobim)",
+  "cidade": "Itaobim",
+  "sede": false
+ },
+ {
+  "codigo": "6CIA_IND_Diamantina_Sede_4_COB",
+  "rotulo": "6CIA IND - Diamantina (Sede)",
+  "cob": "4º COB",
+  "ueop": "6ª Cia Ind",
+  "fracao": null,
+  "cidade": "Diamantina",
+  "sede": true
+ },
+ {
+  "codigo": "6CIA_IND_1CIA_2PEL_Pirapora_4_COB",
+  "rotulo": "6CIA IND/1CIA/2PEL (Pirapora)",
+  "cob": "4º COB",
+  "ueop": "6ª Cia Ind",
+  "fracao": "1ª Cia/2º Pel (Pirapora)",
+  "cidade": "Pirapora",
+  "sede": false
+ },
+ {
+  "codigo": "6CIA_IND_1CIA_3PEL_Capelinha_4_COB",
+  "rotulo": "6CIA IND/1CIA/3PEL (Capelinha)",
+  "cob": "4º COB",
+  "ueop": "6ª Cia Ind",
+  "fracao": "1ª Cia/3º Pel (Capelinha)",
+  "cidade": "Capelinha",
+  "sede": false
+ },
+ {
+  "codigo": "6CIA_IND_1CIA_4PEL_Tres_Marias_4_COB",
+  "rotulo": "6CIA IND/1CIA/4PEL (Tres Marias)",
+  "cob": "4º COB",
+  "ueop": "6ª Cia Ind",
+  "fracao": "1ª Cia/4º Pel (Tres Marias)",
+  "cidade": "Tres Marias",
+  "sede": false
+ },
+ {
+  "codigo": "7_BBM_Montes_Claros_Sede_4_COB",
+  "rotulo": "7 BBM - Montes Claros (Sede)",
+  "cob": "4º COB",
+  "ueop": "7º BBM",
+  "fracao": null,
+  "cidade": "Montes Claros",
+  "sede": true
+ },
+ {
+  "codigo": "7_BBM_1CIA_7PEL_Janauba_4_COB",
+  "rotulo": "7 BBM/1CIA/7PEL (Janauba)",
+  "cob": "4º COB",
+  "ueop": "7º BBM",
+  "fracao": "1ª Cia/7º Pel (Janauba)",
+  "cidade": "Janauba",
+  "sede": false
+ },
+ {
+  "codigo": "7_BBM_1CIA_8PEL_Januaria_4_COB",
+  "rotulo": "7 BBM/1CIA/8PEL (Januaria)",
+  "cob": "4º COB",
+  "ueop": "7º BBM",
+  "fracao": "1ª Cia/8º Pel (Januaria)",
+  "cidade": "Januaria",
+  "sede": false
+ },
+ {
+  "codigo": "7_BBM_1CIA_9PEL_Salinas_4_COB",
+  "rotulo": "7 BBM/1CIA/9PEL (Salinas)",
+  "cob": "4º COB",
+  "ueop": "7º BBM",
+  "fracao": "1ª Cia/9º Pel (Salinas)",
+  "cidade": "Salinas",
+  "sede": false
+ },
+ {
+  "codigo": "7_BBM_1CIA_9PEL_PA_Francisco_Sa_4_COB",
+  "rotulo": "7 BBM/1CIA/9PEL/PA (Francisco Sa)",
+  "cob": "4º COB",
+  "ueop": "7º BBM",
+  "fracao": "1ª Cia/9º Pel/PA (Francisco Sa)",
+  "cidade": "Francisco Sa",
+  "sede": false
+ },
+ {
+  "codigo": "7_BBM_1CIA_PA_Bocaiuva_4_COB",
+  "rotulo": "7 BBM/1CIA/PA (Bocaiuva)",
+  "cob": "4º COB",
+  "ueop": "7º BBM",
+  "fracao": "1ª Cia/PA (Bocaiuva)",
+  "cidade": "Bocaiuva",
+  "sede": false
+ },
+ {
+  "codigo": "7CIA_IND_Pouso_Alegre_Sede_6_COB",
+  "rotulo": "7CIA IND - Pouso Alegre (Sede)",
+  "cob": "6º COB",
+  "ueop": "7ª Cia Ind",
+  "fracao": null,
+  "cidade": "Pouso Alegre",
+  "sede": true
+ },
+ {
+  "codigo": "7CIA_IND_1CIA_2PEL_Itajuba_6_COB",
+  "rotulo": "7CIA IND/1CIA/2PEL (Itajuba)",
+  "cob": "6º COB",
+  "ueop": "7ª Cia Ind",
+  "fracao": "1ª Cia/2º Pel (Itajuba)",
+  "cidade": "Itajuba",
+  "sede": false
+ },
+ {
+  "codigo": "7CIA_IND_1CIA_3PEL_Extrema_6_COB",
+  "rotulo": "7CIA IND/1CIA/3PEL (Extrema)",
+  "cob": "6º COB",
+  "ueop": "7ª Cia Ind",
+  "fracao": "1ª Cia/3º Pel (Extrema)",
+  "cidade": "Extrema",
+  "sede": false
+ },
+ {
+  "codigo": "8_BBM_Uberaba_Sede_2_COB",
+  "rotulo": "8 BBM - Uberaba (Sede)",
+  "cob": "2º COB",
+  "ueop": "8º BBM",
+  "fracao": null,
+  "cidade": "Uberaba",
+  "sede": true
+ },
+ {
+  "codigo": "8_BBM_1CIA_7PEL_Frutal_2_COB",
+  "rotulo": "8 BBM/1CIA/7PEL (Frutal)",
+  "cob": "2º COB",
+  "ueop": "8º BBM",
+  "fracao": "1ª Cia/7º Pel (Frutal)",
+  "cidade": "Frutal",
+  "sede": false
+ },
+ {
+  "codigo": "8_BBM_1CIA_8PEL_Iturama_2_COB",
+  "rotulo": "8 BBM/1CIA/8PEL (Iturama)",
+  "cob": "2º COB",
+  "ueop": "8º BBM",
+  "fracao": "1ª Cia/8º Pel (Iturama)",
+  "cidade": "Iturama",
+  "sede": false
+ },
+ {
+  "codigo": "8_BBM_2CIA_1PEL_Araxa_2_COB",
+  "rotulo": "8 BBM/2CIA/1PEL (Araxa)",
+  "cob": "2º COB",
+  "ueop": "8º BBM",
+  "fracao": "2ª Cia/1º Pel (Araxa)",
+  "cidade": "Araxa",
+  "sede": false
+ },
+ {
+  "codigo": "8_BBM_2CIA_1PEL_PA_Sao_Gotardo_2_COB",
+  "rotulo": "8 BBM/2CIA/1PEL/PA (Sao Gotardo)",
+  "cob": "2º COB",
+  "ueop": "8º BBM",
+  "fracao": "2ª Cia/1º Pel/PA (Sao Gotardo)",
+  "cidade": "Sao Gotardo",
+  "sede": false
+ },
+ {
+  "codigo": "8_BBM_2CIA_2PEL_Sacramento_2_COB",
+  "rotulo": "8 BBM/2CIA/2PEL (Sacramento)",
+  "cob": "2º COB",
+  "ueop": "8º BBM",
+  "fracao": "2ª Cia/2º Pel (Sacramento)",
+  "cidade": "Sacramento",
+  "sede": false
+ },
+ {
+  "codigo": "8_BBM_2CIA_2PEL_PA_Campos_Altos_2_COB",
+  "rotulo": "8 BBM/2CIA/2PEL/PA (Campos Altos)",
+  "cob": "2º COB",
+  "ueop": "8º BBM",
+  "fracao": "2ª Cia/2º Pel/PA (Campos Altos)",
+  "cidade": "Campos Altos",
+  "sede": false
+ },
+ {
+  "codigo": "9_BBM_Varginha_Sede_6_COB",
+  "rotulo": "9 BBM - Varginha (Sede)",
+  "cob": "6º COB",
+  "ueop": "9º BBM",
+  "fracao": null,
+  "cidade": "Varginha",
+  "sede": true
+ },
+ {
+  "codigo": "9_BBM_1CIA_PA_Boa_Esperanca_6_COB",
+  "rotulo": "9 BBM/1CIA/PA (Boa Esperanca)",
+  "cob": "6º COB",
+  "ueop": "9º BBM",
+  "fracao": "1ª Cia/PA (Boa Esperanca)",
+  "cidade": "Boa Esperanca",
+  "sede": false
+ },
+ {
+  "codigo": "9_BBM_2CIA_1PEL_Lavras_6_COB",
+  "rotulo": "9 BBM/2CIA/1PEL (Lavras)",
+  "cob": "6º COB",
+  "ueop": "9º BBM",
+  "fracao": "2ª Cia/1º Pel (Lavras)",
+  "cidade": "Lavras",
+  "sede": false
+ },
+ {
+  "codigo": "9_BBM_2CIA_2PEL_Tres_Coracoes_6_COB",
+  "rotulo": "9 BBM/2CIA/2PEL (Tres Coracoes)",
+  "cob": "6º COB",
+  "ueop": "9º BBM",
+  "fracao": "2ª Cia/2º Pel (Tres Coracoes)",
+  "cidade": "Tres Coracoes",
+  "sede": false
+ },
+ {
+  "codigo": "9_BBM_2CIA_3PEL_Sao_Lourenco_6_COB",
+  "rotulo": "9 BBM/2CIA/3PEL (Sao Lourenco)",
+  "cob": "6º COB",
+  "ueop": "9º BBM",
+  "fracao": "2ª Cia/3º Pel (Sao Lourenco)",
+  "cidade": "Sao Lourenco",
+  "sede": false
+ },
+ {
+  "codigo": "10_BBM_Divinopolis_Sede_1_COB",
+  "rotulo": "10 BBM - Divinopolis (Sede)",
+  "cob": "1º COB",
+  "ueop": "10º BBM",
+  "fracao": null,
+  "cidade": "Divinopolis",
+  "sede": true
+ },
+ {
+  "codigo": "10_BBM_2CIA_1PEL_Para_de_Minas_1_COB",
+  "rotulo": "10 BBM/2CIA/1PEL (Para de Minas)",
+  "cob": "1º COB",
+  "ueop": "10º BBM",
+  "fracao": "2ª Cia/1º Pel (Para de Minas)",
+  "cidade": "Para de Minas",
+  "sede": false
+ },
+ {
+  "codigo": "10_BBM_2CIA_2PEL_Itauna_1_COB",
+  "rotulo": "10 BBM/2CIA/2PEL (Itauna)",
+  "cob": "1º COB",
+  "ueop": "10º BBM",
+  "fracao": "2ª Cia/2º Pel (Itauna)",
+  "cidade": "Itauna",
+  "sede": false
+ },
+ {
+  "codigo": "10_BBM_3CIA_1PEL_Nova_Serrana_1_COB",
+  "rotulo": "10 BBM/3CIA/1PEL (Nova Serrana)",
+  "cob": "1º COB",
+  "ueop": "10º BBM",
+  "fracao": "3ª Cia/1º Pel (Nova Serrana)",
+  "cidade": "Nova Serrana",
+  "sede": false
+ },
+ {
+  "codigo": "10_BBM_3CIA_2PEL_Bom_Despacho_1_COB",
+  "rotulo": "10 BBM/3CIA/2PEL (Bom Despacho)",
+  "cob": "1º COB",
+  "ueop": "10º BBM",
+  "fracao": "3ª Cia/2º Pel (Bom Despacho)",
+  "cidade": "Bom Despacho",
+  "sede": false
+ },
+ {
+  "codigo": "10_BBM_4CIA_1PEL_Formiga_1_COB",
+  "rotulo": "10 BBM/4CIA/1PEL (Formiga)",
+  "cob": "1º COB",
+  "ueop": "10º BBM",
+  "fracao": "4ª Cia/1º Pel (Formiga)",
+  "cidade": "Formiga",
+  "sede": false
+ },
+ {
+  "codigo": "10_BBM_4CIA_1PEL_PA_Arcos_1_COB",
+  "rotulo": "10 BBM/4CIA/1PEL/PA (Arcos)",
+  "cob": "1º COB",
+  "ueop": "10º BBM",
+  "fracao": "4ª Cia/1º Pel/PA (Arcos)",
+  "cidade": "Arcos",
+  "sede": false
+ },
+ {
+  "codigo": "10_BBM_4CIA_2PEL_Oliveira_1_COB",
+  "rotulo": "10 BBM/4CIA/2PEL (Oliveira)",
+  "cob": "1º COB",
+  "ueop": "10º BBM",
+  "fracao": "4ª Cia/2º Pel (Oliveira)",
+  "cidade": "Oliveira",
+  "sede": false
+ },
+ {
+  "codigo": "10_BBM_4CIA_2PEL_PA_Campo_Belo_1_COB",
+  "rotulo": "10 BBM/4CIA/2PEL/PA (Campo Belo)",
+  "cob": "1º COB",
+  "ueop": "10º BBM",
+  "fracao": "4ª Cia/2º Pel/PA (Campo Belo)",
+  "cidade": "Campo Belo",
+  "sede": false
+ },
+ {
+  "codigo": "10_BBM_4CIA_PA_Campo_Belo_1_COB",
+  "rotulo": "10 BBM/4CIA/PA (Campo Belo)",
+  "cob": "1º COB",
+  "ueop": "10º BBM",
+  "fracao": "4ª Cia/PA (Campo Belo)",
+  "cidade": "Campo Belo",
+  "sede": false
+ },
+ {
+  "codigo": "11_BBM_Ipatinga_Sede_5_COB",
+  "rotulo": "11 BBM - Ipatinga (Sede)",
+  "cob": "5º COB",
+  "ueop": "11º BBM",
+  "fracao": null,
+  "cidade": "Ipatinga",
+  "sede": true
+ },
+ {
+  "codigo": "11_BBM_1CIA_5PEL_Coronel_Fabriciano_5_COB",
+  "rotulo": "11 BBM/1CIA/5PEL (Coronel Fabriciano)",
+  "cob": "5º COB",
+  "ueop": "11º BBM",
+  "fracao": "1ª Cia/5º Pel (Coronel Fabriciano)",
+  "cidade": "Coronel Fabriciano",
+  "sede": false
+ },
+ {
+  "codigo": "11_BBM_1CIA_6PEL_Itabira_5_COB",
+  "rotulo": "11 BBM/1CIA/6PEL (Itabira)",
+  "cob": "5º COB",
+  "ueop": "11º BBM",
+  "fracao": "1ª Cia/6º Pel (Itabira)",
+  "cidade": "Itabira",
+  "sede": false
+ },
+ {
+  "codigo": "11_BBM_1CIA_6PEL_PA_Joao_Monlevade_5_COB",
+  "rotulo": "11 BBM/1CIA/6PEL/PA (Joao Monlevade)",
+  "cob": "5º COB",
+  "ueop": "11º BBM",
+  "fracao": "1ª Cia/6º Pel/PA (Joao Monlevade)",
+  "cidade": "Joao Monlevade",
+  "sede": false
+ },
+ {
+  "codigo": "11_BBM_1CIA_7PEL_Timoteo_5_COB",
+  "rotulo": "11 BBM/1CIA/7PEL (Timoteo)",
+  "cob": "5º COB",
+  "ueop": "11º BBM",
+  "fracao": "1ª Cia/7º Pel (Timoteo)",
+  "cidade": "Timoteo",
+  "sede": false
+ },
+ {
+  "codigo": "11_BBM_1CIA_PA_Sao_Goncalo_Rio_Abaixo_5_COB",
+  "rotulo": "11 BBM/1CIA/PA (Sao Goncalo Rio Abaixo)",
+  "cob": "5º COB",
+  "ueop": "11º BBM",
+  "fracao": "1ª Cia/PA (Sao Goncalo Rio Abaixo)",
+  "cidade": "Sao Goncalo Rio Abaixo",
+  "sede": false
+ },
+ {
+  "codigo": "11_BBM_2CIA_1PEL_Manhuacu_5_COB",
+  "rotulo": "11 BBM/2CIA/1PEL (Manhuacu)",
+  "cob": "5º COB",
+  "ueop": "11º BBM",
+  "fracao": "2ª Cia/1º Pel (Manhuacu)",
+  "cidade": "Manhuacu",
+  "sede": false
+ },
+ {
+  "codigo": "11_BBM_2CIA_2PEL_Caratinga_5_COB",
+  "rotulo": "11 BBM/2CIA/2PEL (Caratinga)",
+  "cob": "5º COB",
+  "ueop": "11º BBM",
+  "fracao": "2ª Cia/2º Pel (Caratinga)",
+  "cidade": "Caratinga",
+  "sede": false
+ },
+ {
+  "codigo": "11_BBM_2CIA_3PEL_Ponte_Nova_5_COB",
+  "rotulo": "11 BBM/2CIA/3PEL (Ponte Nova)",
+  "cob": "5º COB",
+  "ueop": "11º BBM",
+  "fracao": "2ª Cia/3º Pel (Ponte Nova)",
+  "cidade": "Ponte Nova",
+  "sede": false
+ },
+ {
+  "codigo": "12_BBM_Patos_de_Minas_Sede_2_COB",
+  "rotulo": "12 BBM - Patos de Minas (Sede)",
+  "cob": "2º COB",
+  "ueop": "12º BBM",
+  "fracao": null,
+  "cidade": "Patos de Minas",
+  "sede": true
+ },
+ {
+  "codigo": "12_BBM_2CIA_1PEL_Unai_2_COB",
+  "rotulo": "12 BBM/2CIA/1PEL (Unai)",
+  "cob": "2º COB",
+  "ueop": "12º BBM",
+  "fracao": "2ª Cia/1º Pel (Unai)",
+  "cidade": "Unai",
+  "sede": false
+ },
+ {
+  "codigo": "12_BBM_2CIA_2PEL_Paracatu_2_COB",
+  "rotulo": "12 BBM/2CIA/2PEL (Paracatu)",
+  "cob": "2º COB",
+  "ueop": "12º BBM",
+  "fracao": "2ª Cia/2º Pel (Paracatu)",
+  "cidade": "Paracatu",
+  "sede": false
+ },
+ {
+  "codigo": "12_BBM_2CIA_3PEL_Joao_Pinheiro_2_COB",
+  "rotulo": "12 BBM/2CIA/3PEL (Joao Pinheiro)",
+  "cob": "2º COB",
+  "ueop": "12º BBM",
+  "fracao": "2ª Cia/3º Pel (Joao Pinheiro)",
+  "cidade": "Joao Pinheiro",
+  "sede": false
+ },
+ {
+  "codigo": "12_BBM_3CIA_1PEL_Patrocinio_2_COB",
+  "rotulo": "12 BBM/3CIA/1PEL (Patrocinio)",
+  "cob": "2º COB",
+  "ueop": "12º BBM",
+  "fracao": "3ª Cia/1º Pel (Patrocinio)",
+  "cidade": "Patrocinio",
+  "sede": false
+ },
+ {
+  "codigo": "12_BBM_3CIA_1PEL_PA_Monte_Carmelo_2_COB",
+  "rotulo": "12 BBM/3CIA/1PEL/PA (Monte Carmelo)",
+  "cob": "2º COB",
+  "ueop": "12º BBM",
+  "fracao": "3ª Cia/1º Pel/PA (Monte Carmelo)",
+  "cidade": "Monte Carmelo",
+  "sede": false
+ }
+]
