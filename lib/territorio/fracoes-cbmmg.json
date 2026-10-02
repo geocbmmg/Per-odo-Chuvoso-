@@ -41,7 +41,7 @@
   "cob": "6º COB",
   "ueop": "1ª Cia Ind",
   "fracao": null,
-  "cidade": "Pocos de Caldas",
+  "cidade": "Poços de Caldas",
   "sede": true
  },
  {
@@ -67,8 +67,8 @@
   "rotulo": "1CIA IND/2CIA/2PEL (Sao Sebastiao do Paraiso)",
   "cob": "6º COB",
   "ueop": "1ª Cia Ind",
-  "fracao": "2ª Cia/2º Pel (Sao Sebastiao do Paraiso)",
-  "cidade": "Sao Sebastiao do Paraiso",
+  "fracao": "2ª Cia/2º Pel (São Sebastião do Paraíso)",
+  "cidade": "São Sebastião do Paraíso",
   "sede": false
  },
  {
@@ -157,8 +157,8 @@
   "rotulo": "2 BBM/1CIA/8PEL (Rib. das Neves)",
   "cob": "1º COB",
   "ueop": "2º BBM",
-  "fracao": "1ª Cia/8º Pel (Rib. das Neves)",
-  "cidade": "Rib. das Neves",
+  "fracao": "1ª Cia/8º Pel (Ribeirão das Neves)",
+  "cidade": "Ribeirão das Neves",
   "sede": false
  },
  {
@@ -175,8 +175,8 @@
   "rotulo": "2CIA IND/1CIA/2PEL (Sao Joao Del Rei)",
   "cob": "3º COB",
   "ueop": "2ª Cia Ind",
-  "fracao": "1ª Cia/2º Pel (Sao Joao Del Rei)",
-  "cidade": "Sao Joao Del Rei",
+  "fracao": "1ª Cia/2º Pel (São João del Rei)",
+  "cidade": "São João del Rei",
   "sede": false
  },
  {
@@ -211,8 +211,8 @@
   "rotulo": "3 BBM/2CIA/2PEL (Sabara)",
   "cob": "1º COB",
   "ueop": "3º BBM",
-  "fracao": "2ª Cia/2º Pel (Sabara)",
-  "cidade": "Sabara",
+  "fracao": "2ª Cia/2º Pel (Sabará)",
+  "cidade": "Sabará",
   "sede": false
  },
  {
@@ -220,8 +220,8 @@
   "rotulo": "3 BBM/2CIA/2PEL/PA (Nova Uniao)",
   "cob": "1º COB",
   "ueop": "3º BBM",
-  "fracao": "2ª Cia/2º Pel/PA (Nova Uniao)",
-  "cidade": "Nova Uniao",
+  "fracao": "2ª Cia/2º Pel/PA (Nova União)",
+  "cidade": "Nova União",
   "sede": false
  },
  {
@@ -265,8 +265,8 @@
   "rotulo": "4 BBM/1CIA/7PEL/PA (Alem Paraiba)",
   "cob": "3º COB",
   "ueop": "4º BBM",
-  "fracao": "1ª Cia/7º Pel/PA (Alem Paraiba)",
-  "cidade": "Alem Paraiba",
+  "fracao": "1ª Cia/7º Pel/PA (Além Paraíba)",
+  "cidade": "Além Paraíba",
   "sede": false
  },
  {
@@ -283,8 +283,8 @@
   "rotulo": "4 BBM/2CIA/1PEL (Uba)",
   "cob": "3º COB",
   "ueop": "4º BBM",
-  "fracao": "2ª Cia/1º Pel (Uba)",
-  "cidade": "Uba",
+  "fracao": "2ª Cia/1º Pel (Ubá)",
+  "cidade": "Ubá",
   "sede": false
  },
  {
@@ -292,8 +292,8 @@
   "rotulo": "4 BBM/2CIA/2PEL (Muriae)",
   "cob": "3º COB",
   "ueop": "4º BBM",
-  "fracao": "2ª Cia/2º Pel (Muriae)",
-  "cidade": "Muriae",
+  "fracao": "2ª Cia/2º Pel (Muriaé)",
+  "cidade": "Muriaé",
   "sede": false
  },
  {
@@ -301,8 +301,8 @@
   "rotulo": "4 BBM/2CIA/3PEL (Vicosa)",
   "cob": "3º COB",
   "ueop": "4º BBM",
-  "fracao": "2ª Cia/3º Pel (Vicosa)",
-  "cidade": "Vicosa",
+  "fracao": "2ª Cia/3º Pel (Viçosa)",
+  "cidade": "Viçosa",
   "sede": false
  },
  {
@@ -311,7 +311,7 @@
   "cob": "2º COB",
   "ueop": "5º BBM",
   "fracao": null,
-  "cidade": "Uberlandia",
+  "cidade": "Uberlândia",
   "sede": true
  },
  {
@@ -373,8 +373,8 @@
   "rotulo": "6 BBM/1CIA/7PEL (Sao J. Evangelista)",
   "cob": "5º COB",
   "ueop": "6º BBM",
-  "fracao": "1ª Cia/7º Pel (Sao J. Evangelista)",
-  "cidade": "Sao J. Evangelista",
+  "fracao": "1ª Cia/7º Pel (São João Evangelista)",
+  "cidade": "São João Evangelista",
   "sede": false
  },
  {
@@ -382,8 +382,8 @@
   "rotulo": "6 BBM/1CIA/7PEL/PA (Guanhaes)",
   "cob": "5º COB",
   "ueop": "6º BBM",
-  "fracao": "1ª Cia/7º Pel/PA (Guanhaes)",
-  "cidade": "Guanhaes",
+  "fracao": "1ª Cia/7º Pel/PA (Guanhães)",
+  "cidade": "Guanhães",
   "sede": false
  },
  {
@@ -400,8 +400,8 @@
   "rotulo": "6 BBM/2CIA/3PEL (Aracuai)",
   "cob": "5º COB",
   "ueop": "6º BBM",
-  "fracao": "2ª Cia/3º Pel (Aracuai)",
-  "cidade": "Aracuai",
+  "fracao": "2ª Cia/3º Pel (Araçuaí)",
+  "cidade": "Araçuaí",
   "sede": false
  },
  {
@@ -445,8 +445,8 @@
   "rotulo": "6CIA IND/1CIA/4PEL (Tres Marias)",
   "cob": "4º COB",
   "ueop": "6ª Cia Ind",
-  "fracao": "1ª Cia/4º Pel (Tres Marias)",
-  "cidade": "Tres Marias",
+  "fracao": "1ª Cia/4º Pel (Três Marias)",
+  "cidade": "Três Marias",
   "sede": false
  },
  {
@@ -463,8 +463,8 @@
   "rotulo": "7 BBM/1CIA/7PEL (Janauba)",
   "cob": "4º COB",
   "ueop": "7º BBM",
-  "fracao": "1ª Cia/7º Pel (Janauba)",
-  "cidade": "Janauba",
+  "fracao": "1ª Cia/7º Pel (Janaúba)",
+  "cidade": "Janaúba",
   "sede": false
  },
  {
@@ -472,8 +472,8 @@
   "rotulo": "7 BBM/1CIA/8PEL (Januaria)",
   "cob": "4º COB",
   "ueop": "7º BBM",
-  "fracao": "1ª Cia/8º Pel (Januaria)",
-  "cidade": "Januaria",
+  "fracao": "1ª Cia/8º Pel (Januária)",
+  "cidade": "Januária",
   "sede": false
  },
  {
@@ -490,8 +490,8 @@
   "rotulo": "7 BBM/1CIA/9PEL/PA (Francisco Sa)",
   "cob": "4º COB",
   "ueop": "7º BBM",
-  "fracao": "1ª Cia/9º Pel/PA (Francisco Sa)",
-  "cidade": "Francisco Sa",
+  "fracao": "1ª Cia/9º Pel/PA (Francisco Sá)",
+  "cidade": "Francisco Sá",
   "sede": false
  },
  {
@@ -499,8 +499,8 @@
   "rotulo": "7 BBM/1CIA/PA (Bocaiuva)",
   "cob": "4º COB",
   "ueop": "7º BBM",
-  "fracao": "1ª Cia/PA (Bocaiuva)",
-  "cidade": "Bocaiuva",
+  "fracao": "1ª Cia/PA (Bocaiúva)",
+  "cidade": "Bocaiúva",
   "sede": false
  },
  {
@@ -517,8 +517,8 @@
   "rotulo": "7CIA IND/1CIA/2PEL (Itajuba)",
   "cob": "6º COB",
   "ueop": "7ª Cia Ind",
-  "fracao": "1ª Cia/2º Pel (Itajuba)",
-  "cidade": "Itajuba",
+  "fracao": "1ª Cia/2º Pel (Itajubá)",
+  "cidade": "Itajubá",
   "sede": false
  },
  {
@@ -562,8 +562,8 @@
   "rotulo": "8 BBM/2CIA/1PEL (Araxa)",
   "cob": "2º COB",
   "ueop": "8º BBM",
-  "fracao": "2ª Cia/1º Pel (Araxa)",
-  "cidade": "Araxa",
+  "fracao": "2ª Cia/1º Pel (Araxá)",
+  "cidade": "Araxá",
   "sede": false
  },
  {
@@ -571,8 +571,8 @@
   "rotulo": "8 BBM/2CIA/1PEL/PA (Sao Gotardo)",
   "cob": "2º COB",
   "ueop": "8º BBM",
-  "fracao": "2ª Cia/1º Pel/PA (Sao Gotardo)",
-  "cidade": "Sao Gotardo",
+  "fracao": "2ª Cia/1º Pel/PA (São Gotardo)",
+  "cidade": "São Gotardo",
   "sede": false
  },
  {
@@ -607,8 +607,8 @@
   "rotulo": "9 BBM/1CIA/PA (Boa Esperanca)",
   "cob": "6º COB",
   "ueop": "9º BBM",
-  "fracao": "1ª Cia/PA (Boa Esperanca)",
-  "cidade": "Boa Esperanca",
+  "fracao": "1ª Cia/PA (Boa Esperança)",
+  "cidade": "Boa Esperança",
   "sede": false
  },
  {
@@ -625,8 +625,8 @@
   "rotulo": "9 BBM/2CIA/2PEL (Tres Coracoes)",
   "cob": "6º COB",
   "ueop": "9º BBM",
-  "fracao": "2ª Cia/2º Pel (Tres Coracoes)",
-  "cidade": "Tres Coracoes",
+  "fracao": "2ª Cia/2º Pel (Três Corações)",
+  "cidade": "Três Corações",
   "sede": false
  },
  {
@@ -634,8 +634,8 @@
   "rotulo": "9 BBM/2CIA/3PEL (Sao Lourenco)",
   "cob": "6º COB",
   "ueop": "9º BBM",
-  "fracao": "2ª Cia/3º Pel (Sao Lourenco)",
-  "cidade": "Sao Lourenco",
+  "fracao": "2ª Cia/3º Pel (São Lourenço)",
+  "cidade": "São Lourenço",
   "sede": false
  },
  {
@@ -644,7 +644,7 @@
   "cob": "1º COB",
   "ueop": "10º BBM",
   "fracao": null,
-  "cidade": "Divinopolis",
+  "cidade": "Divinópolis",
   "sede": true
  },
  {
@@ -652,8 +652,8 @@
   "rotulo": "10 BBM/2CIA/1PEL (Para de Minas)",
   "cob": "1º COB",
   "ueop": "10º BBM",
-  "fracao": "2ª Cia/1º Pel (Para de Minas)",
-  "cidade": "Para de Minas",
+  "fracao": "2ª Cia/1º Pel (Pará de Minas)",
+  "cidade": "Pará de Minas",
   "sede": false
  },
  {
@@ -661,8 +661,8 @@
   "rotulo": "10 BBM/2CIA/2PEL (Itauna)",
   "cob": "1º COB",
   "ueop": "10º BBM",
-  "fracao": "2ª Cia/2º Pel (Itauna)",
-  "cidade": "Itauna",
+  "fracao": "2ª Cia/2º Pel (Itaúna)",
+  "cidade": "Itaúna",
   "sede": false
  },
  {
@@ -760,8 +760,8 @@
   "rotulo": "11 BBM/1CIA/6PEL/PA (Joao Monlevade)",
   "cob": "5º COB",
   "ueop": "11º BBM",
-  "fracao": "1ª Cia/6º Pel/PA (Joao Monlevade)",
-  "cidade": "Joao Monlevade",
+  "fracao": "1ª Cia/6º Pel/PA (João Monlevade)",
+  "cidade": "João Monlevade",
   "sede": false
  },
  {
@@ -769,8 +769,8 @@
   "rotulo": "11 BBM/1CIA/7PEL (Timoteo)",
   "cob": "5º COB",
   "ueop": "11º BBM",
-  "fracao": "1ª Cia/7º Pel (Timoteo)",
-  "cidade": "Timoteo",
+  "fracao": "1ª Cia/7º Pel (Timóteo)",
+  "cidade": "Timóteo",
   "sede": false
  },
  {
@@ -778,8 +778,8 @@
   "rotulo": "11 BBM/1CIA/PA (Sao Goncalo Rio Abaixo)",
   "cob": "5º COB",
   "ueop": "11º BBM",
-  "fracao": "1ª Cia/PA (Sao Goncalo Rio Abaixo)",
-  "cidade": "Sao Goncalo Rio Abaixo",
+  "fracao": "1ª Cia/PA (São Gonçalo do Rio Abaixo)",
+  "cidade": "São Gonçalo do Rio Abaixo",
   "sede": false
  },
  {
@@ -787,8 +787,8 @@
   "rotulo": "11 BBM/2CIA/1PEL (Manhuacu)",
   "cob": "5º COB",
   "ueop": "11º BBM",
-  "fracao": "2ª Cia/1º Pel (Manhuacu)",
-  "cidade": "Manhuacu",
+  "fracao": "2ª Cia/1º Pel (Manhuaçu)",
+  "cidade": "Manhuaçu",
   "sede": false
  },
  {
@@ -823,8 +823,8 @@
   "rotulo": "12 BBM/2CIA/1PEL (Unai)",
   "cob": "2º COB",
   "ueop": "12º BBM",
-  "fracao": "2ª Cia/1º Pel (Unai)",
-  "cidade": "Unai",
+  "fracao": "2ª Cia/1º Pel (Unaí)",
+  "cidade": "Unaí",
   "sede": false
  },
  {
@@ -841,8 +841,8 @@
   "rotulo": "12 BBM/2CIA/3PEL (Joao Pinheiro)",
   "cob": "2º COB",
   "ueop": "12º BBM",
-  "fracao": "2ª Cia/3º Pel (Joao Pinheiro)",
-  "cidade": "Joao Pinheiro",
+  "fracao": "2ª Cia/3º Pel (João Pinheiro)",
+  "cidade": "João Pinheiro",
   "sede": false
  },
  {
@@ -850,8 +850,8 @@
   "rotulo": "12 BBM/3CIA/1PEL (Patrocinio)",
   "cob": "2º COB",
   "ueop": "12º BBM",
-  "fracao": "3ª Cia/1º Pel (Patrocinio)",
-  "cidade": "Patrocinio",
+  "fracao": "3ª Cia/1º Pel (Patrocínio)",
+  "cidade": "Patrocínio",
   "sede": false
  },
  {

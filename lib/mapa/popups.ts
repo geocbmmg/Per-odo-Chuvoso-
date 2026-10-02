@@ -68,13 +68,28 @@ function campoData(rotulo: string, valor: unknown): CampoPopup {
   return { rotulo, valor: t ? formatarDataHora(t) : VAZIO };
 }
 
-const formatoCota = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 2 });
+const formatoNumero = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 2 });
 
-function campoCota(valor: unknown): CampoPopup {
-  return {
-    rotulo: "Cota",
-    valor: typeof valor === "number" && Number.isFinite(valor) ? `${formatoCota.format(valor)} m` : VAZIO,
-  };
+function numero(valor: unknown): string | null {
+  return typeof valor === "number" && Number.isFinite(valor) ? formatoNumero.format(valor) : null;
+}
+
+/** Campo numérico com unidade, omitido quando não informado. */
+function campoNumero(rotulo: string, valor: unknown, unidade = ""): CampoPopup | null {
+  const n = numero(valor);
+  return n ? { rotulo, valor: `${n}${unidade}` } : null;
+}
+
+/** Chuva informada no alerta meteorológico: mm/h e acumulado em 24 h. */
+function campoChuva(mmHora: unknown, mm24h: unknown): CampoPopup | null {
+  const partes = [numero(mmHora) && `${numero(mmHora)} mm/h`, numero(mm24h) && `${numero(mm24h)} mm em 24 h`];
+  const valor = juntarCom(" · ", ...partes);
+  return valor ? { rotulo: "Chuva", valor } : null;
+}
+
+function juntarCom(separador: string, ...partes: Array<string | null>): string | null {
+  const validas = partes.filter((p): p is string => Boolean(p));
+  return validas.length ? validas.join(separador) : null;
 }
 
 function juntar(...partes: Array<string | null>): string | null {
@@ -125,8 +140,13 @@ export function conteudoAlerta(props: Record<string, unknown>, contexto: Context
       campo("Município", props.municipio),
       campo("Tipo de risco", props.tipoRisco),
       campo("Nível", props.nivel),
-      campoCota(props.cota),
+      campoChuva(props.chuvaMmHora, props.chuva24hMm),
+      campoOpcional("Rio", juntarCom(" · bacia ", texto(props.rio), texto(props.bacia))),
+      // O formulário registra a cota em centímetros.
+      campoNumero("Cota", props.cota, " cm"),
+      campoNumero("Índice de risco", props.indiceRisco),
       campoData("Emitido em", props.emitidoEm),
+      texto(props.validoAte) ? campoData("Válido até", props.validoAte) : null,
     ]),
   };
   if (contexto.chamadasComAcao) {
@@ -154,7 +174,8 @@ export function conteudoAcaoRrd(props: Record<string, unknown>): ConteudoPopup {
       campo("UEOp", props.ueop),
       campoOpcional("Fração", props.fracao),
       campo("Município", props.municipio),
-      campo("Ação executada", props.descricao),
+      campo(Array.isArray(props.acoes) && props.acoes.length > 1 ? "Ações executadas" : "Ação executada", props.descricao),
+      campoOpcional("Nº REDS", Array.isArray(props.reds) ? props.reds.join(", ") : null),
       campoData("Executada em", props.executadaEm),
     ]),
   };

@@ -24,10 +24,22 @@ export interface Alerta {
   /** Fração (Cia/Pel/posto) — nível entre a UEOp e o município. */
   fracao: string | null;
   municipio: string | null;
+  /** Tipo de risco do formulário: Meteorológico (chuva), Hidrológico (inundação) ou Geológico. */
   tipoRisco: string | null;
+  /** Nível do alerta conforme o tipo (campo nivel, inundacao ou deslizamento do formulário). */
   nivel: string | null;
+  /** Meteorológico: chuva em mm/h e acumulado em 24 h informados na emissão. */
+  chuvaMmHora: number | null;
+  chuva24hMm: number | null;
+  /** Hidrológico: bacia, rio e cota (cm). */
+  bacia: string | null;
+  rio: string | null;
   cota: number | null;
+  /** Geológico: índice de risco do GeoRisk/CEMADEN. */
+  indiceRisco: number | null;
   emitidoEm: string | null;
+  /** Data/hora da validade do alerta. */
+  validoAte: string | null;
 }
 
 export interface AcaoRrd {
@@ -38,8 +50,12 @@ export interface AcaoRrd {
   /** Fração (Cia/Pel/posto) — nível entre a UEOp e o município. */
   fracao: string | null;
   municipio: string | null;
-  /** Descrição da ação executada (texto livre no formulário atual). */
+  /** Ações executadas, juntas em um texto (para balões e listas). */
   descricao: string | null;
+  /** Uma entrada por ação da repetição "Ações" do formulário. */
+  acoes: string[];
+  /** Nº REDS informados nas ações (registro da ocorrência; não é dado pessoal). */
+  reds: string[];
   executadaEm: string | null;
 }
 

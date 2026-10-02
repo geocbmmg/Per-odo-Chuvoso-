@@ -8,19 +8,31 @@ import { formatarInteiro } from "./formatos";
 
 /**
  * Diagnóstico de uma camada ArcGIS (bloco recolhível "Campos do formulário"):
- * atributo lógico → campo resolvido no formulário Survey123, nome da camada no
- * servidor, total de feições e quantas vieram sem geometria. Abre sozinho
- * quando algum campo não foi encontrado.
+ * camada do serviço efetivamente lida (e se a escolha automática divergiu do
+ * índice configurado), atributo lógico → campo resolvido no formulário
+ * Survey123, tabela de repetição, total de feições e quantas vieram sem
+ * geometria. Abre sozinho quando algum campo não foi encontrado ou quando a
+ * camada lida não é a configurada.
  */
 export function DiagnosticoArcgis({ diagnostico, className }: { diagnostico: DiagnosticoCamada; className?: string }) {
-  const campos = Object.entries(diagnostico.campos);
+  const repeticao = diagnostico.repeticao;
+  const campos: [string, string | null][] = [
+    ...Object.entries(diagnostico.campos),
+    ...(repeticao ? Object.entries(repeticao.campos).map(([a, c]): [string, string | null] => [`ações › ${a}`, c]) : []),
+  ];
   const faltando = campos.filter(([, campo]) => campo === null).length;
   const encontrados = campos.length - faltando;
+  const origem = diagnostico.origem;
+  const trocada = !!origem && origem.id !== origem.configurada;
 
   return (
     <details
-      open={faltando > 0}
-      className={cn("group rounded-[10px] border border-linha/12 bg-linha/3", faltando > 0 && "border-alerta/40", className)}
+      open={faltando > 0 || trocada}
+      className={cn(
+        "group rounded-[10px] border border-linha/12 bg-linha/3",
+        (faltando > 0 || trocada) && "border-alerta/40",
+        className,
+      )}
     >
       <summary
         className={cn(
@@ -38,6 +50,11 @@ export function DiagnosticoArcgis({ diagnostico, className }: { diagnostico: Dia
             {faltando === 1 ? "1 não encontrado" : `${faltando} não encontrados`}
           </Badge>
         ) : null}
+        {trocada ? (
+          <Badge variant="alerta" marcador>
+            Camada {origem.id} em vez da {origem.configurada}
+          </Badge>
+        ) : null}
       </summary>
 
       <div className="flex flex-col gap-3 border-t border-linha/9 px-3 pb-3 pt-2.5">
@@ -48,6 +65,31 @@ export function DiagnosticoArcgis({ diagnostico, className }: { diagnostico: Dia
           <dd className="min-w-0 break-words font-mono text-[12px] text-ink-2">
             {diagnostico.nomeNoServidor ?? <span className="font-sans text-mut">não informado</span>}
           </dd>
+          {origem ? (
+            <>
+              <dt className="text-mut">Camada lida</dt>
+              <dd className="min-w-0 break-words text-ink-2">
+                <span className="font-mono text-[12px]">FeatureServer/{origem.id}</span>
+                {" · "}
+                {origem.tipo === "tabela" ? "tabela" : "camada"} com {origem.pontuacao} de {origem.total} campos-chave
+                {trocada ? (
+                  <span className="block text-alerta-txt">
+                    Escolhida automaticamente: a camada {origem.configurada}, configurada, tem menos campos do formulário.
+                  </span>
+                ) : null}
+              </dd>
+            </>
+          ) : null}
+          {repeticao && origem?.repeticao ? (
+            <>
+              <dt className="text-mut">Ações (repetição)</dt>
+              <dd className="min-w-0 break-words text-ink-2 tabular-nums">
+                <span className="font-mono text-[12px]">FeatureServer/{origem.repeticao.id}</span>
+                {" · "}
+                {formatarInteiro(repeticao.totalRegistros)} registros, {formatarInteiro(repeticao.vinculados)} ligados a uma ação RRD
+              </dd>
+            </>
+          ) : null}
           <dt className="text-mut">Feições</dt>
           <dd className="text-ink-2 tabular-nums">
             {formatarInteiro(diagnostico.totalFeicoes)}

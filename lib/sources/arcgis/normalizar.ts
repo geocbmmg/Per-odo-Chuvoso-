@@ -11,6 +11,7 @@ import type {
   SituacaoOcorrencia,
 } from "@/lib/dominio/tipos";
 import { normalizarRotuloCob } from "@/lib/territorio";
+import { buscarFracao, nomeMunicipio } from "@/lib/territorio/fracoes";
 import {
   comoDataIso,
   comoNumero,
@@ -22,11 +23,13 @@ import {
 } from "./campos";
 import {
   CANDIDATOS_ACAO_RRD,
+  CANDIDATOS_ACAO_RRD_REPETICAO,
   CANDIDATOS_ALERTA,
   CANDIDATOS_COB,
   CANDIDATOS_OCORRENCIA,
 } from "./camadas";
 import type { CampoEsri, FeicaoEsri } from "./cliente";
+import { normalizarGuid } from "./deteccao";
 import { poligonoEsriParaGeoJSON, pontoEsriParaGeoJSON } from "./geometria";
 
 /**
@@ -40,6 +43,20 @@ export interface Diagnostico {
   campos: Record<string, string | null>;
   totalFeicoes: number;
   semGeometria: number;
+  /** Tabela de repetição lida junto (ações da RRD). */
+  repeticao?: {
+    campos: Record<string, string | null>;
+    totalRegistros: number;
+    /** Registros ligados a algum registro principal. */
+    vinculados: number;
+  };
+}
+
+/** Registros de uma tabela de repetição e o campo que os liga ao registro principal. */
+export interface Repeticao {
+  campos: CampoEsri[];
+  feicoes: FeicaoEsri[];
+  campoPai: CampoEsri;
 }
 
 export interface Normalizado<C> {
@@ -89,32 +106,128 @@ function normalizarPontos<P, K extends string>(
   };
 }
 
+/**
+ * Território de um registro. O formulário grava a fração completa no campo
+ * "ueop" (ex.: código "1_BBM_2CIA_1PEL_Ouro_Preto_1_COB", rótulo
+ * "1 BBM/2CIA/1PEL (Ouro Preto)"): pela tabela oficial ela é decomposta em
+ * UEOp e fração, e completa o COB quando ele falta. Município em código do
+ * formulário ("Acucena") vira o nome ("Açucena").
+ */
+function territorio<K extends string>(
+  attrs: Record<string, unknown>,
+  mapa: MapaCampos<K | "cob" | "ueop" | "fracao" | "municipio">,
+): { cob: string | null; ueop: string | null; fracao: string | null; municipio: string | null } {
+  const ueopBruta = lerAtributo(attrs, mapa.ueop);
+  const fracaoOficial = buscarFracao(ueopBruta) ?? buscarFracao(attrs[mapa.ueop?.name ?? ""]);
+  // O alias "Fração Responsável" do campo ueop também casa com os candidatos
+  // de fração: nesse caso a fração sai da decomposição oficial, não do campo.
+  const mesmoCampo = !!mapa.fracao && mapa.fracao.name === mapa.ueop?.name;
+  const fracaoCampo = mesmoCampo ? null : comoTexto(lerAtributo(attrs, mapa.fracao));
+  const cob = normalizarRotuloCob(lerAtributo(attrs, mapa.cob)) ?? fracaoOficial?.cob ?? null;
+  return {
+    cob,
+    ueop: fracaoOficial?.ueop ?? comoTexto(ueopBruta),
+    fracao: fracaoOficial?.fracao ?? fracaoCampo,
+    municipio: nomeMunicipio(comoTexto(lerAtributo(attrs, mapa.municipio))),
+  };
+}
+
 export function normalizarAlertas(campos: CampoEsri[], feicoes: FeicaoEsri[]): Normalizado<FeicoesAlertas> {
   return normalizarPontos(campos, feicoes, CANDIDATOS_ALERTA, (attrs, mapa, id): Alerta => ({
     id,
     numeroChamada: texto(attrs, mapa, "numeroChamada"),
-    cob: normalizarRotuloCob(lerAtributo(attrs, mapa.cob)),
-    ueop: texto(attrs, mapa, "ueop"),
-    fracao: texto(attrs, mapa, "fracao"),
-    municipio: texto(attrs, mapa, "municipio"),
-    tipoRisco: texto(attrs, mapa, "tipoRisco"),
-    nivel: texto(attrs, mapa, "nivel"),
+    ...territorio(attrs, mapa),
+    tipoRisco: classificarTipoRisco(texto(attrs, mapa, "tipoRisco")),
+    // Um campo de nível por tipo de risco no formulário: vale o primeiro preenchido.
+    nivel: texto(attrs, mapa, "nivel") ?? texto(attrs, mapa, "nivelHidrologico") ?? texto(attrs, mapa, "nivelGeologico"),
+    chuvaMmHora: comoNumero(lerAtributo(attrs, mapa.chuvaMmHora)),
+    chuva24hMm: comoNumero(lerAtributo(attrs, mapa.chuva24hMm)),
+    bacia: texto(attrs, mapa, "bacia"),
+    rio: texto(attrs, mapa, "rio"),
     cota: comoNumero(lerAtributo(attrs, mapa.cota)),
+    indiceRisco: comoNumero(lerAtributo(attrs, mapa.indiceRisco)),
     emitidoEm: data(attrs, mapa, "emitidoEm"),
+    validoAte: data(attrs, mapa, "validoAte"),
   }));
 }
 
-export function normalizarAcoesRrd(campos: CampoEsri[], feicoes: FeicaoEsri[]): Normalizado<FeicoesAcoesRrd> {
-  return normalizarPontos(campos, feicoes, CANDIDATOS_ACAO_RRD, (attrs, mapa, id): AcaoRrd => ({
-    id,
-    numeroChamada: texto(attrs, mapa, "numeroChamada"),
-    cob: normalizarRotuloCob(lerAtributo(attrs, mapa.cob)),
-    ueop: texto(attrs, mapa, "ueop"),
-    fracao: texto(attrs, mapa, "fracao"),
-    municipio: texto(attrs, mapa, "municipio"),
-    descricao: texto(attrs, mapa, "descricao"),
-    executadaEm: data(attrs, mapa, "executadaEm"),
-  }));
+/** Ações e nº REDS da repetição, agrupados pelo GlobalID do registro principal. */
+function agruparRepeticao(repeticao: Repeticao) {
+  const mapa = resolverCampos(repeticao.campos, CANDIDATOS_ACAO_RRD_REPETICAO);
+  const porPai = new Map<string, { acoes: string[]; reds: string[] }>();
+  for (const f of repeticao.feicoes) {
+    const attrs = f.attributes ?? {};
+    const pai = normalizarGuid(attrs[repeticao.campoPai.name]);
+    if (!pai) continue;
+    const grupo = porPai.get(pai) ?? { acoes: [], reds: [] };
+    const acao = texto(attrs, mapa, "descricao");
+    const reds = texto(attrs, mapa, "reds");
+    if (acao) grupo.acoes.push(acao);
+    if (reds && !grupo.reds.includes(reds)) grupo.reds.push(reds);
+    porPai.set(pai, grupo);
+  }
+  return { mapa, porPai };
+}
+
+/**
+ * Ações RRD. No formulário real cada ação é uma linha da repetição "Ações"
+ * (tabela filha); sem repetição, vale o campo de descrição da própria camada.
+ */
+export function normalizarAcoesRrd(
+  campos: CampoEsri[],
+  feicoes: FeicaoEsri[],
+  repeticao?: Repeticao,
+): Normalizado<FeicoesAcoesRrd> {
+  const filhos = repeticao ? agruparRepeticao(repeticao) : null;
+  const campoGlobal = campos.find((c) => c.type === "esriFieldTypeGlobalID")?.name ?? "globalid";
+  const vinculados = new Set<string>();
+  const resultado = normalizarPontos(campos, feicoes, CANDIDATOS_ACAO_RRD, (attrs, mapa, id): AcaoRrd => {
+    const pai = normalizarGuid(attrs[campoGlobal]);
+    const grupo = pai ? filhos?.porPai.get(pai) : undefined;
+    if (pai && grupo) vinculados.add(pai);
+    const propria = texto(attrs, mapa, "descricao");
+    const acoes = grupo?.acoes.length ? grupo.acoes : propria ? [propria] : [];
+    return {
+      id,
+      numeroChamada: texto(attrs, mapa, "numeroChamada"),
+      ...territorio(attrs, mapa),
+      descricao: acoes.length ? acoes.join("; ") : null,
+      acoes,
+      reds: grupo?.reds ?? [],
+      executadaEm: data(attrs, mapa, "executadaEm"),
+    };
+  });
+  if (repeticao && filhos) {
+    let ligados = 0;
+    for (const f of repeticao.feicoes) {
+      const pai = normalizarGuid(f.attributes?.[repeticao.campoPai.name]);
+      if (pai && vinculados.has(pai)) ligados++;
+    }
+    // A descrição vem da repetição: não acusar "não encontrado" na camada principal.
+    if (resultado.diagnostico.campos.descricao === null && filhos.mapa.descricao) {
+      delete resultado.diagnostico.campos.descricao;
+    }
+    resultado.diagnostico.repeticao = {
+      campos: { ...resumoResolucao(filhos.mapa), ligacao: repeticao.campoPai.name },
+      totalRegistros: repeticao.feicoes.length,
+      vinculados: ligados,
+    };
+  }
+  return resultado;
+}
+
+/**
+ * Tipo de risco canônico. Os rótulos do formulário real têm erros de digitação
+ * ("Metereológico (Chuva)", "Hidrológico (Inuncação)"); o mapa de risco e os
+ * gráficos agrupam pelas três categorias. Texto não reconhecido fica como veio.
+ */
+export function classificarTipoRisco(valor: string | null): string | null {
+  if (!valor) return null;
+  const t = valor.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  if (/meteor|metereo|chuva|tempestade|vendaval|granizo/.test(t)) return "Meteorológico";
+  if (/hidrol|inund|enchent|alag|cheia/.test(t)) return "Hidrológico";
+  if (/geol|desliz|escorreg|movimento de massa|solapamento/.test(t)) return "Geológico";
+  return valor;
 }
 
 /** Classifica a situação a partir do texto livre/domínio do formulário. */
@@ -136,10 +249,7 @@ export function normalizarOcorrencias(
     numeroChamada: texto(attrs, mapa, "numeroChamada"),
     titulo: texto(attrs, mapa, "titulo"),
     situacao: classificarSituacao(texto(attrs, mapa, "situacao")),
-    cob: normalizarRotuloCob(lerAtributo(attrs, mapa.cob)),
-    ueop: texto(attrs, mapa, "ueop"),
-    fracao: texto(attrs, mapa, "fracao"),
-    municipio: texto(attrs, mapa, "municipio"),
+    ...territorio(attrs, mapa),
     iniciadaEm: data(attrs, mapa, "iniciadaEm"),
   }));
 }

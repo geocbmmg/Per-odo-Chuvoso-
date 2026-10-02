@@ -3,7 +3,8 @@ import { modoExemplo, variaveisInvalidas } from "@/lib/env";
 import { LISTA_FONTES } from "@/lib/fontes/catalogo";
 import { statusDaFonte } from "@/lib/fontes/leituras";
 import type { FonteId, StatusFonte } from "@/lib/fontes/tipos";
-import { CAMADAS_ARCGIS, obterCamada, type CamadaArcgisId } from "@/lib/sources/arcgis";
+import { CAMADAS_ARCGIS, obterCamada, type CamadaArcgisId, type OrigemCamada } from "@/lib/sources/arcgis";
+import type { Diagnostico } from "@/lib/sources/arcgis/normalizar";
 import { obterAvisosInmet } from "@/lib/sources/inmet";
 import { obterPrevisaoCobs } from "@/lib/sources/open-meteo";
 
@@ -15,13 +16,11 @@ import { obterPrevisaoCobs } from "@/lib/sources/open-meteo";
  * serverless já tinha visto. Fontes em cache não são reconsultadas.
  */
 
-export interface DiagnosticoCamada {
+export interface DiagnosticoCamada extends Diagnostico {
   camada: string;
   nomeNoServidor: string | null;
-  totalFeicoes: number;
-  semGeometria: number;
-  /** Atributo lógico → campo resolvido no formulário (null = não encontrado). */
-  campos: Record<string, string | null>;
+  /** Camada/tabela do serviço efetivamente lida (null em leituras antigas guardadas). */
+  origem: OrigemCamada | null;
 }
 
 export interface StatusFonteDetalhado extends StatusFonte {
@@ -48,6 +47,7 @@ async function sondar(fonte: FonteId): Promise<DiagnosticoCamada | undefined> {
     return {
       camada: CAMADAS_ARCGIS[camada].nome,
       nomeNoServidor: leitura.dados.nomeNoServidor,
+      origem: leitura.dados.origem ?? null,
       ...leitura.dados.diagnostico,
     };
   }

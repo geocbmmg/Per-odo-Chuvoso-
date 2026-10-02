@@ -16,8 +16,14 @@ function alerta(p: Partial<Alerta>): Alerta {
     municipio: null,
     tipoRisco: null,
     nivel: null,
+    chuvaMmHora: null,
+    chuva24hMm: null,
+    bacia: null,
+    rio: null,
     cota: null,
+    indiceRisco: null,
     emitidoEm: "2026-10-10T12:00:00Z",
+    validoAte: null,
     ...p,
   };
 }
@@ -31,6 +37,8 @@ function acao(p: Partial<AcaoRrd>): AcaoRrd {
     fracao: null,
     municipio: null,
     descricao: null,
+    acoes: [],
+    reds: [],
     executadaEm: "2026-10-11T12:00:00Z",
     ...p,
   };

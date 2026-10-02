@@ -515,13 +515,13 @@ describe("conteúdo dos balões", () => {
       municipio: "Belo Horizonte",
       tipoRisco: "Alagamento",
       nivel: "Alerta",
-      cota: 2.5,
+      cota: 250,
       emitidoEm: "2026-10-02T15:00:00.000Z",
     };
     const conteudo = conteudoAlerta(props, { chamadasComAcao: chamadasComAcaoRrd([{ numeroChamada: "26.1002.0066" }]) });
     expect(conteudo.titulo).toBe("Alagamento — Belo Horizonte");
     expect(conteudo.campos).toContainEqual({ rotulo: "Emitido em", valor: "02/10/2026 12:00" });
-    expect(conteudo.campos).toContainEqual({ rotulo: "Cota", valor: "2,5 m" });
+    expect(conteudo.campos).toContainEqual({ rotulo: "Cota", valor: "250 cm" });
     expect(conteudo.campos).toContainEqual({ rotulo: "Nº chamada CAD", valor: "2610020066" });
     expect(conteudo.selo).toEqual({ texto: "Com ação RRD vinculada", tom: "ok" });
 
@@ -529,6 +529,35 @@ describe("conteúdo dos balões", () => {
     expect(pendente.selo?.tom).toBe("alerta");
     expect(conteudoAlerta({ numeroChamada: null }).selo).toBeUndefined();
     expect(conteudoAlerta({}).campos.every((c) => c.valor === "Não informado")).toBe(true);
+  });
+
+  it("alerta mostra os dados do tipo de risco e omite os que não se aplicam", () => {
+    const chuva = conteudoAlerta({
+      tipoRisco: "Meteorológico",
+      chuvaMmHora: 42,
+      chuva24hMm: 96.5,
+      emitidoEm: "2026-10-02T15:00:00.000Z",
+      validoAte: "2026-10-03T15:00:00.000Z",
+    });
+    expect(chuva.campos).toContainEqual({ rotulo: "Chuva", valor: "42 mm/h · 96,5 mm em 24 h" });
+    expect(chuva.campos).toContainEqual({ rotulo: "Válido até", valor: "03/10/2026 12:00" });
+    expect(chuva.campos.some((c) => c.rotulo === "Cota" || c.rotulo === "Rio" || c.rotulo === "Índice de risco")).toBe(false);
+
+    const rio = conteudoAlerta({ tipoRisco: "Hidrológico", rio: "Rio Muriaé", bacia: "Rio Muriaé", cota: 640 });
+    expect(rio.campos).toContainEqual({ rotulo: "Rio", valor: "Rio Muriaé · bacia Rio Muriaé" });
+    expect(rio.campos).toContainEqual({ rotulo: "Cota", valor: "640 cm" });
+    expect(conteudoAlerta({ indiceRisco: 1.9 }).campos).toContainEqual({ rotulo: "Índice de risco", valor: "1,9" });
+  });
+
+  it("ação RRD lista as ações da repetição e os nº REDS", () => {
+    const conteudo = conteudoAcaoRrd({
+      acoes: ["Evacuação preventiva", "Isolamento da área"],
+      descricao: "Evacuação preventiva; Isolamento da área",
+      reds: ["2026-000000001-001"],
+    });
+    expect(conteudo.campos).toContainEqual({ rotulo: "Ações executadas", valor: "Evacuação preventiva; Isolamento da área" });
+    expect(conteudo.campos).toContainEqual({ rotulo: "Nº REDS", valor: "2026-000000001-001" });
+    expect(conteudoAcaoRrd({ acoes: ["Uma"], descricao: "Uma", reds: [] }).campos.some((c) => c.rotulo === "Nº REDS")).toBe(false);
   });
 
   it("ocorrência traz a situação em palavra; finalizada muda cor e forma", () => {

@@ -111,7 +111,7 @@ lib/
   dados/                   Indicadores, Visão Geral, painel de status
   mapa/                    Estilo do mapa (função pura), simbologia, mapas base, máscara de MG
   db/                      Drizzle (schema + cliente)
-  territorio.ts            COB → BBM/UEOp → fração → município; sedes dos COBs
+  territorio/              COB → BBM/UEOp → fração → município; tabela oficial de frações; sedes
   datas.ts                 Datas em America/Sao_Paulo
   env.ts                   Variáveis de ambiente (server-only, validadas com zod)
 docs/                      Padrão visual, fontes de dados, território

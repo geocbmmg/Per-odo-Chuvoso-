@@ -3,10 +3,11 @@ import { buscarJson, type OpcoesBusca } from "@/lib/fontes/http";
 /**
  * Cliente REST do ArcGIS Enterprise — SOMENTE LEITURA.
  *
- * Só monta URLs de metadados (`.../FeatureServer/<n>?f=json`) e de consulta
- * (`.../FeatureServer/<n>/query`). Não existe função para applyEdits,
- * addFeatures, updateFeatures ou deleteFeatures, e `montarUrlCamada` recusa
- * qualquer caminho que não seja uma camada de FeatureServer.
+ * Só monta URLs de metadados (`.../FeatureServer/layers?f=json` e
+ * `.../FeatureServer/<n>?f=json`) e de consulta (`.../FeatureServer/<n>/query`).
+ * Não existe função para applyEdits, addFeatures, updateFeatures ou
+ * deleteFeatures, e os montadores de URL recusam qualquer caminho que não seja
+ * um FeatureServer ou uma camada dele.
  */
 
 export type TipoCampoEsri =
@@ -69,6 +70,7 @@ export interface RespostaConsultaEsri {
 export interface MetadadosCamadaEsri {
   id: number;
   name: string;
+  /** "Feature Layer" ou "Table" (as repetições do Survey123 costumam ser tabelas). */
   type: string;
   geometryType?: string | null;
   fields: CampoEsri[];
@@ -112,17 +114,22 @@ function verificarErro(corpo: unknown): void {
 }
 
 /**
- * URL de uma camada: `<base>/<servico>/FeatureServer/<camada>`.
+ * URL de um FeatureServer: `<base>/<servico>/FeatureServer`.
  * `servico` é só o nome (ex.: "MG_DISSOLVIDO_COB"), sem barras.
  */
-export function montarUrlCamada(base: string, servico: string, camada: number): string {
+export function montarUrlServico(base: string, servico: string): string {
   if (!/^[A-Za-z0-9_]+$/.test(servico)) {
     throw new ErroArcGIS(`Nome de serviço inválido: ${servico}`);
   }
+  return `${base.replace(/\/+$/, "")}/${servico}/FeatureServer`;
+}
+
+/** URL de uma camada: `<base>/<servico>/FeatureServer/<camada>`. */
+export function montarUrlCamada(base: string, servico: string, camada: number): string {
   if (!Number.isInteger(camada) || camada < 0) {
     throw new ErroArcGIS(`Índice de camada inválido: ${camada}`);
   }
-  return `${base.replace(/\/+$/, "")}/${servico}/FeatureServer/${camada}`;
+  return `${montarUrlServico(base, servico)}/${camada}`;
 }
 
 export interface ParametrosConsulta {
@@ -163,17 +170,37 @@ export function montarUrlConsulta(
   return `${urlCamada}/query?${busca.toString()}`;
 }
 
-export async function lerMetadadosCamada(
-  urlCamada: string,
+/** Camadas e tabelas de um FeatureServer, cada uma com a lista completa de campos. */
+export interface CamadasServicoEsri {
+  layers: MetadadosCamadaEsri[];
+  tables: MetadadosCamadaEsri[];
+}
+
+/**
+ * Lê `<FeatureServer>/layers?f=json`: todas as camadas e tabelas do serviço,
+ * com campos e domínios, numa só chamada. É o que permite escolher a camada
+ * certa do formulário (ver deteccao.ts) e achar a tabela de repetição.
+ */
+export async function lerCamadasServico(
+  urlServico: string,
   opcoes: OpcoesBusca = {},
-): Promise<MetadadosCamadaEsri> {
-  const corpo = await buscarJson<unknown>(`${urlCamada}?f=json`, opcoes);
+): Promise<CamadasServicoEsri> {
+  const corpo = await buscarJson<unknown>(`${urlServico}/layers?f=json`, opcoes);
   verificarErro(corpo);
-  const meta = corpo as MetadadosCamadaEsri;
-  if (!Array.isArray(meta.fields)) {
-    throw new ErroArcGIS("Metadados da camada sem lista de campos");
+  const resposta = corpo as Partial<CamadasServicoEsri>;
+  const validas = (lista: unknown): MetadadosCamadaEsri[] =>
+    Array.isArray(lista)
+      ? lista.filter(
+          (c): c is MetadadosCamadaEsri =>
+            typeof c === "object" && c !== null && Number.isInteger((c as MetadadosCamadaEsri).id) &&
+            Array.isArray((c as MetadadosCamadaEsri).fields),
+        )
+      : [];
+  const camadas = { layers: validas(resposta.layers), tables: validas(resposta.tables) };
+  if (camadas.layers.length + camadas.tables.length === 0) {
+    throw new ErroArcGIS("Serviço sem camadas ou tabelas com lista de campos");
   }
-  return meta;
+  return camadas;
 }
 
 /**

@@ -4,11 +4,11 @@ import type { FonteId } from "@/lib/fontes/tipos";
 /**
  * Catálogo das camadas ArcGIS lidas pela Sala de Situação (somente leitura).
  *
- * `campos` lista, para cada atributo lógico, os candidatos de nome/alias de
- * campo em ordem de preferência (ver campos.ts). Os nomes reais dos
- * formulários Survey123 ainda não foram conferidos contra o servidor: a
- * página /status mostra qual campo foi resolvido para cada atributo — ajuste
- * as listas abaixo se algum atributo aparecer como "não encontrado".
+ * Cada atributo lógico tem os candidatos de nome/alias de campo em ordem de
+ * preferência (ver campos.ts). Os primeiros candidatos são os nomes dos
+ * XLSForms reais (Emissão de Alertas e Ações RRD, recebidos em 02/10/2026);
+ * os demais cobrem variações de outros formulários. A página /status mostra o
+ * campo resolvido para cada atributo e a camada escolhida no serviço.
  */
 
 const NUMERO_CHAMADA = [
@@ -75,9 +75,20 @@ export const CANDIDATOS_ALERTA = {
     "tipo",
     "Tipo de risco",
   ],
+  // O formulário grava o nível em um campo por tipo de risco: nivel (meteorológico),
+  // inundacao (hidrológico) e deslizamento (geológico). Vale o primeiro preenchido.
   nivel: ["nivel_alerta", "nivel_de_alerta", "nivel_risco", "nivel", "grau_risco", "grau", "severidade", "Nível"],
-  cota: ["cota", "cota_*", "cota_rio", "nivel_rio", "leitura_cota", "Cota"],
+  nivelHidrologico: ["inundacao", "nivel_inundacao", "inund", "Nível da Cota de Inundação"],
+  nivelGeologico: ["deslizamento", "desliz", "Risco de Deslizamento de Terra"],
+  chuvaMmHora: ["mmh", "milimetros", "mm_hora", "Milímetros por hora"],
+  chuva24hMm: ["mmpor", "mmporhora", "mm_24h", "Milímetros acumulados em 24 horas"],
+  bacia: ["bacia", "bac", "Indique a Bacia"],
+  rio: ["rio", "nome_rio", "Nome do Rio"],
+  cota: ["cota", "cot", "cota_*", "cota_rio", "nivel_rio", "leitura_cota", "Cota"],
+  indiceRisco: ["indice", "ind", "indice_risco", "Insira o índice de Risco"],
+  validoAte: ["validade", "data_validade", "valido_ate", "Data/Hora da Validade do Alerta"],
   emitidoEm: [
+    "datain",
     "data_emissao",
     "data_hora_emissao",
     "data_alerta",
@@ -111,6 +122,7 @@ export const CANDIDATOS_ACAO_RRD = {
     "Ações realizadas",
   ],
   executadaEm: [
+    "datain",
     "data_acao",
     "data_da_acao",
     "data_execucao",
@@ -121,6 +133,15 @@ export const CANDIDATOS_ACAO_RRD = {
     "CreationDate",
     "created_date",
   ],
+} as const;
+
+/**
+ * Repetição "Ações" do formulário de Ações RRD (tabela filha, ligada ao
+ * registro principal por parentglobalid): uma linha por ação executada.
+ */
+export const CANDIDATOS_ACAO_RRD_REPETICAO = {
+  descricao: CANDIDATOS_ACAO_RRD.descricao,
+  reds: ["reds", "n_reds", "numero_reds", "nr_reds", "N. Reds", "Nº REDS"],
 } as const;
 
 export const CANDIDATOS_OCORRENCIA = {
@@ -142,6 +163,7 @@ export const CANDIDATOS_OCORRENCIA = {
   fracao: FRACAO,
   municipio: MUNICIPIO,
   iniciadaEm: [
+    "datain",
     "data_inicio",
     "data_hora_inicio",
     "inicio",
@@ -166,8 +188,16 @@ export interface DefinicaoCamadaArcgis {
   fonte: FonteId;
   nome: string;
   servico: string;
+  /**
+   * Índice preferido no FeatureServer. Se outra camada ou tabela do serviço
+   * resolver mais `chaves`, ela é usada no lugar (deteccao.ts) e /status avisa.
+   */
   camada: number;
+  /** Atributos lógicos que identificam a camada do formulário. */
+  chaves: readonly string[];
   geometria: "ponto" | "poligono";
+  /** Lê também a tabela de repetição do formulário (ações da RRD). */
+  repeticao?: boolean;
 }
 
 export const CAMADAS_ARCGIS: Record<CamadaArcgisId, DefinicaoCamadaArcgis> = {
@@ -177,6 +207,7 @@ export const CAMADAS_ARCGIS: Record<CamadaArcgisId, DefinicaoCamadaArcgis> = {
     nome: "Limites dos COBs",
     servico: "MG_DISSOLVIDO_COB",
     camada: 0,
+    chaves: ["cob"],
     geometria: "poligono",
   },
   alertas: {
@@ -184,7 +215,10 @@ export const CAMADAS_ARCGIS: Record<CamadaArcgisId, DefinicaoCamadaArcgis> = {
     fonte: "arcgis-alertas",
     nome: "Emissão de Alertas",
     servico: "service_6f690a1b09bf4bab9d6b831de9fc3767_form",
+    // Camada 1 por indicação da equipe; o pulldata do formulário de Ações RRD
+    // consulta a camada 0. A detecção escolhe a que tiver os campos do formulário.
     camada: 1,
+    chaves: ["numeroChamada", "cob", "ueop", "municipio", "tipoRisco", "nivel", "nivelHidrologico", "nivelGeologico"],
     geometria: "ponto",
   },
   "acoes-rrd": {
@@ -193,7 +227,9 @@ export const CAMADAS_ARCGIS: Record<CamadaArcgisId, DefinicaoCamadaArcgis> = {
     nome: "Ações RRD",
     servico: "service_84097bf8336f4667bba0441c1571cd94_form",
     camada: 0,
+    chaves: ["numeroChamada", "cob", "ueop", "municipio"],
     geometria: "ponto",
+    repeticao: true,
   },
   "ocorrencias-complexas": {
     id: "ocorrencias-complexas",
@@ -201,6 +237,7 @@ export const CAMADAS_ARCGIS: Record<CamadaArcgisId, DefinicaoCamadaArcgis> = {
     nome: "Ocorrências Complexas",
     servico: "service_f0ff0b0661d941a0aac4db84ba95f566_form",
     camada: 0,
+    chaves: ["numeroChamada", "titulo", "situacao", "cob", "ueop", "municipio"],
     geometria: "ponto",
   },
 };
