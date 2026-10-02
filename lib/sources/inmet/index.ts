@@ -4,7 +4,7 @@ import { env, modoExemplo } from "@/lib/env";
 import { buscarTexto } from "@/lib/fontes/http";
 import { obterLeitura } from "@/lib/fontes/leituras";
 import type { Leitura } from "@/lib/fontes/tipos";
-import { deslocamentoAte, deslocarIso } from "@/lib/sources/exemplos/deslocar";
+import { deslocamentoEmDiasAte, deslocarIso } from "@/lib/sources/exemplos/deslocar";
 import { REFERENCIA_RSS_INMET_EXEMPLO, RSS_INMET_EXEMPLO } from "@/lib/sources/exemplos/inmet-avisos";
 import {
   URL_AVISOS_INMET,
@@ -23,7 +23,8 @@ export interface AvisoInmetVigente extends AvisoInmet {
 }
 
 function exemplo(): AvisoInmetBruto[] {
-  const delta = deslocamentoAte(REFERENCIA_RSS_INMET_EXEMPLO);
+  // Em dias inteiros: os avisos mantêm os horários do arquivo (ex.: 08:30–23:59).
+  const delta = deslocamentoEmDiasAte(REFERENCIA_RSS_INMET_EXEMPLO);
   return interpretarRssInmet(RSS_INMET_EXEMPLO).map((a) => ({
     ...a,
     inicio: deslocarIso(a.inicio, delta),

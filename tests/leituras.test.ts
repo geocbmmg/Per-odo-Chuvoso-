@@ -142,3 +142,23 @@ describe("stubs das fontes da Fase 1", () => {
     await expect(obterQuadrosRadar()).rejects.toThrow(/Fase 1/);
   });
 });
+
+describe("modo exemplo e deslocamento de datas", () => {
+  beforeEach(() => reiniciarLeituras());
+
+  it("registra a leitura de exemplo para o carimbo de /status", async () => {
+    await obterLeitura("inmet-avisos", "rss", async () => [], { modoExemplo: true, exemplo: () => [] });
+    const s = statusDaFonte("inmet-avisos", { modoExemplo: true });
+    expect(s.estado).toBe("exemplo");
+    expect(s.atualizadoEm).not.toBeNull();
+  });
+
+  it("desloca em dias inteiros no horário de Brasília", async () => {
+    const { deslocamentoEmDiasAte } = await import("@/lib/sources/exemplos/deslocar");
+    const ref = "2026-10-02T15:00:00.000Z"; // 02/10 12:00 BRT
+    expect(deslocamentoEmDiasAte(ref, new Date("2026-10-02T02:59:00Z"))).toBe(-86_400_000); // 01/10 23:59 BRT
+    expect(deslocamentoEmDiasAte(ref, new Date("2026-10-02T03:00:00Z"))).toBe(0); // 02/10 00:00 BRT
+    expect(deslocamentoEmDiasAte(ref, new Date("2026-10-03T02:59:00Z"))).toBe(0); // 02/10 23:59 BRT
+    expect(deslocamentoEmDiasAte(ref, new Date("2026-10-05T12:00:00Z"))).toBe(3 * 86_400_000);
+  });
+});

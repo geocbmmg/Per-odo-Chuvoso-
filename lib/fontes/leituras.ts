@@ -139,12 +139,15 @@ export async function obterLeitura<T>(
   const estado = estadoGlobal();
 
   if (opcoes.modoExemplo && opcoes.exemplo) {
-    return {
-      fonte,
-      dados: opcoes.exemplo(),
-      atualizadoEm: agora().toISOString(),
-      origem: "exemplo",
-    };
+    const instante = agora().toISOString();
+    // Registra a "leitura" para /status mostrar o carimbo também no modo exemplo.
+    const r = registro(fonte);
+    r.ultimaTentativaEm = instante;
+    r.ultimoSucessoEm = instante;
+    r.atualizadoEm = instante;
+    r.ultimoErro = null;
+    r.latenciaMs = 0;
+    return { fonte, dados: opcoes.exemplo(), atualizadoEm: instante, origem: "exemplo" };
   }
 
   const guardada = estado.armazem.ler(chaveCompleta);
