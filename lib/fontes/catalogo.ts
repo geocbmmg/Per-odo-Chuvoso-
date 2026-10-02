@@ -1,0 +1,152 @@
+import type { DefinicaoFonte, FonteId } from "./tipos";
+
+const MIN = 60;
+const HORA = 60 * MIN;
+const DIA = 24 * HORA;
+
+/**
+ * Catálogo das fontes de dados da Sala de Situação. A página /status e o
+ * carimbo "atualizado às" usam estes parâmetros para classificar cada fonte.
+ */
+export const CATALOGO_FONTES: Record<FonteId, DefinicaoFonte> = {
+  "arcgis-cobs": {
+    id: "arcgis-cobs",
+    nome: "Limites dos COBs",
+    descricao: "Polígonos das áreas dos Comandos Operacionais de Bombeiros (MG_DISSOLVIDO_COB).",
+    grupo: "ArcGIS CBMMG",
+    referencia:
+      "https://geoprocessamento.bombeiros.mg.gov.br/server/rest/services/Hosted/MG_DISSOLVIDO_COB/FeatureServer/0",
+    ttlSegundos: 6 * HORA,
+    toleranciaSegundos: DIA,
+    limiteForaDoArSegundos: 7 * DIA,
+    implementada: true,
+    credito: "CBMMG — ArcGIS Enterprise",
+  },
+  "arcgis-alertas": {
+    id: "arcgis-alertas",
+    nome: "Emissão de Alertas",
+    descricao: "Alertas emitidos pelas UEOp (formulário Survey123, camada 1).",
+    grupo: "ArcGIS CBMMG",
+    referencia:
+      "https://geoprocessamento.bombeiros.mg.gov.br/server/rest/services/Hosted/service_6f690a1b09bf4bab9d6b831de9fc3767_form/FeatureServer/1",
+    ttlSegundos: 2 * MIN,
+    toleranciaSegundos: 15 * MIN,
+    limiteForaDoArSegundos: DIA,
+    implementada: true,
+    credito: "CBMMG — ArcGIS Enterprise",
+  },
+  "arcgis-acoes-rrd": {
+    id: "arcgis-acoes-rrd",
+    nome: "Ações RRD",
+    descricao: "Ações de Redução do Risco de Desastres registradas pelas UEOp.",
+    grupo: "ArcGIS CBMMG",
+    referencia:
+      "https://geoprocessamento.bombeiros.mg.gov.br/server/rest/services/Hosted/service_84097bf8336f4667bba0441c1571cd94_form/FeatureServer",
+    ttlSegundos: 2 * MIN,
+    toleranciaSegundos: 15 * MIN,
+    limiteForaDoArSegundos: DIA,
+    implementada: true,
+    credito: "CBMMG — ArcGIS Enterprise",
+  },
+  "arcgis-ocorrencias-complexas": {
+    id: "arcgis-ocorrencias-complexas",
+    nome: "Ocorrências Complexas",
+    descricao: "Anúncios de ocorrências complexas (estrutura SCI).",
+    grupo: "ArcGIS CBMMG",
+    referencia:
+      "https://geoprocessamento.bombeiros.mg.gov.br/server/rest/services/Hosted/service_f0ff0b0661d941a0aac4db84ba95f566_form/FeatureServer",
+    ttlSegundos: 2 * MIN,
+    toleranciaSegundos: 15 * MIN,
+    limiteForaDoArSegundos: DIA,
+    implementada: true,
+    credito: "CBMMG — ArcGIS Enterprise",
+  },
+  "arcgis-cotas-sace": {
+    id: "arcgis-cotas-sace",
+    nome: "Cotas de Inundação (SACE)",
+    descricao: "Leituras de cotas de rios informadas pelas UEOp.",
+    grupo: "ArcGIS CBMMG",
+    referencia:
+      "https://geoprocessamento.bombeiros.mg.gov.br/server/rest/services/Hosted/service_7736003ef907440aac59eeb7031941dc_form/FeatureServer",
+    ttlSegundos: 5 * MIN,
+    toleranciaSegundos: HORA,
+    limiteForaDoArSegundos: DIA,
+    implementada: false,
+    credito: "CBMMG — ArcGIS Enterprise",
+  },
+  "arcgis-nac": {
+    id: "arcgis-nac",
+    nome: "Anúncio Operacional Diário (NAC)",
+    descricao: "Efetivo diário dos Núcleos de Atenção às Chuvas.",
+    grupo: "ArcGIS CBMMG",
+    referencia:
+      "https://geoprocessamento.bombeiros.mg.gov.br/server/rest/services/Hosted/service_69637c0e22b84971a20d9d3f617f605c/FeatureServer",
+    ttlSegundos: 10 * MIN,
+    toleranciaSegundos: 2 * HORA,
+    limiteForaDoArSegundos: 2 * DIA,
+    implementada: false,
+    credito: "CBMMG — ArcGIS Enterprise",
+  },
+  "inmet-avisos": {
+    id: "inmet-avisos",
+    nome: "INMET — Avisos meteorológicos",
+    descricao: "Avisos oficiais vigentes (RSS), filtrados para Minas Gerais.",
+    grupo: "Meteorologia",
+    referencia: "https://apiprevmet3.inmet.gov.br/avisos/rss",
+    ttlSegundos: 10 * MIN,
+    toleranciaSegundos: 30 * MIN,
+    limiteForaDoArSegundos: 6 * HORA,
+    implementada: true,
+    credito: "Avisos: INMET (domínio público)",
+  },
+  "open-meteo-previsao": {
+    id: "open-meteo-previsao",
+    nome: "Open-Meteo — Previsão",
+    descricao: "Precipitação prevista (horária e diária) nas sedes dos COBs.",
+    grupo: "Meteorologia",
+    referencia: "https://open-meteo.com/en/docs",
+    ttlSegundos: HORA,
+    toleranciaSegundos: 3 * HORA,
+    limiteForaDoArSegundos: DIA,
+    implementada: true,
+    credito: "Previsão: Open-Meteo.com (CC BY 4.0)",
+  },
+  "ana-telemetria": {
+    id: "ana-telemetria",
+    nome: "ANA — Telemetria de rios",
+    descricao: "Nível e vazão das estações telemétricas (HidroWebService).",
+    grupo: "Hidrologia",
+    referencia: "https://www.ana.gov.br/hidrowebservice/",
+    ttlSegundos: 15 * MIN,
+    toleranciaSegundos: HORA,
+    limiteForaDoArSegundos: DIA,
+    implementada: false,
+    credito: "Hidrologia: ANA — HidroWebService",
+  },
+  "open-meteo-flood": {
+    id: "open-meteo-flood",
+    nome: "Open-Meteo Flood (GloFAS)",
+    descricao: "Vazão prevista dos rios (modelo GloFAS/Copernicus).",
+    grupo: "Hidrologia",
+    referencia: "https://open-meteo.com/en/docs/flood-api",
+    ttlSegundos: 6 * HORA,
+    toleranciaSegundos: DIA,
+    limiteForaDoArSegundos: 3 * DIA,
+    implementada: false,
+    credito: "Vazão prevista: Open-Meteo.com / Copernicus GloFAS (CC BY 4.0)",
+  },
+  "rainviewer-radar": {
+    id: "rainviewer-radar",
+    nome: "RainViewer — Radar",
+    descricao: "Tiles de radar de precipitação para sobreposição no mapa.",
+    grupo: "Meteorologia",
+    referencia: "https://www.rainviewer.com/api/weather-maps-api.html",
+    ttlSegundos: 5 * MIN,
+    toleranciaSegundos: 30 * MIN,
+    limiteForaDoArSegundos: 6 * HORA,
+    implementada: false,
+    credito: "Radar: RainViewer",
+  },
+};
+
+export const LISTA_FONTES: DefinicaoFonte[] = Object.values(CATALOGO_FONTES);
