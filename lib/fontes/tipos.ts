@@ -12,7 +12,10 @@ export type FonteId =
   | "arcgis-cotas-sace"
   | "arcgis-nac"
   | "inmet-avisos"
+  | "inmet-municipios"
+  | "cemaden-alertas"
   | "open-meteo-previsao"
+  | "open-meteo-municipios"
   | "ana-telemetria"
   | "open-meteo-flood"
   | "rainviewer-radar";
@@ -52,7 +55,7 @@ export type EstadoFonte =
   | "exemplo"
   | "desconhecida";
 
-export type GrupoFonte = "ArcGIS CBMMG" | "Meteorologia" | "Hidrologia";
+export type GrupoFonte = "ArcGIS CBMMG" | "Meteorologia" | "Risco geo-hidrológico" | "Hidrologia";
 
 export interface DefinicaoFonte {
   id: FonteId;

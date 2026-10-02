@@ -1,5 +1,5 @@
 import { useId } from "react";
-import { CloudSun, Database, ExternalLink, Waves, type LucideIcon } from "lucide-react";
+import { CloudSun, Database, ExternalLink, Mountain, Waves, type LucideIcon } from "lucide-react";
 
 import { IdadeRelativa } from "@/components/layout/idade-relativa";
 import { CabecalhoBloco } from "@/components/monitoramento/cabecalho-bloco";
@@ -21,6 +21,11 @@ export const GRUPOS_FONTES: readonly { grupo: GrupoFonte; icone: LucideIcon; des
     descricao: "Formulários Survey123 e camadas do portal de geoprocessamento do CBMMG.",
   },
   { grupo: "Meteorologia", icone: CloudSun, descricao: "Avisos oficiais, previsão de chuva e radar." },
+  {
+    grupo: "Risco geo-hidrológico",
+    icone: Mountain,
+    descricao: "Alertas de deslizamento e de inundação por município monitorado.",
+  },
   { grupo: "Hidrologia", icone: Waves, descricao: "Nível e vazão de rios, observados e previstos." },
 ];
 
