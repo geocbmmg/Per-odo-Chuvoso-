@@ -86,3 +86,15 @@ describe("Open-Meteo", () => {
     expect(() => interpretarPrevisao([bloco(0, 0, () => 0)], pontos, new Date())).toThrow(/esperados 2/);
   });
 });
+
+describe("Open-Meteo — modo exemplo", () => {
+  it("gera resposta válida para as 6 sedes de COB", async () => {
+    const { PONTOS_PREVISAO, respostaExemploOpenMeteo } = await import("@/lib/sources/open-meteo");
+    const agora = new Date("2026-10-02T15:30:00Z");
+    const previsoes = interpretarPrevisao(respostaExemploOpenMeteo(PONTOS_PREVISAO, agora), PONTOS_PREVISAO, agora);
+    expect(previsoes.map((p) => p.cob)).toEqual(["1º COB", "2º COB", "3º COB", "4º COB", "5º COB", "6º COB"]);
+    expect(previsoes.every((p) => p.acumulado24hMm !== null && p.acumulado72hMm !== null)).toBe(true);
+    expect(previsoes[0].horaria[0].hora).toBe("2026-10-02T12:00:00-03:00");
+    expect(previsoes[0].diaria).toHaveLength(4);
+  });
+});

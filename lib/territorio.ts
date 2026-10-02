@@ -72,3 +72,23 @@ export function compararCobs(a: RotuloCob, b: RotuloCob): number {
   const vb = Number.isNaN(nb) ? Number.POSITIVE_INFINITY : nb;
   return va - vb || a.localeCompare(b, "pt-BR");
 }
+
+export interface SedeCob {
+  cob: RotuloCob;
+  municipio: string;
+  latitude: number;
+  longitude: number;
+}
+
+/**
+ * Cidades-sede dos COBs (coordenadas da sede municipal, IBGE). Usadas como
+ * pontos de previsão meteorológica por COB. Levantamento em docs/territorio.md.
+ */
+export const SEDES_COBS: readonly SedeCob[] = [
+  { cob: "1º COB", municipio: "Belo Horizonte", latitude: -19.9167, longitude: -43.9345 },
+  { cob: "2º COB", municipio: "Uberlândia", latitude: -18.9113, longitude: -48.2622 },
+  { cob: "3º COB", municipio: "Juiz de Fora", latitude: -21.7642, longitude: -43.3496 },
+  { cob: "4º COB", municipio: "Montes Claros", latitude: -16.7282, longitude: -43.8578 },
+  { cob: "5º COB", municipio: "Governador Valadares", latitude: -18.8545, longitude: -41.9555 },
+  { cob: "6º COB", municipio: "Poços de Caldas", latitude: -21.7878, longitude: -46.5613 },
+];
