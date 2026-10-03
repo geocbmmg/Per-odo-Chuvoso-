@@ -4,15 +4,16 @@ import { LayoutDashboard, LogIn, LockKeyhole } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-/** Para onde o login devolve a pessoa depois de entrar. */
-export const ROTA_ENTRAR_ALERTAS = "/entrar?voltar=/alertas-acoes-rrd";
+import { rotaEntrar } from "./apresentacao";
 
 /**
  * Sem sessão, a fila e a emissão não aparecem (dado com texto livre e
  * recortado por COB): só o convite para entrar com o usuário do GeoRescue.
- * Os totais públicos continuam na Visão Geral.
+ * Os totais públicos continuam na Visão Geral. `voltar` é o caminho atual COM
+ * a busca (?alerta=…&aba=…): depois do login a pessoa volta ao mesmo detalhe
+ * e à mesma aba (o link compartilhado não se perde).
  */
-export function CartaoEntrar({ expirou = false }: { expirou?: boolean }) {
+export function CartaoEntrar({ expirou = false, voltar }: { expirou?: boolean; voltar?: string }) {
   return (
     <Card variant="modulo" className="mx-auto w-full max-w-xl items-start gap-4">
       <span
@@ -35,7 +36,7 @@ export function CartaoEntrar({ expirou = false }: { expirou?: boolean }) {
       </div>
       <div className="flex flex-wrap gap-2">
         <Button asChild size="lg">
-          <Link href={ROTA_ENTRAR_ALERTAS}>
+          <Link href={rotaEntrar(voltar)}>
             <LogIn aria-hidden="true" />
             Entrar com o GeoRescue
           </Link>

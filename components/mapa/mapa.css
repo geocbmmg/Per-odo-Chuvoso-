@@ -1608,9 +1608,25 @@
   outline-offset: 2px;
 }
 
-/* Aviso da camada (carregando / indisponível): mesma pílula do mapa base. */
+/* Aviso da camada (carregando / indisponível): mesma pílula do mapa base.
+   Abaixo do balão (z 4): no celular a pílula ocupa a faixa de cima do mapa e
+   cobria o título e o × do balão aberto logo acima do ponto. */
 .risco-mapa__aviso {
-  z-index: 4;
+  z-index: 3;
+}
+
+/* Celular: mínimo de 340 px, o mesmo de ALTURA_MAPA_RISCO (components/risco/altura.ts).
+   O utilitário min-h-[340px] fica em @layer utilities e perde para a regra base
+   .mapa-sit__area { min-height: 0 }, fora de camada; esta regra repõe o mínimo
+   (as de tela cheia, mais específicas, continuam com min-height: 0). */
+.risco-mapa .mapa-sit__area {
+  min-height: 340px;
+}
+
+@media (min-width: 768px) {
+  .risco-mapa .mapa-sit__area {
+    min-height: 0;
+  }
 }
 
 /* ── Rótulos das áreas (COB, UEOp) e dos municípios ─────────────────────── */
@@ -1845,19 +1861,32 @@
   }
 }
 
-/* Rótulo de área que encostaria em outro de nível mais grave. */
+/* Rótulo de área (UEOp) que encostaria em outro de nível mais grave. No nível
+   COB nenhum some: o de menor prioridade é deslocado (rotulos-risco.ts). */
 .risco-rotulo[data-colide="true"] {
   visibility: hidden;
 }
 
-/* Rótulos numa linha só e alinhados em coluna: o balão fica baixo e raramente rola. */
+/* Rótulos alinhados em coluna: o balão fica baixo e raramente rola. O valor
+   (dd) toma só o que precisa (até 60% da largura) e nunca quebra uma medida
+   no meio; quem quebra linha é o rótulo (dt), que fica com o resto. */
 .risco-pop .mapa-pop__campos {
-  grid-template-columns: max-content minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) fit-content(60%);
   gap: 4px 12px;
 }
 
 .risco-pop .mapa-pop__campo {
   display: contents;
+}
+
+/* Texto (ex.: "Governador Valadares — 105,5 mm") quebra entre palavras. */
+.risco-pop .mapa-pop__campo dd {
+  overflow-wrap: break-word;
+}
+
+/* Medida ("105,5 mm", "11,9 mm/h") numa linha só. */
+.risco-pop .mapa-pop__campo dd[data-medida] {
+  white-space: nowrap;
 }
 
 /* Celular: MG inteiro ocupa ~300 px; o rótulo da área fica só com cor + nome

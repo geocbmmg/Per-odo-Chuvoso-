@@ -38,6 +38,9 @@ export function seloNivel(nivel: NivelRisco | null, texto: string): HTMLElement 
 
 let contador = 0;
 
+/** Medida ("105,5 mm", "11,9 mm/h"): o valor nunca quebra no meio — quem quebra é o rótulo (dt). */
+const EH_MEDIDA = /^\d[\d.,]*(\s\S{1,6})?$/;
+
 export interface AcoesBalao {
   /** Botão "Aproximar em …" (balão de área). */
   aoAproximar?: () => void;
@@ -66,7 +69,9 @@ export function criarBalaoRisco(conteudo: ConteudoBalaoRisco, acoes: AcoesBalao 
     const lista = el("dl", "mapa-pop__campos");
     for (const campo of conteudo.campos) {
       const linha = el("div", "mapa-pop__campo");
-      linha.append(el("dt", "", campo.rotulo), el("dd", "", campo.valor));
+      const valor = el("dd", "", campo.valor);
+      if (EH_MEDIDA.test(campo.valor)) valor.dataset.medida = "true";
+      linha.append(el("dt", "", campo.rotulo), valor);
       lista.append(linha);
     }
     bloco.append(lista);

@@ -1,5 +1,5 @@
 import "server-only";
-import { env, modoExemplo, TAMANHO_MINIMO_CRON_SECRET, variaveisInvalidas } from "@/lib/env";
+import { env, GRUPO_OPERADOR_PADRAO, modoExemplo, TAMANHO_MINIMO_CRON_SECRET, variaveisInvalidas } from "@/lib/env";
 import { LISTA_FONTES } from "@/lib/fontes/catalogo";
 import { statusDaFonte } from "@/lib/fontes/leituras";
 import type { FonteId, StatusFonte } from "@/lib/fontes/tipos";
@@ -39,8 +39,10 @@ export interface ConfiguracaoStatus {
   pseudonimoConfigurado: boolean;
   /** GEORESCUE_BASE_URL e SALA_SESSION_SECRET presentes (login real ligado). */
   loginConfigurado: boolean;
-  grupoOperador: string;
-  cronProtegido: boolean;
+  /** SALA_GRUPO_OPERADOR no padrão ("SALA")? O nome definido nunca sai daqui: /status é público. */
+  grupoOperadorPadrao: boolean;
+  /** CRON_SECRET: protegido (16+ caracteres), curto (o /api/ingest recusa os jobs) ou ausente. */
+  cron: "protegido" | "curto" | "ausente";
 }
 
 export function configuracaoStatus(): ConfiguracaoStatus {
@@ -51,9 +53,9 @@ export function configuracaoStatus(): ConfiguracaoStatus {
     bancoConfigurado: Boolean(e.DATABASE_URL),
     pseudonimoConfigurado: Boolean(e.SALA_PSEUDO_SEGREDO),
     loginConfigurado: Boolean(e.GEORESCUE_BASE_URL && e.SALA_SESSION_SECRET),
-    grupoOperador: e.SALA_GRUPO_OPERADOR,
+    grupoOperadorPadrao: e.SALA_GRUPO_OPERADOR === GRUPO_OPERADOR_PADRAO,
     // A mesma regra de /api/ingest: segredo curto bloqueia os jobs (não protege).
-    cronProtegido: Boolean(e.CRON_SECRET && e.CRON_SECRET.length >= TAMANHO_MINIMO_CRON_SECRET),
+    cron: !e.CRON_SECRET ? "ausente" : e.CRON_SECRET.length >= TAMANHO_MINIMO_CRON_SECRET ? "protegido" : "curto",
   };
 }
 

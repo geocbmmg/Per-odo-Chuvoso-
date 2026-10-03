@@ -6,6 +6,9 @@ import { z } from "zod";
  * este módulo importa "server-only" e nenhuma variável usa o prefixo NEXT_PUBLIC_.
  * Documentação de cada variável: .env.example.
  */
+/** Padrão de SALA_GRUPO_OPERADOR: o domínio de grupo do GeoRescue que faz o "Operador da Sala". */
+export const GRUPO_OPERADOR_PADRAO = "SALA";
+
 const esquema = z.object({
   ARCGIS_SERVICES_URL: z
     .url()
@@ -33,7 +36,7 @@ const esquema = z.object({
   // curto é descartado (login desligado: falha fechada, nunca sessão fraca).
   SALA_SESSION_SECRET: z.string().min(32).optional(),
   // Domínio de GRUPO do GeoRescue que faz o "Operador da Sala".
-  SALA_GRUPO_OPERADOR: z.string().trim().min(1).max(60).default("SALA"),
+  SALA_GRUPO_OPERADOR: z.string().trim().min(1).max(60).default(GRUPO_OPERADOR_PADRAO),
 });
 
 export type Env = z.infer<typeof esquema>;

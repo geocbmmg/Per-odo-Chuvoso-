@@ -2,6 +2,7 @@
 
 import { ListOrdered, RefreshCw, Table2 } from "lucide-react";
 import dynamic from "next/dynamic";
+import { useSearchParams } from "next/navigation";
 import { useId, useMemo, useRef, useState } from "react";
 
 import { FonteIndisponivel } from "@/components/comum/fonte-indisponivel";
@@ -24,9 +25,9 @@ import {
   camadasIndisponiveis,
   dadosDaPintura,
   legendaDaPintura,
+  lerSelecaoDaUrl,
   listaMunicipiosEmRisco,
   listaRankingChuva,
-  mesmaSelecao,
   resumoPorCob,
   ROTULOS_JANELA,
   ROTULOS_PINTURA,
@@ -66,16 +67,14 @@ function fonteDaPintura(pintura: PinturaRisco): string {
  * mapa no modelo do GeoRisk, legenda, lista de municípios e resumo por COB.
  * Os dados vêm de /api/chuva e /api/risco, lidos no navegador e atualizados
  * sozinhos com a aba visível; uma camada fora do ar não derruba as outras.
- * A seleção fica na URL (?camada=…&janela=…&nivel=…), compartilhável.
+ * A seleção fica na URL (?camada=…&janela=…&nivel=…), compartilhável — e a
+ * URL é a ÚNICA fonte dela: trocar a pintura grava a busca com
+ * history.replaceState (que o Next integra ao roteador), e navegar para
+ * /risco pelo menu volta ao padrão; useSearchParams enxerga as duas coisas.
  */
-export function PainelRisco({ selecaoInicial }: { selecaoInicial: SelecaoMapaRisco }) {
-  const [selecao, setSelecao] = useState(selecaoInicial);
-  // Navegação para outra URL de /risco (link do menu): a seleção acompanha.
-  const [daUrl, setDaUrl] = useState(selecaoInicial);
-  if (!mesmaSelecao(daUrl, selecaoInicial)) {
-    setDaUrl(selecaoInicial);
-    setSelecao(selecaoInicial);
-  }
+export function PainelRisco() {
+  const params = useSearchParams();
+  const selecao = useMemo(() => lerSelecaoDaUrl(params), [params]);
 
   const chuva = useLeituraPeriodica(URL_API_CHUVA, interpretarRespostaChuva, INTERVALO_CHUVA_MS);
   const risco = useLeituraPeriodica(URL_API_RISCO, interpretarRespostaRisco, INTERVALO_RISCO_MS);
@@ -108,12 +107,12 @@ export function PainelRisco({ selecaoInicial }: { selecaoInicial: SelecaoMapaRis
   // ── Seleção → URL (substitui a entrada do histórico; nada de recarregar) ──
 
   const aplicar = (nova: SelecaoMapaRisco) => {
-    setSelecao(nova);
     try {
       const { pathname, search, hash } = window.location;
+      // Estado null: o Next copia o estado interno dele e avisa o roteador — useSearchParams muda.
       window.history.replaceState(null, "", `${pathname}${buscaDaSelecao(nova, search)}${hash}`);
     } catch {
-      // Sem acesso ao histórico (iframe restrito): a seleção vale só nesta tela.
+      // Sem acesso ao histórico (iframe restrito): a seleção não muda — a URL é a fonte dela.
     }
   };
   const escolherPintura = (p: PinturaRisco) => aplicar({ ...selecao, pintura: p });

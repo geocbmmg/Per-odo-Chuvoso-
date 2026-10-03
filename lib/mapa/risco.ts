@@ -1342,9 +1342,20 @@ export interface CaixaTela {
   altura: number;
 }
 
+/** As duas caixas se tocam (com `folga` px de separação mínima)? */
+function caixasSeTocam(a: CaixaTela, b: CaixaTela, folga: number): boolean {
+  return (
+    a.x - folga < b.x + b.largura &&
+    a.x + a.largura + folga > b.x &&
+    a.y - folga < b.y + b.altura &&
+    a.y + a.altura + folga > b.y
+  );
+}
+
 /**
  * Escolhe rótulos que não se sobrepõem, na ordem de prioridade recebida
- * (gulosa). `folga` em px separa as caixas.
+ * (gulosa). `folga` em px separa as caixas. Para níveis com muitos rótulos
+ * (UEOp, município): quem encosta num aceito fica de fora.
  */
 export function rotulosSemSobreposicao<T>(
   candidatos: readonly (T & { caixa: CaixaTela })[],
@@ -1352,15 +1363,46 @@ export function rotulosSemSobreposicao<T>(
 ): (T & { caixa: CaixaTela })[] {
   const aceitos: (T & { caixa: CaixaTela })[] = [];
   for (const c of candidatos) {
-    const a = c.caixa;
-    const colide = aceitos.some(
-      ({ caixa: b }) =>
-        a.x - folga < b.x + b.largura &&
-        a.x + a.largura + folga > b.x &&
-        a.y - folga < b.y + b.altura &&
-        a.y + a.altura + folga > b.y,
-    );
-    if (!colide) aceitos.push(c);
+    if (!aceitos.some((a) => caixasSeTocam(c.caixa, a.caixa, folga))) aceitos.push(c);
+  }
+  return aceitos;
+}
+
+/**
+ * Rótulos que NUNCA somem (nível COB: são só seis, e o padrão visual §7 proíbe
+ * identificar o COB só pela cor). Na ordem de prioridade recebida, quem encosta
+ * num já aceito é empurrado na vertical — primeiro para longe do rótulo em que
+ * encostou, cada vez mais longe; depois para o lado oposto — até `tentativas`
+ * posições (uma altura de caixa + folga por passo). Sem lugar livre, fica no
+ * ponto original: visível, ainda que encostando. Todos os candidatos voltam,
+ * com o `deslocamento` [dx, dy] em px a aplicar ao marcador.
+ */
+export function rotulosDeslocados<T>(
+  candidatos: readonly (T & { caixa: CaixaTela })[],
+  folga = 2,
+  tentativas = 4,
+): (T & { caixa: CaixaTela; deslocamento: [number, number] })[] {
+  const aceitos: (T & { caixa: CaixaTela; deslocamento: [number, number] })[] = [];
+  const paraLonge = Math.ceil(tentativas / 2);
+  for (const c of candidatos) {
+    const original = c.caixa;
+    const colisor = aceitos.find((a) => caixasSeTocam(original, a.caixa, folga));
+    if (!colisor) {
+      aceitos.push({ ...c, deslocamento: [0, 0] });
+      continue;
+    }
+    const centro = original.y + original.altura / 2;
+    const centroColisor = colisor.caixa.y + colisor.caixa.altura / 2;
+    // Para baixo se este rótulo já está abaixo (ou na altura) do outro; senão para cima.
+    const sentido = centro >= centroColisor ? 1 : -1;
+    const passo = original.altura + folga;
+    let escolhido: { caixa: CaixaTela; deslocamento: [number, number] } | null = null;
+    for (let i = 1; i <= tentativas && !escolhido; i++) {
+      const dy = i <= paraLonge ? sentido * i * passo : -sentido * (i - paraLonge) * passo;
+      const caixa = { ...original, y: original.y + dy };
+      if (!aceitos.some((a) => caixasSeTocam(caixa, a.caixa, folga))) escolhido = { caixa, deslocamento: [0, dy] };
+    }
+    aceitos.push({ ...c, ...(escolhido ?? { caixa: original, deslocamento: [0, 0] as [number, number] }) });
   }
   return aceitos;
 }

@@ -265,7 +265,6 @@ export default function MapaRisco({
         evento.stopPropagation();
         fechadoPorDentro = true;
         popup.remove();
-        if (!retornoFoco?.isConnected) mapa.getCanvas().focus();
       }
     });
     elemento.addEventListener(
@@ -283,7 +282,12 @@ export default function MapaRisco({
         alvoBalaoRef.current = null;
         if (mapaRef.current) definirDestaque(mapaRef.current, selecionadoRef, null, "selecionado");
       }
-      if (fechadoPorDentro && retornoFoco?.isConnected) retornoFoco.focus();
+      // Fechado por quem estava dentro (Esc ou o botão ×): o foco volta para quem pediu o
+      // balão ("Ver no mapa") ou, senão, para o canvas do mapa — nunca cai no <body>.
+      if (fechadoPorDentro) {
+        if (retornoFoco?.isConnected) retornoFoco.focus();
+        else mapa.getCanvas().focus();
+      }
     });
     balao.el.focus({ preventScroll: true });
     popupRef.current = popup;

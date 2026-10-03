@@ -97,8 +97,9 @@ export function ListaMunicipiosRisco({
                     i === 0 && "rounded-t-[12px]",
                     i === visiveis.length - 1 && "rounded-b-[12px]",
                   )}
-                  aria-label={`${linha.nome}: ${linha.rotuloNivel}${numerada ? `, ${linha.destaque}` : ""}. Ver no mapa`}
                 >
+                  {/* Sem aria-label: o nome acessível é o conteúdo inteiro (nome, destaque, nível, COB · UEOp e detalhe). */}
+                  <span className="sr-only">Ver no mapa: </span>
                   {conteudo}
                 </button>
               ) : (

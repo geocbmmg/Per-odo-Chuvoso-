@@ -1,6 +1,7 @@
 "use client";
 
 import { FlaskConical, Inbox, Plus, RefreshCw, TriangleAlert } from "lucide-react";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { CarimboAtualizacao } from "@/components/layout/carimbo-atualizacao";
@@ -18,7 +19,9 @@ import { cn } from "@/lib/utils";
 
 import { carregarFila, ehSemSessao, enviarAcao, ErroApiAlertas, type RespostaAcao } from "./api";
 import {
+  ABA_PADRAO,
   abasVisiveis,
+  buscaDaFila,
   contadores as calcularContadores,
   contarAbas,
   contarAlertas,
@@ -26,6 +29,7 @@ import {
   filaDaAba,
   FILTROS_VAZIOS,
   filtrosAtivos,
+  lerBuscaDaFila,
   rotuloNivel,
   rotuloTipo,
   type AbaFila,
@@ -52,17 +56,18 @@ interface EstadoDetalhe {
   erro: string | null;
 }
 
-/** ?alerta=…&aba=… na URL (substitui a entrada do histórico; nada recarrega). */
+/**
+ * ?alerta=…&aba=… na URL (substitui a entrada do histórico; nada recarrega).
+ * Estado null, de propósito: o Next copia o estado interno dele e passa a nova
+ * URL ao roteador, e useSearchParams enxerga a mudança. (Com
+ * window.history.state, marcado como interno, o roteador ignoraria a chamada.)
+ */
 function gravarNaUrl(alerta: string | null, aba: AbaFila) {
   try {
-    const url = new URL(window.location.href);
-    if (alerta) url.searchParams.set("alerta", alerta);
-    else url.searchParams.delete("alerta");
-    if (aba !== "pendentes") url.searchParams.set("aba", aba);
-    else url.searchParams.delete("aba");
-    window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
+    const { pathname, search, hash } = window.location;
+    window.history.replaceState(null, "", `${pathname}${buscaDaFila(alerta, aba, search)}${hash}`);
   } catch {
-    // Sem acesso ao histórico: o estado vale só nesta tela.
+    // Sem acesso ao histórico (iframe restrito): nada muda — a URL é a fonte do estado.
   }
 }
 
@@ -70,17 +75,14 @@ function gravarNaUrl(alerta: string | null, aba: AbaFila) {
  * Fila e emissão de alertas (/alertas-acoes-rrd). A fila vem inteira do
  * escopo da sessão (o servidor recorta por COB); abas, filtros e contadores
  * são da tela, com o relógio dela. O detalhe abre numa gaveta lateral (tela
- * cheia no celular); o formulário de emissão, noutra.
+ * cheia no celular); o formulário de emissão, noutra. O detalhe aberto
+ * (?alerta=) e a aba (?aba=) vêm SÓ da URL: navegar para /alertas-acoes-rrd
+ * pelo menu fecha a gaveta e volta à aba padrão, e a URL sempre reproduz a tela.
  */
-export function PainelAlertas({
-  sessao,
-  alertaInicial,
-  abaInicial,
-}: {
-  sessao: SessaoPublica;
-  alertaInicial: string | null;
-  abaInicial: AbaFila | null;
-}) {
+export function PainelAlertas({ sessao }: { sessao: SessaoPublica }) {
+  const params = useSearchParams();
+  const pathname = usePathname();
+  const { alerta: selecionado, aba: abaUrl } = useMemo(() => lerBuscaDaFila(params), [params]);
   const fila = useFilaAlertas();
   const agoraMs = useAgoraMs();
   const agora = useMemo(() => (agoraMs ? new Date(agoraMs) : null), [agoraMs]);
@@ -96,12 +98,10 @@ export function PainelAlertas({
     papel: sessao.papel,
   };
   const abas = abasVisiveis(capacidades);
-  const [abaEscolhida, setAba] = useState<AbaFila>(abaInicial ?? "pendentes");
-  const aba = abas.some((a) => a.id === abaEscolhida) ? abaEscolhida : "pendentes";
+  const aba = abas.some((a) => a.id === abaUrl) ? abaUrl : ABA_PADRAO;
   const [filtros, setFiltros] = useState<FiltrosFila>(FILTROS_VAZIOS);
 
   // ── Detalhe ────────────────────────────────────────────────────────────
-  const [selecionado, setSelecionado] = useState<string | null>(alertaInicial);
   const [detalhe, setDetalhe] = useState<EstadoDetalhe | null>(null);
   const [avisos, setAvisos] = useState<Record<string, string[]>>({});
   /** Confirmação do formulário para o detalhe que abre em seguida. */
@@ -130,48 +130,74 @@ export function PainelAlertas({
   }, []);
 
   useEffect(() => {
-    // Link direto (?alerta=…): carrega o detalhe com o histórico.
-    if (alertaInicial) void carregarDetalhe(alertaInicial);
-  }, [alertaInicial, carregarDetalhe]);
+    // Alerta na URL (link direto, cartão clicado, formulário concluído): carrega o detalhe com o histórico.
+    if (selecionado) void carregarDetalhe(selecionado);
+  }, [selecionado, carregarDetalhe]);
 
   const abrirDetalhe = (id: string, origem: HTMLElement | null) => {
     origemRef.current = origem;
     setConfirmacao(null);
-    setSelecionado(id);
     gravarNaUrl(id, aba);
-    void carregarDetalhe(id);
   };
 
   const fecharDetalhe = () => {
-    setSelecionado(null);
     setConfirmacao(null);
     gravarNaUrl(null, aba);
   };
 
   const escolherAba = (valor: string) => {
     if (!ehAbaFila(valor)) return;
-    setAba(valor);
     gravarNaUrl(selecionado, valor);
   };
 
   // ── Formulário de emissão ──────────────────────────────────────────────
   const [formulario, setFormulario] = useState<FormularioAlerta | null>(null);
   const [formAberto, setFormAberto] = useState(false);
+  /**
+   * A pessoa digitou algo no formulário guardado? Só então trocar de formulário
+   * pede confirmação (um formulário aberto e fechado sem mudança some calado).
+   * O formulário só chama onMudar em resposta a quem digita, nunca sozinho.
+   */
+  const [formularioAlterado, setFormularioAlterado] = useState(false);
   const [errosForm, setErrosForm] = useState<ErroApiAlertas | null>(null);
   const [anuncio, setAnuncio] = useState<string | null>(null);
 
   const abrirNovo = (origem: HTMLElement) => {
     origemRef.current = origem;
+    if (formulario && formulario.alertaId !== null && formularioAlterado) {
+      // Só há um formulário guardado, e o botão × promete "o que foi digitado fica
+      // guardado": uma edição de outro alerta não some sem a pessoa concordar.
+      const descartar = window.confirm(
+        `O formulário guarda uma edição não salva do alerta ${formulario.alertaId}.\n\n` +
+          "OK: descarta essa edição e abre um alerta novo.\n" +
+          "Cancelar: volta para a edição guardada.",
+      );
+      if (!descartar) {
+        setFormAberto(true);
+        return;
+      }
+    }
     // Rascunho não salvo de um alerta novo continua (fechar a gaveta não perde nada).
+    if (!(formulario && formulario.alertaId === null)) setFormularioAlterado(false);
     setFormulario((atual) => (atual && atual.alertaId === null ? atual : formularioVazio(new Date())));
     setErrosForm(null);
     setFormAberto(true);
   };
 
   const abrirEdicao = (alerta: AlertaFila, erros?: ErroApiAlertas) => {
+    if (formulario && formulario.alertaId !== alerta.alertaId && formularioAlterado) {
+      const guardado =
+        formulario.alertaId === null ? "um alerta novo não salvo" : `uma edição não salva do alerta ${formulario.alertaId}`;
+      const descartar = window.confirm(
+        `O formulário guarda ${guardado}.\n\n` +
+          `OK: descarta e abre a atualização do alerta ${alerta.alertaId}.\n` +
+          "Cancelar: mantém o que estava guardado (nada muda).",
+      );
+      if (!descartar) return;
+    }
+    if (!(formulario && formulario.alertaId === alerta.alertaId)) setFormularioAlterado(false);
     setFormulario((atual) => (atual && atual.alertaId === alerta.alertaId ? atual : formularioDoAlerta(alerta, new Date())));
     setErrosForm(erros ?? null);
-    setSelecionado(null);
     gravarNaUrl(null, aba);
     setFormAberto(true);
   };
@@ -210,6 +236,7 @@ export function PainelAlertas({
     setAvisos((atual) => ({ ...atual, [r.id]: r.avisos }));
     setFormAberto(false);
     setFormulario(null);
+    setFormularioAlterado(false);
     setErrosForm(null);
     const texto =
       acao === "emitir" ? `Alerta ${r.id} emitido.` : situacao && situacao !== "RASCUNHO" ? `Alerta ${r.id} atualizado.` : `Rascunho ${r.id} salvo.`;
@@ -217,9 +244,9 @@ export function PainelAlertas({
     setConfirmacao({ id: r.id, texto });
     void fila.recarregar();
     origemRef.current = null;
-    setSelecionado(r.id);
+    // O alerta entra na URL e o efeito carrega o detalhe; se já era o aberto, recarrega aqui.
+    if (selecionado === r.id) void carregarDetalhe(r.id);
     gravarNaUrl(r.id, aba);
-    void carregarDetalhe(r.id);
   };
 
   const recarregarVersaoFormulario = async () => {
@@ -261,10 +288,12 @@ export function PainelAlertas({
       : `Atualizar alerta ${formulario.alertaId}`;
 
   if (fila.semSessao) {
+    // Sessão expirada com a tela aberta: o login devolve a esta URL, com ?alerta= e ?aba=.
+    const busca = params.toString();
     return (
       <>
         <CabecalhoPagina titulo={modulo.rotulo} subtitulo={SUBTITULO} icone={modulo.icone} />
-        <CartaoEntrar expirou />
+        <CartaoEntrar expirou voltar={`${pathname}${busca ? `?${busca}` : ""}`} />
       </>
     );
   }
@@ -466,12 +495,16 @@ export function PainelAlertas({
             <FormularioEmissao
               key={formulario.alertaId ?? "novo"}
               valor={formulario}
-              onMudar={(mudanca) => setFormulario((atual) => (atual ? (typeof mudanca === "function" ? mudanca(atual) : mudanca) : atual))}
+              onMudar={(mudanca) => {
+                setFormularioAlterado(true);
+                setFormulario((atual) => (atual ? (typeof mudanca === "function" ? mudanca(atual) : mudanca) : atual));
+              }}
               onEnviar={enviar}
               onConcluido={concluirFormulario}
               onDescartar={() => {
                 setFormAberto(false);
                 setFormulario(null);
+                setFormularioAlterado(false);
                 setErrosForm(null);
               }}
               onRecarregarVersao={recarregarVersaoFormulario}

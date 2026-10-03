@@ -765,13 +765,23 @@ function PainelAcaoRrd({
             </select>
           )}
         </Campo>
-        <fieldset className="min-w-0 sm:col-span-2" aria-describedby={erros.resultado ? "erro-acao-resultado" : undefined}>
+        {/* radiogroup: papel em que a ARIA 1.2 prevê aria-invalid; a mensagem de erro liga no grupo E em cada rádio. */}
+        <fieldset
+          role="radiogroup"
+          className="min-w-0 sm:col-span-2"
+          aria-invalid={erros.resultado ? true : undefined}
+          aria-describedby={erros.resultado ? "erro-acao-resultado" : undefined}
+        >
           <legend className="mb-1.5 text-[12.5px] font-bold text-ink">
             Resultado <span className="font-semibold text-mut" aria-hidden="true">*</span>
           </legend>
           <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
             {RESULTADOS_ACAO.map((r, i) => (
               <label key={r.codigo} className={CLASSE_OPCAO_CHIP}>
+                {/* Além do grupo, cada rádio leva aria-invalid e a mensagem: em modo de formulário o leitor
+                    de tela chega direto na opção e anuncia "inválido" + "Obrigatório". (A ARIA 1.2 não lista
+                    aria-invalid para "radio", mas Chrome e Firefox expõem o estado e NVDA, JAWS e VoiceOver o anunciam.) */}
+                {/* eslint-disable-next-line jsx-a11y/role-supports-aria-props */}
                 <input
                   type="radio"
                   id={i === 0 ? "campo-acao-resultado" : undefined}
@@ -780,6 +790,8 @@ function PainelAcaoRrd({
                   checked={f.resultado === r.codigo}
                   onChange={() => mudar("resultado", r.codigo)}
                   className={CLASSE_RADIO_OCULTO}
+                  aria-invalid={erros.resultado ? true : undefined}
+                  aria-describedby={erros.resultado ? "erro-acao-resultado" : undefined}
                 />
                 {r.rotulo}
               </label>

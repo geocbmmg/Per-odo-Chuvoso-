@@ -4,6 +4,8 @@ import type { Sessao } from "@/lib/auth/tipos";
 
 import {
   abasVisiveis,
+  buscaDaFila,
+  caminhoDaFila,
   contadores,
   contarAbas,
   detalheLegivel,
@@ -11,7 +13,9 @@ import {
   filaDaAba,
   FILTROS_VAZIOS,
   formatarDuracao,
+  lerBuscaDaFila,
   prazoRelativo,
+  rotaEntrar,
   rotuloAutoria,
   rotuloFracao,
   rotuloNivel,
@@ -559,5 +563,49 @@ describe("fluxo completo com os corpos da tela: rascunho → emitir → ciência
     const ok = await post(montarCorpoCancelar(a.alertaId, a.alteradoEm, "Emitido por engano."));
     expect(ok.status).toBe(200);
     expect(ok.corpo.alerta).toMatchObject({ situacao: "CANCELADO", motivoCancelamento: "Emitido por engano." });
+  });
+});
+
+// ---------------------------------------------------------------------------------------------
+// URL da fila (?alerta= e ?aba=) e volta do login
+// ---------------------------------------------------------------------------------------------
+
+describe("URL da fila e volta do login", () => {
+  it("lê ?alerta e ?aba (objeto da página ou URLSearchParams); valor estranho cai no vazio/padrão", () => {
+    expect(lerBuscaDaFila({ alerta: "AL-20261002-0001", aba: "todos" })).toEqual({ alerta: "AL-20261002-0001", aba: "todos" });
+    expect(lerBuscaDaFila(new URLSearchParams("?alerta=AL-20261002-0001&aba=rascunhos"))).toEqual({
+      alerta: "AL-20261002-0001",
+      aba: "rascunhos",
+    });
+    expect(lerBuscaDaFila({ alerta: ["AL-20261002-0002", "AL-20261002-0003"], aba: ["todos"] })).toEqual({
+      alerta: "AL-20261002-0002",
+      aba: "todos",
+    });
+    expect(lerBuscaDaFila({ alerta: "<script>", aba: "xpto" })).toEqual({ alerta: null, aba: "pendentes" });
+    expect(lerBuscaDaFila({})).toEqual({ alerta: null, aba: "pendentes" });
+    expect(lerBuscaDaFila(new URLSearchParams(""))).toEqual({ alerta: null, aba: "pendentes" });
+  });
+
+  it("monta a busca sem o padrão, preserva os outros parâmetros e faz a volta", () => {
+    expect(buscaDaFila(null, "pendentes")).toBe("");
+    expect(buscaDaFila("AL-20261002-0001", "pendentes")).toBe("?alerta=AL-20261002-0001");
+    expect(buscaDaFila("AL-20261002-0001", "todos", "?x=1")).toBe("?x=1&alerta=AL-20261002-0001&aba=todos");
+    // Fechar a gaveta e voltar à aba padrão limpa a URL, sem perder o resto.
+    expect(buscaDaFila(null, "pendentes", "?alerta=AL-20261002-0001&aba=todos&x=1")).toBe("?x=1");
+    expect(lerBuscaDaFila(new URLSearchParams(buscaDaFila("AL-20261002-0001", "finalizados")))).toEqual({
+      alerta: "AL-20261002-0001",
+      aba: "finalizados",
+    });
+  });
+
+  it("o link de entrar leva o caminho inteiro (com a busca) codificado em ?voltar=", () => {
+    const caminho = caminhoDaFila("AL-20261002-0001", "todos");
+    expect(caminho).toBe("/alertas-acoes-rrd?alerta=AL-20261002-0001&aba=todos");
+    const rota = rotaEntrar(caminho);
+    expect(rota).toBe("/entrar?voltar=%2Falertas-acoes-rrd%3Falerta%3DAL-20261002-0001%26aba%3Dtodos");
+    // A página /entrar lê ?voltar= já decodificado: o mesmo caminho, com a busca.
+    expect(new URL(rota, "http://sala.invalid").searchParams.get("voltar")).toBe(caminho);
+    expect(rotaEntrar()).toBe("/entrar?voltar=%2Falertas-acoes-rrd");
+    expect(caminhoDaFila(null, "pendentes")).toBe("/alertas-acoes-rrd");
   });
 });

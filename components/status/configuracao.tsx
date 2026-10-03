@@ -6,8 +6,8 @@ import type { ConfiguracaoStatus } from "@/lib/dados/status";
 
 /**
  * O que está configurado no servidor, para o primeiro deploy e para a
- * operação: só sim/não e o nome do modo (nunca o valor de uma variável).
- * Cada linha diz o que falta e onde se lê a respeito.
+ * operação: só sim/não e o nome do modo (nunca o valor de uma variável — a
+ * página /status é pública). Cada linha diz o que falta e onde se lê a respeito.
  */
 
 interface Linha {
@@ -55,11 +55,23 @@ function linhas(c: ConfiguracaoStatus, modoExemplo: boolean): Linha[] {
       ok: modoExemplo ? null : c.loginConfigurado,
       nota: modoExemplo || c.loginConfigurado ? undefined : "Defina GEORESCUE_BASE_URL e SALA_SESSION_SECRET (32+ caracteres).",
     },
-    { rotulo: "Grupo dos operadores", valor: c.grupoOperador, ok: null, nota: "Domínio de grupo do GeoRescue que faz o Operador da Sala." },
+    {
+      rotulo: "Grupo dos operadores",
+      // Nunca o nome definido: só se é o padrão (o servidor nem o envia).
+      valor: c.grupoOperadorPadrao ? "padrão (SALA)" : "definido",
+      ok: null,
+      nota: "SALA_GRUPO_OPERADOR: domínio de grupo do GeoRescue que faz o Operador da Sala.",
+    },
     {
       rotulo: "Jobs de atualização",
-      valor: c.cronProtegido ? "protegidos por CRON_SECRET" : "sem CRON_SECRET",
-      ok: c.cronProtegido ? true : process.env.NODE_ENV === "production" ? false : null,
+      valor:
+        c.cron === "protegido"
+          ? "protegidos por CRON_SECRET"
+          : c.cron === "curto"
+            ? "CRON_SECRET curto: jobs bloqueados"
+            : "sem CRON_SECRET",
+      ok: c.cron === "protegido" ? true : c.cron === "curto" || process.env.NODE_ENV === "production" ? false : null,
+      nota: c.cron === "curto" ? "Use 16+ caracteres (ex.: openssl rand -hex 32): com menos, /api/ingest recusa todos os jobs." : undefined,
     },
   ];
 }

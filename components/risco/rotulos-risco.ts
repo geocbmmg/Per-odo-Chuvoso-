@@ -1,6 +1,12 @@
 import type { Map as MapaMapLibre, Marker } from "maplibre-gl";
 import { CORES_NIVEL, gravidade, type NivelRisco } from "@/lib/dominio/matrizes";
-import { rotulosSemSobreposicao, ZOOM_ROTULOS_MUNICIPIO, type CaixaTela, type RotuloArea } from "@/lib/mapa/risco";
+import {
+  rotulosDeslocados,
+  rotulosSemSobreposicao,
+  ZOOM_ROTULOS_MUNICIPIO,
+  type CaixaTela,
+  type RotuloArea,
+} from "@/lib/mapa/risco";
 import type { MunicipioMg } from "@/lib/territorio/municipios";
 
 /**
@@ -9,7 +15,9 @@ import type { MunicipioMg } from "@/lib/territorio/municipios";
  * mesma informação está nas listas e na tabela fora do canvas.
  *
  * - COB e UEOp: nome + amostra e nome da cor do nível. Qual aparece depende
- *   do nível exibido (CSS: [data-nivel-area] na raiz do mapa).
+ *   do nível exibido (CSS: [data-nivel-area] na raiz do mapa). Os seis COBs
+ *   nunca somem: quem encostaria em outro é deslocado na vertical; na UEOp,
+ *   que tem dezenas, o de nível menos grave fica escondido.
  * - Municípios: só o nome, a partir do zoom 8, sem sobreposição (os de nível
  *   mais grave têm prioridade).
  */
@@ -29,6 +37,9 @@ function amostra(nivel: NivelRisco | null): HTMLSpanElement {
   else el.dataset.vazia = "true";
   return el;
 }
+
+/** Separação mínima entre rótulos de área (px). */
+const FOLGA_ROTULOS = 2;
 
 export class RotulosAreasRisco {
   private marcadores: { marcador: Marker; rotulo: RotuloArea }[] = [];
@@ -52,26 +63,32 @@ export class RotulosAreasRisco {
   }
 
   /**
-   * Esconde os rótulos do nível exibido que encostariam em outro (fica o de
-   * nível mais grave). Mede o DOM: chamar depois do render e do movimento.
+   * Rótulos do nível exibido que encostariam em outro, do mais grave ao menos
+   * grave. COB: ninguém some — o de menor prioridade é empurrado na vertical
+   * (padrão visual §7: o COB nunca é identificado só pela cor). UEOp: o de
+   * nível menos grave fica escondido. Mede o DOM: chamar depois do render e
+   * do movimento.
    */
   evitarSobreposicao(): void {
-    const visiveis = this.marcadores
-      .map(({ marcador, rotulo }) => ({ el: marcador.getElement(), rotulo }))
-      .filter(({ el }) => {
+    const exibidos = this.marcadores.filter(({ marcador }) => marcador.getElement().getClientRects().length > 0);
+    // Mede a partir do ponto original: um deslocamento anterior não pode somar ao novo.
+    for (const { marcador } of exibidos) marcador.setOffset([0, 0]);
+    const visiveis = exibidos
+      .map(({ marcador, rotulo }) => {
+        const el = marcador.getElement();
         el.dataset.colide = "false";
-        return el.getClientRects().length > 0;
-      })
-      .map(({ el, rotulo }) => {
         const r = el.getBoundingClientRect();
-        return { el, rotulo, caixa: { x: r.x, y: r.y, largura: r.width, altura: r.height } };
+        return { el, marcador, rotulo, caixa: { x: r.x, y: r.y, largura: r.width, altura: r.height } };
       })
       .sort(
         (a, b) =>
           (b.rotulo.nivel ? gravidade(b.rotulo.nivel) + 1 : 0) - (a.rotulo.nivel ? gravidade(a.rotulo.nivel) + 1 : 0),
       );
-    const aceitos = new Set(rotulosSemSobreposicao(visiveis, 2).map((v) => v.el));
-    for (const { el } of visiveis) el.dataset.colide = aceitos.has(el) ? "false" : "true";
+    const cobs = visiveis.filter(({ rotulo }) => rotulo.nivelArea === "cob");
+    for (const { marcador, deslocamento } of rotulosDeslocados(cobs, FOLGA_ROTULOS)) marcador.setOffset(deslocamento);
+    const demais = visiveis.filter(({ rotulo }) => rotulo.nivelArea !== "cob");
+    const aceitos = new Set(rotulosSemSobreposicao(demais, FOLGA_ROTULOS).map((v) => v.el));
+    for (const { el } of demais) el.dataset.colide = aceitos.has(el) ? "false" : "true";
   }
 
   remover(): void {

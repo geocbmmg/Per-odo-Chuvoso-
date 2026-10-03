@@ -10,10 +10,18 @@ import { prazoRelativo, rotuloEvento, rotuloNivel, rotuloTipo, unidadeDoAlerta, 
 import { MarcaNatureza, MarcaPrazo, MarcaValidade, SeloNivelAlerta, SeloSituacao } from "./marcas";
 
 /**
- * A fila de alertas em dois desenhos com o MESMO conteúdo: cartões no
- * celular e tablet (< 1280px) e tabela densa .dash-tbl no desktop. Cada
- * alerta abre o detalhe por um botão de verdade (teclado e leitor de tela);
- * no desktop a linha inteira também é clicável com o mouse.
+ * A fila de alertas em dois desenhos com o MESMO conteúdo: cartões até
+ * 1535px (1 coluna no celular, 2 no tablet, 3 a partir de 1280px) e tabela
+ * densa .dash-tbl a partir de 2xl (1536px). Cada alerta abre o detalhe por um
+ * botão de verdade (teclado e leitor de tela); na tabela a linha inteira
+ * também é clicável com o mouse.
+ *
+ * Por que 2xl: com o trilho de 244px aberto (padrão no desktop) sobram ~994px
+ * a 1280px e ~1080px a 1366px, e a tabela mede ~1140px no mínimo (as pílulas
+ * "Ação RRD registrada" e "Exercício/simulado" não quebram) — a rolagem
+ * horizontal esconderia "Prazo da ação" e "Validade" sem avisar. A partir de
+ * 1536px sobram ≥ 1250px. Nenhuma coluna tem largura mínima fixa, e "Prazo da
+ * ação" e "Validade" quebram linha quando um texto mais longo apertar.
  */
 
 export interface PropsFila {
@@ -43,7 +51,7 @@ export function FilaAlertas(props: PropsFila) {
 
 function CartoesFila({ alertas, agora, onAbrir, selecionado }: PropsFila) {
   return (
-    <ul className="grid grid-cols-1 gap-2.5 md:grid-cols-2 xl:hidden" aria-label="Alertas">
+    <ul className="grid grid-cols-1 gap-2.5 md:grid-cols-2 xl:grid-cols-3 2xl:hidden" aria-label="Alertas">
       {alertas.map((a) => {
         const prazo = prazoRelativo(a, agora);
         const validade = validadeRelativa(a, agora);
@@ -54,7 +62,6 @@ function CartoesFila({ alertas, agora, onAbrir, selecionado }: PropsFila) {
             <button
               type="button"
               onClick={(e) => onAbrir(a.alertaId, e.currentTarget)}
-              aria-label={rotuloAcessivel(a)}
               data-selecionado={selecionado === a.alertaId || undefined}
               className={cn(
                 "relative flex w-full min-w-0 flex-col gap-2 rounded-[14px] border border-border bg-superficie p-3.5 text-left",
@@ -63,6 +70,8 @@ function CartoesFila({ alertas, agora, onAbrir, selecionado }: PropsFila) {
                 prazo.estado === "vencido" && "border-l-[3px] border-l-perigo",
               )}
             >
+              {/* Sem aria-label: o nome acessível é o cartão inteiro (nível, situação, exercício, prazo vencido, validade). */}
+              <span className="sr-only">Abrir alerta: </span>
               <span className="flex w-full flex-wrap items-center gap-1.5">
                 <SeloNivelAlerta nivel={a.nivelAlerta} />
                 <SeloSituacao situacao={a.situacao} />
@@ -102,7 +111,7 @@ function CartoesFila({ alertas, agora, onAbrir, selecionado }: PropsFila) {
 
 function TabelaFila({ alertas, agora, onAbrir, selecionado, legenda }: PropsFila) {
   return (
-    <Table containerClassName="max-xl:hidden" className="[&_td]:px-2.5 [&_th]:px-2.5">
+    <Table containerClassName="max-2xl:hidden" className="[&_td]:px-2.5 [&_th]:px-2.5">
       <TableCaption className="text-left">{legenda}</TableCaption>
       <TableHeader>
         <tr>
@@ -137,7 +146,7 @@ function TabelaFila({ alertas, agora, onAbrir, selecionado, legenda }: PropsFila
               <TableCell className="w-[1%] whitespace-nowrap">
                 <SeloNivelAlerta nivel={a.nivelAlerta} />
               </TableCell>
-              <TableCell className="min-w-[160px]">
+              <TableCell>
                 <button
                   type="button"
                   data-abrir
@@ -151,8 +160,8 @@ function TabelaFila({ alertas, agora, onAbrir, selecionado, legenda }: PropsFila
                 <span className="block whitespace-nowrap font-mono text-[11px] text-mut">{a.alertaId}</span>
                 <MarcaNatureza natureza={a.natureza} />
               </TableCell>
-              <TableCell className="min-w-[104px] font-semibold text-ink">{a.municipio ?? "—"}</TableCell>
-              <TableCell className="min-w-[148px] text-[12px]">
+              <TableCell className="font-semibold text-ink">{a.municipio ?? "—"}</TableCell>
+              <TableCell className="text-[12px]">
                 <span className="block text-ink-2">{unidade.linha1}</span>
                 {unidade.linha2 ? <span className="block text-mut">{unidade.linha2}</span> : null}
               </TableCell>
@@ -160,10 +169,10 @@ function TabelaFila({ alertas, agora, onAbrir, selecionado, legenda }: PropsFila
               <TableCell className="whitespace-nowrap">
                 <SeloSituacao situacao={a.situacao} />
               </TableCell>
-              <TableCell className="whitespace-nowrap text-[12.5px]">
+              <TableCell className="text-[12.5px]">
                 <MarcaPrazo prazo={prazo} />
               </TableCell>
-              <TableCell className="whitespace-nowrap text-[12.5px]">
+              <TableCell className="text-[12.5px]">
                 <MarcaValidade texto={validade.texto} expirada={validade.expirada} />
               </TableCell>
             </TableRow>

@@ -50,6 +50,7 @@ import {
   resumoPorCob,
   rotuloDoNivel,
   rotulosDasAreas,
+  rotulosDeslocados,
   rotulosSemSobreposicao,
   SELECAO_PADRAO,
   textoVigencia,
@@ -870,6 +871,53 @@ describe("geometria auxiliar", () => {
       { id: "c", ...caixa(60) },
     ]);
     expect(aceitos.map((a) => a.id)).toEqual(["a", "c"]);
+  });
+
+  it("rótulos deslocados (nível COB): ninguém some; o de menor prioridade é empurrado para longe do outro", () => {
+    // 3º COB (prioritário) e 6º COB 14 px abaixo, sobrepostos na horizontal — as caixas medidas a 1280 px.
+    const r = rotulosDeslocados(
+      [
+        { id: "3º COB", caixa: { x: 378, y: 439, largura: 156, altura: 18 } },
+        { id: "6º COB", caixa: { x: 262, y: 453, largura: 142, altura: 18 } },
+      ],
+      2,
+    );
+    expect(r.map((a) => a.id)).toEqual(["3º COB", "6º COB"]);
+    expect(r[0].deslocamento).toEqual([0, 0]);
+    // Uma altura + folga para baixo (o 6º COB já estava abaixo do 3º): deixam de encostar.
+    expect(r[1].deslocamento).toEqual([0, 20]);
+    expect(r[1].caixa.y).toBe(473);
+    expect(r[1].caixa.y - 2 >= r[0].caixa.y + r[0].caixa.altura).toBe(true);
+  });
+
+  it("rótulos deslocados: para cima quando o outro está embaixo; depois o lado oposto; sem lugar livre fica no ponto", () => {
+    const caixa = (y: number) => ({ caixa: { x: 0, y, largura: 50, altura: 18 } });
+    const acima = rotulosDeslocados([{ id: "a", ...caixa(100) }, { id: "b", ...caixa(96) }], 2);
+    expect(acima[1].deslocamento).toEqual([0, -20]);
+
+    // a, c e d ocupam o ponto e as duas posições de baixo; "e" cai na primeira de cima.
+    const oposto = rotulosDeslocados(
+      [{ id: "a", ...caixa(100) }, { id: "c", ...caixa(120) }, { id: "d", ...caixa(140) }, { id: "e", ...caixa(100) }],
+      2,
+    );
+    expect(oposto.map((x) => x.id)).toEqual(["a", "c", "d", "e"]);
+    expect(oposto[3].deslocamento).toEqual([0, -20]);
+
+    // Cercado pelas quatro posições tentadas: continua na lista, no ponto original (visível, encostando).
+    const cercado = rotulosDeslocados(
+      [
+        { id: "a", ...caixa(100) },
+        { id: "c", ...caixa(120) },
+        { id: "d", ...caixa(140) },
+        { id: "e", ...caixa(80) },
+        { id: "f", ...caixa(60) },
+        { id: "g", ...caixa(100) },
+      ],
+      2,
+    );
+    expect(cercado.map((x) => x.id)).toEqual(["a", "c", "d", "e", "f", "g"]);
+    expect(cercado[5].deslocamento).toEqual([0, 0]);
+    expect(cercado[5].caixa.y).toBe(100);
   });
 });
 

@@ -457,13 +457,24 @@ export function FormularioEmissao({
 
           {/* ── Risco ── */}
           <SecaoFormulario titulo="Risco">
-            <fieldset className="min-w-0 sm:col-span-2" aria-describedby={erros.tipoRisco ? "erro-tipoRisco" : undefined}>
+            {/* radiogroup: papel em que a ARIA 1.2 prevê aria-invalid; a mensagem de erro liga no grupo E em cada rádio. */}
+            <fieldset
+              role="radiogroup"
+              className="min-w-0 sm:col-span-2"
+              aria-invalid={erros.tipoRisco ? true : undefined}
+              aria-describedby={erros.tipoRisco ? "erro-tipoRisco" : undefined}
+            >
               <legend className="mb-1.5 text-[12.5px] font-bold text-ink">
                 Tipo de risco <span className="font-semibold text-mut" aria-hidden="true">*</span>
               </legend>
               <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
                 {TIPOS_RISCO_SALA.map((t, i) => (
                   <label key={t.codigo} className={CLASSE_OPCAO_CHIP}>
+                    {/* Além do grupo, cada rádio leva aria-invalid e a mensagem: em modo de formulário o
+                        leitor de tela chega direto na opção e anuncia "inválido" + "Obrigatório para emitir".
+                        (A ARIA 1.2 não lista aria-invalid para "radio", mas Chrome e Firefox expõem o
+                        estado e NVDA, JAWS e VoiceOver o anunciam.) */}
+                    {/* eslint-disable-next-line jsx-a11y/role-supports-aria-props */}
                     <input
                       type="radio"
                       id={i === 0 ? "campo-tipoRisco" : undefined}
@@ -472,6 +483,8 @@ export function FormularioEmissao({
                       checked={f.tipoRisco === t.codigo}
                       onChange={() => escolherTipo(t.codigo)}
                       className={CLASSE_RADIO_OCULTO}
+                      aria-invalid={erros.tipoRisco ? true : undefined}
+                      aria-describedby={erros.tipoRisco ? "erro-tipoRisco" : undefined}
                     />
                     {t.rotulo}
                   </label>
@@ -581,7 +594,12 @@ export function FormularioEmissao({
                 </p>
               )}
             </div>
-            <fieldset className="min-w-0 sm:col-span-2" aria-describedby={erros.nivel ? "erro-nivel" : undefined}>
+            <fieldset
+              role="radiogroup"
+              className="min-w-0 sm:col-span-2"
+              aria-invalid={erros.nivel ? true : undefined}
+              aria-describedby={erros.nivel ? "erro-nivel" : undefined}
+            >
               <legend className="mb-1.5 text-[12.5px] font-bold text-ink">
                 {sugestao.nivel ? "Confirme ou ajuste o nível" : "Escolha o nível"}{" "}
                 <span className="font-semibold text-mut" aria-hidden="true">*</span>
@@ -589,6 +607,7 @@ export function FormularioEmissao({
               <div className="grid grid-cols-2 gap-1.5 min-[440px]:grid-cols-3 sm:grid-cols-5">
                 {NIVEIS_RISCO.map((n, i) => (
                   <label key={n} className={CLASSE_OPCAO_CHIP}>
+                    {/* eslint-disable-next-line jsx-a11y/role-supports-aria-props -- ver o grupo "Tipo de risco" */}
                     <input
                       type="radio"
                       id={i === 0 ? "campo-nivel" : undefined}
@@ -597,11 +616,18 @@ export function FormularioEmissao({
                       checked={nivel === n}
                       onChange={() => escolherNivel(n)}
                       className={CLASSE_RADIO_OCULTO}
+                      aria-invalid={erros.nivel ? true : undefined}
+                      aria-describedby={erros.nivel ? "erro-nivel" : undefined}
                     />
                     <AmostraNivel nivel={n} className="size-3.5 rounded-[3px]" />
                     <span className="flex flex-col leading-tight">
                       <span>{CORES_NIVEL[n].nome}</span>
-                      {sugestao.nivel === n ? <span className="text-[10.5px] font-bold uppercase tracking-[.06em] text-mut">sugerido</span> : null}
+                      {sugestao.nivel === n ? (
+                        // Marcado, a tinta é a do chip (text-acc-txt): text-mut sobre bg-acc/16 dava 4,06:1 no escuro.
+                        <span className={cn("text-[10.5px] font-bold uppercase tracking-[.06em]", nivel === n ? "text-acc-txt" : "text-mut")}>
+                          sugerido
+                        </span>
+                      ) : null}
                     </span>
                   </label>
                 ))}

@@ -19,7 +19,7 @@ import {
   type TipoAcao,
   type TipoRiscoSala,
 } from "@/lib/alertas/codigos";
-import { estadosDerivados, PRAZO_PADRAO_HORAS, type AlertaSala, type Destinatario } from "@/lib/alertas/dominio";
+import { estadosDerivados, PADRAO_ALERTA_ID, PRAZO_PADRAO_HORAS, type AlertaSala, type Destinatario } from "@/lib/alertas/dominio";
 import type { AlertaFila } from "@/lib/alertas/servico";
 import { formatarData, formatarDataHora, formatarHora } from "@/lib/datas";
 import { CORES_NIVEL, gravidade, type NivelRisco } from "@/lib/dominio/matrizes";
@@ -301,6 +301,69 @@ export const ABAS_FILA: readonly DefinicaoAba[] = [
 
 export function ehAbaFila(valor: unknown): valor is AbaFila {
   return typeof valor === "string" && ABAS_FILA.some((a) => a.id === valor);
+}
+
+// ---------------------------------------------------------------------------------------------
+// URL da fila (?alerta=AL-…&aba=…) e volta do login
+// ---------------------------------------------------------------------------------------------
+
+/** Caminho da fila, sem busca. */
+export const CAMINHO_FILA = "/alertas-acoes-rrd";
+
+export const ABA_PADRAO: AbaFila = "pendentes";
+
+/** Nomes dos parâmetros: /alertas-acoes-rrd?alerta=AL-20261002-0001&aba=todos */
+export const PARAMETROS_URL_FILA = { alerta: "alerta", aba: "aba" } as const;
+
+/** searchParams da página (objeto) ou URLSearchParams do navegador. */
+export type ParametrosBuscaFila = URLSearchParams | Readonly<Record<string, string | string[] | undefined>>;
+
+function lerParametroFila(params: ParametrosBuscaFila, nome: string): string | null {
+  const bruto = params instanceof URLSearchParams ? params.get(nome) : params[nome];
+  const valor = Array.isArray(bruto) ? bruto[0] : bruto;
+  return typeof valor === "string" ? valor.trim() : null;
+}
+
+/**
+ * ?alerta= e ?aba= da URL — a URL é a única fonte do detalhe aberto e da aba.
+ * Alerta fora do padrão AL-… vira null (nada abre); aba desconhecida cai na padrão.
+ */
+export function lerBuscaDaFila(params: ParametrosBuscaFila): { alerta: string | null; aba: AbaFila } {
+  const alerta = lerParametroFila(params, PARAMETROS_URL_FILA.alerta);
+  const aba = lerParametroFila(params, PARAMETROS_URL_FILA.aba);
+  return {
+    alerta: alerta !== null && PADRAO_ALERTA_ID.test(alerta) ? alerta : null,
+    aba: ehAbaFila(aba) ? aba : ABA_PADRAO,
+  };
+}
+
+/**
+ * Query string da fila preservando os outros parâmetros da URL atual. Sem
+ * alerta aberto e na aba padrão a URL fica limpa (link curto).
+ */
+export function buscaDaFila(alerta: string | null, aba: AbaFila, atual: string | URLSearchParams = ""): string {
+  const params = new URLSearchParams(atual);
+  if (alerta) params.set(PARAMETROS_URL_FILA.alerta, alerta);
+  else params.delete(PARAMETROS_URL_FILA.alerta);
+  if (aba !== ABA_PADRAO) params.set(PARAMETROS_URL_FILA.aba, aba);
+  else params.delete(PARAMETROS_URL_FILA.aba);
+  const texto = params.toString();
+  return texto ? `?${texto}` : "";
+}
+
+/** Caminho completo da fila com a busca (o "voltar" do login). */
+export function caminhoDaFila(alerta: string | null, aba: AbaFila): string {
+  return `${CAMINHO_FILA}${buscaDaFila(alerta, aba)}`;
+}
+
+/**
+ * Link de entrar que devolve a pessoa a `voltar` — um caminho interno da Sala
+ * COM a busca (ex.: "/alertas-acoes-rrd?alerta=AL-…&aba=todos"), para o link
+ * compartilhado abrir o detalhe depois do login. A página /entrar confere o
+ * caminho (lib/auth/voltar.ts); aqui ele só é codificado.
+ */
+export function rotaEntrar(voltar: string = CAMINHO_FILA): string {
+  return `/entrar?voltar=${encodeURIComponent(voltar)}`;
 }
 
 /** Abas que a sessão vê (rascunhos só para quem emite; "a encerrar" só para quem encerra). */

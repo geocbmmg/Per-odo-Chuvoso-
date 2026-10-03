@@ -25,12 +25,12 @@ export function EsqueletoFilaAlertas() {
 export function EsqueletoListaAlertas() {
   return (
     <>
-      <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2 xl:hidden">
+      <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2 xl:grid-cols-3 2xl:hidden">
         {[0, 1, 2, 3].map((i) => (
           <Skeleton key={i} className="h-[178px] rounded-[14px]" />
         ))}
       </div>
-      <div className="flex flex-col gap-1.5 max-xl:hidden">
+      <div className="flex flex-col gap-1.5 max-2xl:hidden">
         <Skeleton className="h-10 w-full rounded-[10px]" />
         {[0, 1, 2, 3, 4, 5].map((i) => (
           <Skeleton key={i} className="h-[58px] w-full rounded-[6px]" />
